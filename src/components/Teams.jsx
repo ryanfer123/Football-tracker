@@ -1,12 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
 import { TEAMS } from '../data/teams'
 
-export default function Teams() {
+export default function Teams({ selectedTeamName, setSelectedTeamName }) {
   const [search, setSearch] = useState('')
   const [selectedTeam, setSelectedTeam] = useState(null)
   const [hoveredYear, setHoveredYear] = useState(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (selectedTeamName) {
+      setSelectedTeam(selectedTeamName)
+    }
+  }, [selectedTeamName])
+
+  const handleBack = () => {
+    setSelectedTeam(null)
+    if (setSelectedTeamName) {
+      setSelectedTeamName(null)
+    }
+  }
 
   const teamNames = Object.keys(TEAMS).sort()
   const filteredTeams = teamNames.filter(name => 
@@ -27,6 +40,96 @@ export default function Teams() {
     setHoveredYear(null)
   }
 
+  // Generate Path Data
+  const getTournamentPath = (teamName) => {
+    if (teamName === 'Brazil') {
+      return [
+        { round: 'GS MD1', score: '4-1', vs: 'vs NIG', state: 'WON' },
+        { round: 'GS MD2', score: '3-0', vs: 'vs NED', state: 'WON' },
+        { round: 'GS MD3', score: '2-0', vs: 'vs CMR', state: 'WON' },
+        { round: 'R32', score: '1-0', vs: 'vs JAP', state: 'WON' },
+        { round: 'R16', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'QF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'SF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'FINAL', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
+      ]
+    }
+    if (teamName === 'Germany') {
+      return [
+        { round: 'GS MD1', score: '2-1', vs: 'vs ALG', state: 'WON' },
+        { round: 'GS MD2', score: '1-0', vs: 'vs POL', state: 'WON' },
+        { round: 'GS MD3', score: '1-1', vs: 'vs ECU', state: 'DREW' },
+        { round: 'R32', score: 'TBD', vs: 'vs PAR', state: 'TBD' },
+        { round: 'R16', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'QF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'SF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'FINAL', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
+      ]
+    }
+    if (teamName === 'Netherlands') {
+      return [
+        { round: 'GS MD1', score: '2-0', vs: 'vs PER', state: 'WON' },
+        { round: 'GS MD2', score: '3-1', vs: 'vs MAR', state: 'WON' },
+        { round: 'GS MD3', score: '2-2', vs: 'vs SCO', state: 'DREW' },
+        { round: 'R32', score: 'TBD', vs: 'vs MAR', state: 'TBD' },
+        { round: 'R16', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'QF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'SF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
+        { round: 'FINAL', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
+      ]
+    }
+    // Fallback
+    return [
+      { round: 'GS MD1', score: '1-0', vs: 'vs OPP', state: 'WON' },
+      { round: 'GS MD2', score: '1-2', vs: 'vs OPP', state: 'LOST' },
+      { round: 'GS MD3', score: '0-0', vs: 'vs OPP', state: 'DREW' },
+      { round: 'R32', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
+    ]
+  }
+
+  // Generate Stats Data
+  const getTournamentStats = (teamName) => {
+    if (teamName === 'Brazil') {
+      return [
+        { label: 'GOALS SCORED', value: '10', best: true },
+        { label: 'GOALS CONCEDED', value: '1', best: true },
+        { label: 'SHOTS', value: '28', best: false },
+        { label: 'POSSESSION AVG', value: '62%', best: false },
+        { label: 'CLEAN SHEETS', value: '2', best: true },
+        { label: 'xG TOTAL', value: '7.2', best: true }
+      ]
+    }
+    if (teamName === 'Germany') {
+      return [
+        { label: 'GOALS SCORED', value: '4', best: false },
+        { label: 'GOALS CONCEDED', value: '2', best: false },
+        { label: 'SHOTS', value: '22', best: false },
+        { label: 'POSSESSION AVG', value: '58%', best: false },
+        { label: 'CLEAN SHEETS', value: '1', best: false },
+        { label: 'xG TOTAL', value: '4.8', best: false }
+      ]
+    }
+    if (teamName === 'Netherlands') {
+      return [
+        { label: 'GOALS SCORED', value: '7', best: false },
+        { label: 'GOALS CONCEDED', value: '3', best: false },
+        { label: 'SHOTS', value: '19', best: false },
+        { label: 'POSSESSION AVG', value: '55%', best: false },
+        { label: 'CLEAN SHEETS', value: '1', best: false },
+        { label: 'xG TOTAL', value: '6.1', best: false }
+      ]
+    }
+    // Fallback
+    return [
+      { label: 'GOALS SCORED', value: '2', best: false },
+      { label: 'GOALS CONCEDED', value: '2', best: false },
+      { label: 'SHOTS', value: '12', best: false },
+      { label: 'POSSESSION AVG', value: '48%', best: false },
+      { label: 'CLEAN SHEETS', value: '1', best: false },
+      { label: 'xG TOTAL', value: '1.9', best: false }
+    ]
+  }
+
   // Pitch layout rows
   const renderSquadPitch = (team) => {
     const isSpecialTeam = ['Brazil', 'France', 'Germany', 'Argentina', 'Spain'].includes(selectedTeam)
@@ -38,8 +141,7 @@ export default function Teams() {
       )
     }
 
-    const { squad, formation } = team
-    // Map squad positions to rows
+    const { squad } = team
     const rows = [
       { key: 'FW', players: squad.FW || [] },
       { key: 'MID', players: squad.MID || [] },
@@ -101,12 +203,14 @@ export default function Teams() {
   if (selectedTeam) {
     const team = TEAMS[selectedTeam]
     const historyYears = Object.keys(team.wcHistory).sort()
+    const path = getTournamentPath(selectedTeam)
+    const stats = getTournamentStats(selectedTeam)
 
     return (
       <div>
         {/* Back Button */}
         <button 
-          onClick={() => setSelectedTeam(null)}
+          onClick={handleBack}
           className="text-xs"
           style={{ 
             color: 'var(--text-2)', 
@@ -217,7 +321,7 @@ export default function Teams() {
         </div>
 
         {/* Section: Key Players */}
-        <div>
+        <div style={{ marginBottom: 28 }}>
           <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
             KEY PLAYERS
           </div>
@@ -253,6 +357,96 @@ export default function Teams() {
 
                 <div style={{ fontSize: 12, color: 'var(--text-2)', fontStyle: 'italic', lineHeight: 1.4 }}>
                   "{player.note}"
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FEATURE 5: TOURNAMENT PATH */}
+        <div style={{ marginBottom: 28 }}>
+          <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
+            WC 2026 PATH
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflowX: 'auto', paddingBottom: 8 }}>
+            {path.map((step, idx) => {
+              let chipBorder = '1px solid var(--border)'
+              let scoreColor = 'var(--text-1)'
+
+              if (step.state === 'WON') {
+                chipBorder = '1px solid var(--accent)'
+                scoreColor = 'var(--accent)'
+              } else if (step.state === 'DREW') {
+                chipBorder = '1px solid var(--border-2)'
+                scoreColor = 'var(--text-2)'
+              } else if (step.state === 'LOST') {
+                chipBorder = '1px solid var(--red)'
+                scoreColor = 'var(--red)'
+              } else if (step.state === 'TBD') {
+                chipBorder = '1px dashed var(--border)'
+                scoreColor = 'var(--text-3)'
+              }
+
+              return (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                  <div 
+                    style={{
+                      width: 80,
+                      height: 40,
+                      border: chipBorder,
+                      background: 'var(--surface)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <span className="text-xs" style={{ color: 'var(--text-3)', fontSize: 9 }}>{step.round}</span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: scoreColor, lineHeight: 1.2 }}>{step.score}</span>
+                    <span style={{ fontSize: 9, color: 'var(--text-3)' }}>{step.vs}</span>
+                  </div>
+                  {idx < path.length - 1 && (
+                    <span style={{ fontSize: 11, color: 'var(--text-3)' }}>→</span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* FEATURE 5: STATS COMPARISON */}
+        <div style={{ marginBottom: 28 }}>
+          <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
+            TOURNAMENT STATS
+          </div>
+          <div 
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 8
+            }}
+          >
+            {stats.map((st, idx) => (
+              <div 
+                key={idx}
+                style={{
+                  background: 'var(--surface-2)',
+                  border: '1px solid var(--border)',
+                  padding: 12
+                }}
+              >
+                <div 
+                  style={{ 
+                    fontSize: 28, 
+                    fontWeight: 900, 
+                    color: st.best ? 'var(--accent)' : 'var(--text-1)',
+                    lineHeight: 1 
+                  }}
+                >
+                  {st.value}
+                </div>
+                <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 4 }}>
+                  {st.label}
                 </div>
               </div>
             ))}

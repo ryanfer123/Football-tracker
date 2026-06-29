@@ -60,16 +60,22 @@ const TABS = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('today')
+  const [selectedTeamName, setSelectedTeamName] = useState(null)
+
+  const viewTeamProfile = (name) => {
+    setSelectedTeamName(name)
+    setActiveTab('teams')
+  }
 
   const renderTab = () => {
     switch (activeTab) {
-      case 'today': return <Today />
+      case 'today': return <Today onNavigateToTeam={viewTeamProfile} />
       case 'bracket': return <Bracket />
       case 'predict': return <Predict />
-      case 'teams': return <Teams />
-      case 'groups': return <Groups />
+      case 'teams': return <Teams selectedTeamName={selectedTeamName} setSelectedTeamName={setSelectedTeamName} />
+      case 'groups': return <Groups onNavigateToTeam={viewTeamProfile} />
       case 'golden-boot': return <GoldenBoot />
-      default: return <Today />
+      default: return <Today onNavigateToTeam={viewTeamProfile} />
     }
   }
 
@@ -82,7 +88,12 @@ export default function App() {
             <button
               key={tab.id}
               className={`sidebar-tab${activeTab === tab.id ? ' active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id)
+                if (tab.id !== 'teams') {
+                  setSelectedTeamName(null)
+                }
+              }}
               data-label={tab.label}
             >
               {SVG_ICONS[tab.id]}
@@ -96,3 +107,4 @@ export default function App() {
     </div>
   )
 }
+

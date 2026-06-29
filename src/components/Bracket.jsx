@@ -44,107 +44,248 @@ export default function Bracket() {
 
   const [isSimulating, setIsSimulating] = useState(false)
   const [hasSimulated, setHasSimulated] = useState(false)
-  const [flashingMatch, setFlashingMatch] = useState(null) // { round: string, idx: number }
+  const [predWinners, setPredWinners] = useState(null)
+  const [simulationStep, setSimulationStep] = useState(0)
+  const [isChampFlashing, setIsChampFlashing] = useState(false)
+
+  const [flashingMatch, setFlashingMatch] = useState(null)
   const [hoveredTeam, setHoveredTeam] = useState(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
 
+  const prepareWinners = () => {
+    const r32W = []
+    r32.forEach((m) => {
+      r32W.push(m.completed ? m.winner : getWinner(m.teamA, m.teamB))
+    })
+
+    const r16W = []
+    for (let i = 0; i < 8; i++) {
+      r16W.push(getWinner(r32W[i * 2], r32W[i * 2 + 1]))
+    }
+
+    const qfW = []
+    for (let i = 0; i < 4; i++) {
+      qfW.push(getWinner(r16W[i * 2], r16W[i * 2 + 1]))
+    }
+
+    const sfW = []
+    for (let i = 0; i < 2; i++) {
+      sfW.push(getWinner(qfW[i * 2], qfW[i * 2 + 1]))
+    }
+
+    const finalWinner = getWinner(sfW[0], sfW[1])
+
+    return { r32W, r16W, qfW, sfW, finalWinner }
+  }
+
   const simulateAll = () => {
     setIsSimulating(true)
-    let queue = []
+    const pw = prepareWinners()
+    setPredWinners(pw)
 
-    // R32
-    const r32Winners = []
-    r32.forEach((m, idx) => {
-      if (m.completed) {
-        r32Winners.push(m.winner)
-      } else {
-        const winner = getWinner(m.teamA, m.teamB)
-        r32Winners.push(winner)
-        queue.push({ round: 'r32', matchIdx: idx, winner, teamA: m.teamA, teamB: m.teamB })
-      }
+    let delay = 0
+
+    // 1. Simulate R32
+    pw.r32W.forEach((winner, idx) => {
+      setTimeout(() => {
+        setR32(prev => {
+          const next = [...prev]
+          next[idx] = { ...next[idx], winner }
+          return next
+        })
+        setFlashingMatch({ round: 'r32', idx })
+      }, delay)
+      delay += 50
     })
 
-    // R16
-    const r16Winners = []
-    for (let i = 0; i < 8; i++) {
-      const teamA = r32Winners[i * 2]
-      const teamB = r32Winners[i * 2 + 1]
-      const winner = getWinner(teamA, teamB)
-      r16Winners.push(winner)
-      queue.push({ round: 'r16', matchIdx: i, teamA, teamB, winner })
-    }
+    delay += 400
 
-    // QF
-    const qfWinners = []
-    for (let i = 0; i < 4; i++) {
-      const teamA = r16Winners[i * 2]
-      const teamB = r16Winners[i * 2 + 1]
-      const winner = getWinner(teamA, teamB)
-      qfWinners.push(winner)
-      queue.push({ round: 'qf', matchIdx: i, teamA, teamB, winner })
-    }
-
-    // SF
-    const sfWinners = []
-    for (let i = 0; i < 2; i++) {
-      const teamA = qfWinners[i * 2]
-      const teamB = qfWinners[i * 2 + 1]
-      const winner = getWinner(teamA, teamB)
-      sfWinners.push(winner)
-      queue.push({ round: 'sf', matchIdx: i, teamA, teamB, winner })
-    }
-
-    // Final
-    const finalA = sfWinners[0]
-    const finalB = sfWinners[1]
-    const finalWinner = getWinner(finalA, finalB)
-    queue.push({ round: 'final', matchIdx: 0, teamA: finalA, teamB: finalB, winner: finalWinner })
-
-    // Champion
-    queue.push({ round: 'champion', winner: finalWinner })
-
-    // Execute stagger
-    queue.forEach((step, index) => {
+    // 2. Simulate R16
+    pw.r16W.forEach((winner, idx) => {
+      const teamA = pw.r32W[idx * 2]
+      const teamB = pw.r32W[idx * 2 + 1]
       setTimeout(() => {
-        if (step.round === 'r32') {
+        setR16(prev => {
+          const next = [...prev]
+          next[idx] = { teamA, teamB, winner }
+          return next
+        })
+        setFlashingMatch({ round: 'r16', idx })
+      }, delay)
+      delay += 50
+    })
+
+    delay += 400
+
+    // 3. Simulate QF
+    pw.qfW.forEach((winner, idx) => {
+      const teamA = pw.r16W[idx * 2]
+      const teamB = pw.r16W[idx * 2 + 1]
+      setTimeout(() => {
+        setQf(prev => {
+          const next = [...prev]
+          next[idx] = { teamA, teamB, winner }
+          return next
+        })
+        setFlashingMatch({ round: 'qf', idx })
+      }, delay)
+      delay += 50
+    })
+
+    delay += 400
+
+    // 4. Simulate SF
+    pw.sfW.forEach((winner, idx) => {
+      const teamA = pw.qfW[idx * 2]
+      const teamB = pw.qfW[idx * 2 + 1]
+      setTimeout(() => {
+        setSf(prev => {
+          const next = [...prev]
+          next[idx] = { teamA, teamB, winner }
+          return next
+        })
+        setFlashingMatch({ round: 'sf', idx })
+      }, delay)
+      delay += 50
+    })
+
+    delay += 400
+
+    // 5. Simulate Final
+    const finalA = pw.sfW[0]
+    const finalB = pw.sfW[1]
+    const finalWinner = pw.finalWinner
+    setTimeout(() => {
+      setFinal({ teamA: finalA, teamB: finalB, winner: finalWinner })
+      setFlashingMatch({ round: 'final', idx: 0 })
+    }, delay)
+
+    delay += 600
+
+    // 6. Champion
+    setTimeout(() => {
+      setChampion(finalWinner)
+      setIsChampFlashing(true)
+      setTimeout(() => setIsChampFlashing(false), 450)
+      setIsSimulating(false)
+      setHasSimulated(true)
+      setSimulationStep(5)
+    }, delay)
+  }
+
+  const stepThrough = () => {
+    setIsSimulating(true)
+    let pw = predWinners
+    if (!pw) {
+      pw = prepareWinners()
+      setPredWinners(pw)
+    }
+
+    const currentStep = simulationStep
+
+    if (currentStep === 0) {
+      let delay = 0
+      pw.r32W.forEach((winner, idx) => {
+        setTimeout(() => {
           setR32(prev => {
             const next = [...prev]
-            next[step.matchIdx] = { ...next[step.matchIdx], winner: step.winner }
+            next[idx] = { ...next[idx], winner }
             return next
           })
-          setFlashingMatch({ round: 'r32', idx: step.matchIdx })
-        } else if (step.round === 'r16') {
+          setFlashingMatch({ round: 'r32', idx })
+        }, delay)
+        delay += 50
+      })
+      setTimeout(() => {
+        setIsSimulating(false)
+        setSimulationStep(1)
+      }, delay + 50)
+    } 
+    
+    else if (currentStep === 1) {
+      let delay = 0
+      pw.r16W.forEach((winner, idx) => {
+        const teamA = pw.r32W[idx * 2]
+        const teamB = pw.r32W[idx * 2 + 1]
+        setTimeout(() => {
           setR16(prev => {
             const next = [...prev]
-            next[step.matchIdx] = { teamA: step.teamA, teamB: step.teamB, winner: step.winner }
+            next[idx] = { teamA, teamB, winner }
             return next
           })
-          setFlashingMatch({ round: 'r16', idx: step.matchIdx })
-        } else if (step.round === 'qf') {
+          setFlashingMatch({ round: 'r16', idx })
+        }, delay)
+        delay += 50
+      })
+      setTimeout(() => {
+        setIsSimulating(false)
+        setSimulationStep(2)
+      }, delay + 50)
+    } 
+    
+    else if (currentStep === 2) {
+      let delay = 0
+      pw.qfW.forEach((winner, idx) => {
+        const teamA = pw.r16W[idx * 2]
+        const teamB = pw.r16W[idx * 2 + 1]
+        setTimeout(() => {
           setQf(prev => {
             const next = [...prev]
-            next[step.matchIdx] = { teamA: step.teamA, teamB: step.teamB, winner: step.winner }
+            next[idx] = { teamA, teamB, winner }
             return next
           })
-          setFlashingMatch({ round: 'qf', idx: step.matchIdx })
-        } else if (step.round === 'sf') {
+          setFlashingMatch({ round: 'qf', idx })
+        }, delay)
+        delay += 50
+      })
+      setTimeout(() => {
+        setIsSimulating(false)
+        setSimulationStep(3)
+      }, delay + 50)
+    } 
+    
+    else if (currentStep === 3) {
+      let delay = 0
+      pw.sfW.forEach((winner, idx) => {
+        const teamA = pw.qfW[idx * 2]
+        const teamB = pw.qfW[idx * 2 + 1]
+        setTimeout(() => {
           setSf(prev => {
             const next = [...prev]
-            next[step.matchIdx] = { teamA: step.teamA, teamB: step.teamB, winner: step.winner }
+            next[idx] = { teamA, teamB, winner }
             return next
           })
-          setFlashingMatch({ round: 'sf', idx: step.matchIdx })
-        } else if (step.round === 'final') {
-          setFinal({ teamA: step.teamA, teamB: step.teamB, winner: step.winner })
-          setFlashingMatch({ round: 'final', idx: 0 })
-        } else if (step.round === 'champion') {
-          setChampion(step.winner)
-          setFlashingMatch({ round: 'champion', idx: 0 })
-          setIsSimulating(false)
-          setHasSimulated(true)
-        }
-      }, index * 200)
-    })
+          setFlashingMatch({ round: 'sf', idx })
+        }, delay)
+        delay += 50
+      })
+      setTimeout(() => {
+        setIsSimulating(false)
+        setSimulationStep(4)
+      }, delay + 50)
+    } 
+    
+    else if (currentStep === 4) {
+      let delay = 0
+      const finalA = pw.sfW[0]
+      const finalB = pw.sfW[1]
+      const finalWinner = pw.finalWinner
+      setTimeout(() => {
+        setFinal({ teamA: finalA, teamB: finalB, winner: finalWinner })
+        setFlashingMatch({ round: 'final', idx: 0 })
+      }, delay)
+      
+      delay += 600
+      
+      setTimeout(() => {
+        setChampion(finalWinner)
+        setIsChampFlashing(true)
+        setTimeout(() => setIsChampFlashing(false), 450)
+        setIsSimulating(false)
+        setHasSimulated(true)
+        setSimulationStep(5)
+      }, delay)
+    }
   }
 
   const resetAll = () => {
@@ -154,6 +295,8 @@ export default function Bracket() {
     setSf(Array(2).fill({ teamA: null, teamB: null, winner: null }))
     setFinal({ teamA: null, teamB: null, winner: null })
     setChampion(null)
+    setPredWinners(null)
+    setSimulationStep(0)
     setHasSimulated(false)
     setFlashingMatch(null)
   }
@@ -202,6 +345,8 @@ export default function Bracket() {
       const strokeColor = isFlashing ? 'var(--accent)' : isWinner ? 'var(--accent)' : 'var(--border)'
       const bgColor = isWinner ? '#1A1F00' : 'var(--surface)'
       const textColor = isWinner ? 'var(--accent)' : 'var(--text-1)'
+      const isChamp = champion !== null && champion === team
+      const flashClass = isChamp && isChampFlashing ? 'champion-flash' : ''
 
       if (!team) {
         return (
@@ -215,6 +360,7 @@ export default function Bracket() {
       return (
         <g 
           key={`${x}-${y}-${team}`}
+          className={flashClass}
           onMouseEnter={(e) => handleMouseEnter(team, e)}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -230,12 +376,14 @@ export default function Bracket() {
             strokeWidth="1"
             style={isFlashing ? { animation: 'flash-accent 0.1s ease 2' } : {}}
           />
-          {/* Flag Component inside foreignObject */}
           <foreignObject x={x + 8} y={y - 7} width="20" height="13">
             <FlagComponent teamName={team} size="small" style={{ width: 20, height: 13, border: 'none' }} />
           </foreignObject>
+          {isChamp && (
+            <text x={x + 32} y={y + 4} fill="var(--accent)" fontSize="10" fontWeight="600">🏆</text>
+          )}
           <text 
-            x={x + 34} 
+            x={x + (isChamp ? 48 : 34)} 
             y={y + 4} 
             fill={textColor} 
             fontSize="11" 
@@ -273,7 +421,6 @@ export default function Bracket() {
       chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'r32', idx))
       chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'r32', idx))
 
-      // Connectors to R16
       const nextX = x + colW
       const nextY = getMatchY(1, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
       paths.push(
@@ -293,7 +440,6 @@ export default function Bracket() {
       chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'r16', idx))
       chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'r16', idx))
 
-      // Connectors to QF
       const nextX = x + colW
       const nextY = getMatchY(2, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
       paths.push(
@@ -313,7 +459,6 @@ export default function Bracket() {
       chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'qf', idx))
       chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'qf', idx))
 
-      // Connectors to SF
       const nextX = x + colW
       const nextY = getMatchY(3, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
       paths.push(
@@ -333,7 +478,6 @@ export default function Bracket() {
       chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'sf', idx))
       chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'sf', idx))
 
-      // Connectors to Final
       const nextX = x + colW
       const nextY = getMatchY(4, 0) + (idx === 0 ? -18 : 18)
       paths.push(
@@ -352,7 +496,6 @@ export default function Bracket() {
     chips.push(renderChip(final.teamA, finalX, finalY - 18, isWinnerA, isLoserA, 'final', 0))
     chips.push(renderChip(final.teamB, finalX, finalY + 18, isWinnerB, isLoserB, 'final', 0))
 
-    // Connector to Champion
     paths.push(
       <path key="pfinal" d={drawLine(finalX + 140, finalY, finalX + colW, finalY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
     )
@@ -383,64 +526,113 @@ export default function Bracket() {
           </div>
         </div>
 
-        {hasSimulated ? (
-          <button 
-            onClick={resetAll}
-            style={{
-              border: '1px solid var(--border-2)',
-              background: 'var(--surface)',
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--text-1)',
-              padding: '8px 16px',
-              cursor: 'pointer',
-              transition: 'border-color 80ms ease, color 80ms ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--accent)'
-              e.currentTarget.style.color = 'var(--accent)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-2)'
-              e.currentTarget.style.color = 'var(--text-1)'
-            }}
-          >
-            RESET
-          </button>
-        ) : (
-          <button 
-            onClick={simulateAll}
-            disabled={isSimulating}
-            style={{
-              border: '1px solid var(--border-2)',
-              background: 'var(--surface)',
-              fontSize: 12,
-              fontWeight: 600,
-              color: 'var(--text-1)',
-              padding: '8px 16px',
-              cursor: 'pointer',
-              opacity: isSimulating ? 0.5 : 1,
-              transition: 'border-color 80ms ease, color 80ms ease'
-            }}
-            onMouseEnter={(e) => {
-              if (isSimulating) return
-              e.currentTarget.style.borderColor = 'var(--accent)'
-              e.currentTarget.style.color = 'var(--accent)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--border-2)'
-              e.currentTarget.style.color = 'var(--text-1)'
-            }}
-          >
-            {isSimulating ? 'SIMULATING...' : 'SIMULATE →'}
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: 8 }}>
+          {hasSimulated ? (
+            <button 
+              onClick={resetAll}
+              style={{
+                border: '1px solid var(--border-2)',
+                background: 'var(--surface)',
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'var(--text-1)',
+                padding: '8px 16px',
+                cursor: 'pointer',
+                transition: 'border-color 80ms ease, color 80ms ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--accent)'
+                e.currentTarget.style.color = 'var(--accent)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border-2)'
+                e.currentTarget.style.color = 'var(--text-1)'
+              }}
+            >
+              RESET
+            </button>
+          ) : (
+            <>
+              {/* FEATURE 8: STEP THROUGH BUTTON */}
+              <button 
+                onClick={stepThrough}
+                disabled={isSimulating}
+                style={{
+                  border: '1px solid var(--border-2)',
+                  background: 'var(--surface)',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: 'var(--text-1)',
+                  padding: '8px 16px',
+                  cursor: 'pointer',
+                  opacity: isSimulating ? 0.5 : 1,
+                  transition: 'border-color 80ms ease, color 80ms ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (isSimulating) return
+                  e.currentTarget.style.borderColor = 'var(--accent)'
+                  e.currentTarget.style.color = 'var(--accent)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border-2)'
+                  e.currentTarget.style.color = 'var(--text-1)'
+                }}
+              >
+                {simulationStep === 0 ? 'STEP THROUGH →' : `STEP ROUND ${simulationStep + 1} →`}
+              </button>
+
+              <button 
+                onClick={simulateAll}
+                disabled={isSimulating}
+                style={{
+                  border: '1px solid var(--border-2)',
+                  background: 'var(--surface)',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: 'var(--text-1)',
+                  padding: '8px 16px',
+                  cursor: 'pointer',
+                  opacity: isSimulating ? 0.5 : 1,
+                  transition: 'border-color 80ms ease, color 80ms ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (isSimulating) return
+                  e.currentTarget.style.borderColor = 'var(--accent)'
+                  e.currentTarget.style.color = 'var(--accent)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border-2)'
+                  e.currentTarget.style.color = 'var(--text-1)'
+                }}
+              >
+                {isSimulating ? 'SIMULATING...' : 'SIMULATE ALL →'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* SVG CONTAINER */}
       <div style={{ overflowX: 'auto', overflowY: 'hidden', border: '1px solid var(--border)', padding: 16, background: '#0a0a0a' }}>
         {renderBracketSVG()}
       </div>
+
+      {/* FEATURE 8: SIMULATED WINNER TEXT */}
+      {champion && (
+        <div 
+          style={{ 
+            textAlign: 'center', 
+            marginTop: 16, 
+            fontSize: 13, 
+            fontWeight: 600, 
+            color: 'var(--accent)', 
+            textTransform: 'uppercase', 
+            letterSpacing: '0.08em' 
+          }}
+        >
+          SIMULATED WINNER: {champion}
+        </div>
+      )}
 
       {/* REACT STATE HOVER TOOLTIP */}
       {hoveredTeam && (
