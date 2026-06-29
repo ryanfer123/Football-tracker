@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FlagComponent } from './shared'
 
 const FALLBACK_TODAY = [
@@ -700,10 +700,28 @@ function FixtureRow({ match, onNavigateToTeam, selectedMatchId, setSelectedMatch
   )
 }
 
-export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMatchId }) {
+export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMatchId, onGoalScored }) {
   const [loading, setLoading] = useState(true)
   const [todayMatches, setTodayMatches] = useState(FALLBACK_TODAY)
   const [filter, setFilter] = useState('ALL')
+
+  const prevScoresRef = useRef({})
+
+  useEffect(() => {
+    todayMatches.forEach(match => {
+      const prev = prevScoresRef.current[match.id]
+      if (prev) {
+        if (match.scoreA > prev.scoreA) {
+          if (onGoalScored) onGoalScored(match.teamA, match)
+        }
+        if (match.scoreB > prev.scoreB) {
+          if (onGoalScored) onGoalScored(match.teamB, match)
+        }
+      }
+      // Update cache
+      prevScoresRef.current[match.id] = { scoreA: match.scoreA, scoreB: match.scoreB }
+    })
+  }, [todayMatches, onGoalScored])
 
   useEffect(() => {
     let active = true

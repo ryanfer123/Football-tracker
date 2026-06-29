@@ -107,6 +107,16 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const searchInputRef = useRef(null)
 
+  // Custom Toast notification states
+  const [toasts, setToasts] = useState([])
+
+  // Request browser Notification API permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
+  }, [])
+
   // Check authentication session on mount
   useEffect(() => {
     const checkSession = async () => {
@@ -164,10 +174,47 @@ export default function App() {
     setIsSearchOpen(false)
   }
 
+  // Trigger Goal Notification (Browser push + neobrutalist Toast UI)
+  const handleGoalScored = (scoringTeam, match) => {
+    const title = '⚽ GOAL SCORED!'
+    const message = `${scoringTeam.toUpperCase()} HAVE SCORED! (${match.teamA} ${match.scoreA}–${match.scoreB} ${match.teamB})`
+
+    // 1. HTML5 Desktop notification
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, { body: message })
+    }
+
+    // 2. Custom Toast UI
+    const toastId = Date.now()
+    setToasts(prev => [...prev, { id: toastId, title, message }])
+
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== toastId))
+    }, 5000)
+  }
+
+  // Attach goal simulation globally so Profile.jsx can trigger it
+  useEffect(() => {
+    window.simulateGoal = () => {
+      handleGoalScored('Brazil', { teamA: 'Brazil', teamB: 'Japan', scoreA: 2, scoreB: 0 })
+    }
+    return () => {
+      window.simulateGoal = null
+    }
+  }, [])
+
   const renderTab = () => {
     switch (activeTab) {
       case 'today': 
-        return <Today onNavigateToTeam={viewTeamProfile} selectedMatchId={selectedMatchId} setSelectedMatchId={setSelectedMatchId} />
+        return (
+          <Today 
+            onNavigateToTeam={viewTeamProfile} 
+            selectedMatchId={selectedMatchId} 
+            setSelectedMatchId={setSelectedMatchId} 
+            onGoalScored={handleGoalScored}
+          />
+        )
       case 'tracker': 
         return <Tracker onNavigateToTeam={viewTeamProfile} onGoToTeams={() => setActiveTab('teams')} />
       case 'bracket': 
@@ -192,7 +239,7 @@ export default function App() {
           />
         )
       default: 
-        return <Today onNavigateToTeam={viewTeamProfile} />
+        return <Today onNavigateToTeam={viewTeamProfile} onGoalScored={handleGoalScored} />
     }
   }
 
@@ -528,6 +575,57 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* NEOBRUTALIST TOAST NOTIFICATION CONTAINER */}
+      <div 
+        style={{ 
+          position: 'fixed', 
+          top: 20, 
+          right: 20, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 10, 
+          zIndex: 1000 
+        }}
+      >
+        {toasts.map(toast => (
+          <div 
+            key={toast.id}
+            style={{
+              width: 320,
+              background: 'var(--surface)',
+              border: '2px solid var(--accent)',
+              padding: '12px 16px',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '4px 4px 0px #000',
+              position: 'relative'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 900, color: 'var(--accent)', letterSpacing: '0.1em' }}>
+                {toast.title}
+              </span>
+              <button 
+                onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+                style={{ 
+                  background: 'transparent', 
+                  border: 'none', 
+                  color: 'var(--text-2)', 
+                  cursor: 'pointer',
+                  fontSize: 16,
+                  padding: 0
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-1)' }}>
+              {toast.message}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

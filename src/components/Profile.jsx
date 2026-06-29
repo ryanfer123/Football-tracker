@@ -435,6 +435,26 @@ export default function Profile({ onNavigateToPredict, currentUser, onLogout, on
                   </div>
                 )
               })}
+              <button 
+                onClick={() => {
+                  if (window.simulateGoal) {
+                    window.simulateGoal()
+                  }
+                }}
+                style={{
+                  marginTop: 12,
+                  width: '100%',
+                  border: '1px solid var(--accent)',
+                  background: '#1A1F00',
+                  color: 'var(--accent)',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  height: 28,
+                  cursor: 'pointer'
+                }}
+              >
+                TEST GOAL NOTIFICATION
+              </button>
             </div>
           </div>
         </div>
