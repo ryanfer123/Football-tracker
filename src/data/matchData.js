@@ -1,4 +1,5 @@
 // FIFA World Cup 2026 — Match, Group, Bracket, News, and Scorer Data
+import { buildGroupsFromMatches } from '../utils/groupStats.js'
 
 // ═══════════════════════════════════════════
 // TODAY'S MATCHES — June 29 (Round of 32)
@@ -124,106 +125,109 @@ export const BRACKET = {
 };
 
 // ═══════════════════════════════════════════
-// GROUP STAGE FINAL STANDINGS
+// GROUP STAGE MATCH RESULTS (source of truth)
 // ═══════════════════════════════════════════
-export const GROUPS = {
-  A: {
-    teams: [
-      { name: 'Mexico', p: 3, w: 3, d: 0, l: 0, gf: 6, ga: 0, gd: 6, pts: 9, status: 'winner' },
-      { name: 'South Africa', p: 3, w: 1, d: 1, l: 1, gf: 3, ga: 3, gd: 0, pts: 4, status: 'runnerup' },
-      { name: 'Ecuador', p: 3, w: 1, d: 0, l: 2, gf: 3, ga: 4, gd: -1, pts: 3, status: 'third' },
-      { name: 'South Korea', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 6, gd: -5, pts: 1, status: 'eliminated' }
-    ]
-  },
-  B: {
-    teams: [
-      { name: 'Switzerland', p: 3, w: 2, d: 1, l: 0, gf: 4, ga: 0, gd: 4, pts: 7, status: 'winner' },
-      { name: 'Canada', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 2, gd: 2, pts: 4, status: 'runnerup' },
-      { name: 'Bosnia & Herz', p: 3, w: 1, d: 1, l: 1, gf: 3, ga: 2, gd: 1, pts: 4, status: 'third' },
-      { name: 'Qatar', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 5, gd: -5, pts: 0, status: 'eliminated' }
-    ]
-  },
-  C: {
-    teams: [
-      { name: 'Brazil', p: 3, w: 2, d: 1, l: 0, gf: 7, ga: 1, gd: 6, pts: 7, status: 'winner' },
-      { name: 'Morocco', p: 3, w: 1, d: 2, l: 0, gf: 4, ga: 3, gd: 1, pts: 5, status: 'runnerup' },
-      { name: 'Scotland', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 5, gd: -3, pts: 3, status: 'third' },
-      { name: 'Haiti', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 5, gd: -4, pts: 1, status: 'eliminated' }
-    ]
-  },
-  D: {
-    teams: [
-      { name: 'Germany', p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2, gd: 4, pts: 7, status: 'winner' },
-      { name: 'England', p: 3, w: 2, d: 1, l: 0, gf: 5, ga: 2, gd: 3, pts: 7, status: 'runnerup' },
-      { name: 'Paraguay', p: 3, w: 0, d: 2, l: 1, gf: 2, ga: 4, gd: -2, pts: 2, status: 'third' },
-      { name: 'Cameroon', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 5, gd: -5, pts: 0, status: 'eliminated' }
-    ]
-  },
-  E: {
-    teams: [
-      { name: 'France', p: 3, w: 3, d: 0, l: 0, gf: 8, ga: 1, gd: 7, pts: 9, status: 'winner' },
-      { name: 'Norway', p: 3, w: 2, d: 0, l: 1, gf: 5, ga: 3, gd: 2, pts: 6, status: 'runnerup' },
-      { name: 'Ivory Coast', p: 3, w: 1, d: 1, l: 1, gf: 2, ga: 3, gd: -1, pts: 4, status: 'third' },
-      { name: 'Denmark', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 4, gd: -3, pts: 1, status: 'eliminated' }
-    ]
-  },
-  F: {
-    teams: [
-      { name: 'Japan', p: 3, w: 1, d: 2, l: 0, gf: 7, ga: 3, gd: 4, pts: 5, status: 'winner' },
-      { name: 'Netherlands', p: 3, w: 1, d: 2, l: 0, gf: 4, ga: 3, gd: 1, pts: 5, status: 'runnerup' },
-      { name: 'Sweden', p: 3, w: 0, d: 3, l: 0, gf: 3, ga: 3, gd: 0, pts: 3, status: 'third' },
-      { name: 'Tunisia', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 6, gd: -5, pts: 1, status: 'eliminated' }
-    ]
-  },
-  G: {
-    teams: [
-      { name: 'Belgium', p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2, gd: 4, pts: 7, status: 'winner' },
-      { name: 'Senegal', p: 3, w: 2, d: 0, l: 1, gf: 4, ga: 3, gd: 1, pts: 6, status: 'runnerup' },
-      { name: 'Costa Rica', p: 3, w: 0, d: 2, l: 1, gf: 2, ga: 3, gd: -1, pts: 2, status: 'third' },
-      { name: 'Israel', p: 3, w: 0, d: 1, l: 2, gf: 0, ga: 4, gd: -4, pts: 1, status: 'eliminated' }
-    ]
-  },
-  H: {
-    teams: [
-      { name: 'Mexico', p: 3, w: 2, d: 1, l: 0, gf: 4, ga: 1, gd: 3, pts: 7, status: 'winner' },
-      { name: 'Ecuador', p: 3, w: 2, d: 0, l: 1, gf: 3, ga: 2, gd: 1, pts: 6, status: 'runnerup' },
-      { name: 'Czechia', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 3, gd: -1, pts: 3, status: 'third' },
-      { name: 'South Korea', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 4, gd: -3, pts: 1, status: 'eliminated' }
-    ]
-  },
-  I: {
-    teams: [
-      { name: 'Spain', p: 3, w: 2, d: 1, l: 0, gf: 5, ga: 1, gd: 4, pts: 7, status: 'winner' },
-      { name: 'Portugal', p: 3, w: 2, d: 0, l: 1, gf: 6, ga: 3, gd: 3, pts: 6, status: 'runnerup' },
-      { name: 'Croatia', p: 3, w: 0, d: 2, l: 1, gf: 3, ga: 6, gd: -3, pts: 2, status: 'third' },
-      { name: 'Albania', p: 3, w: 0, d: 1, l: 2, gf: 0, ga: 4, gd: -4, pts: 1, status: 'eliminated' }
-    ]
-  },
-  J: {
-    teams: [
-      { name: 'Australia', p: 3, w: 2, d: 1, l: 0, gf: 3, ga: 0, gd: 3, pts: 7, status: 'winner' },
-      { name: 'Algeria', p: 3, w: 1, d: 1, l: 1, gf: 3, ga: 2, gd: 1, pts: 4, status: 'runnerup' },
-      { name: 'Uruguay', p: 3, w: 0, d: 2, l: 1, gf: 1, ga: 2, gd: -1, pts: 2, status: 'third' },
-      { name: 'Wales', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 3, gd: -3, pts: 0, status: 'eliminated' }
-    ]
-  },
-  K: {
-    teams: [
-      { name: 'Switzerland', p: 3, w: 2, d: 1, l: 0, gf: 4, ga: 1, gd: 3, pts: 7, status: 'winner' },
-      { name: 'Egypt', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 3, gd: 1, pts: 4, status: 'runnerup' },
-      { name: 'Tunisia', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 3, gd: -1, pts: 3, status: 'third' },
-      { name: 'Saudi Arabia', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 3, gd: -3, pts: 0, status: 'eliminated' }
-    ]
-  },
-  L: {
-    teams: [
-      { name: 'Argentina', p: 3, w: 3, d: 0, l: 0, gf: 9, ga: 1, gd: 8, pts: 9, status: 'winner' },
-      { name: 'Austria', p: 3, w: 2, d: 0, l: 1, gf: 4, ga: 3, gd: 1, pts: 6, status: 'runnerup' },
-      { name: 'Algeria', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 5, gd: -3, pts: 3, status: 'third' },
-      { name: 'Jordan', p: 3, w: 0, d: 0, l: 3, gf: 1, ga: 7, gd: -6, pts: 0, status: 'eliminated' }
-    ]
-  }
-};
+export const GROUP_MATCHES = {
+  A: [
+    { team1: 'Mexico', score1: 2, score2: 0, team2: 'South Africa', date: 'JUN 11' },
+    { team1: 'Ecuador', score1: 2, score2: 1, team2: 'South Korea', date: 'JUN 11' },
+    { team1: 'Mexico', score1: 1, score2: 0, team2: 'South Korea', date: 'JUN 15' },
+    { team1: 'South Africa', score1: 2, score2: 1, team2: 'Ecuador', date: 'JUN 15' },
+    { team1: 'Mexico', score1: 3, score2: 0, team2: 'Ecuador', date: 'JUN 19' },
+    { team1: 'South Africa', score1: 1, score2: 1, team2: 'South Korea', date: 'JUN 19' }
+  ],
+  B: [
+    { team1: 'Switzerland', score1: 2, score2: 0, team2: 'Qatar', date: 'JUN 12' },
+    { team1: 'Canada', score1: 1, score2: 1, team2: 'Bosnia & Herz', date: 'JUN 12' },
+    { team1: 'Switzerland', score1: 1, score2: 0, team2: 'Canada', date: 'JUN 16' },
+    { team1: 'Bosnia & Herz', score1: 2, score2: 0, team2: 'Qatar', date: 'JUN 16' },
+    { team1: 'Switzerland', score1: 0, score2: 0, team2: 'Bosnia & Herz', date: 'JUN 20' },
+    { team1: 'Canada', score1: 3, score2: 0, team2: 'Qatar', date: 'JUN 20' }
+  ],
+  C: [
+    { team1: 'Brazil', score1: 2, score2: 0, team2: 'Scotland', date: 'JUN 13' },
+    { team1: 'Morocco', score1: 1, score2: 1, team2: 'Netherlands', date: 'JUN 13' },
+    { team1: 'Brazil', score1: 1, score2: 0, team2: 'Netherlands', date: 'JUN 17' },
+    { team1: 'Morocco', score1: 2, score2: 0, team2: 'Scotland', date: 'JUN 17' },
+    { team1: 'Brazil', score1: 3, score2: 1, team2: 'Morocco', date: 'JUN 21' },
+    { team1: 'Netherlands', score1: 2, score2: 0, team2: 'Scotland', date: 'JUN 21' }
+  ],
+  D: [
+    { team1: 'Germany', score1: 3, score2: 0, team2: 'Cameroon', date: 'JUN 14' },
+    { team1: 'England', score1: 2, score2: 0, team2: 'Cameroon', date: 'JUN 14' },
+    { team1: 'Germany', score1: 2, score2: 1, team2: 'Paraguay', date: 'JUN 18' },
+    { team1: 'England', score1: 2, score2: 1, team2: 'Paraguay', date: 'JUN 18' },
+    { team1: 'Germany', score1: 1, score2: 1, team2: 'England', date: 'JUN 22' },
+    { team1: 'Paraguay', score1: 1, score2: 0, team2: 'Cameroon', date: 'JUN 22' }
+  ],
+  E: [
+    { team1: 'France', score1: 2, score2: 0, team2: 'Denmark', date: 'JUN 15' },
+    { team1: 'Norway', score1: 2, score2: 1, team2: 'Ivory Coast', date: 'JUN 15' },
+    { team1: 'France', score1: 2, score2: 0, team2: 'Ivory Coast', date: 'JUN 19' },
+    { team1: 'Norway', score1: 3, score2: 1, team2: 'Denmark', date: 'JUN 19' },
+    { team1: 'France', score1: 4, score2: 1, team2: 'Norway', date: 'JUN 23' },
+    { team1: 'Ivory Coast', score1: 1, score2: 0, team2: 'Denmark', date: 'JUN 23' }
+  ],
+  F: [
+    { team1: 'Japan', score1: 2, score2: 1, team2: 'Serbia', date: 'JUN 16' },
+    { team1: 'Sweden', score1: 1, score2: 1, team2: 'Tunisia', date: 'JUN 16' },
+    { team1: 'Japan', score1: 1, score2: 1, team2: 'Sweden', date: 'JUN 20' },
+    { team1: 'Serbia', score1: 2, score2: 0, team2: 'Tunisia', date: 'JUN 20' },
+    { team1: 'Japan', score1: 1, score2: 0, team2: 'Tunisia', date: 'JUN 24' },
+    { team1: 'Sweden', score1: 2, score2: 1, team2: 'Serbia', date: 'JUN 24' }
+  ],
+  G: [
+    { team1: 'Belgium', score1: 2, score2: 1, team2: 'Senegal', date: 'JUN 17' },
+    { team1: 'Costa Rica', score1: 0, score2: 0, team2: 'Israel', date: 'JUN 17' },
+    { team1: 'Belgium', score1: 3, score2: 0, team2: 'Israel', date: 'JUN 21' },
+    { team1: 'Senegal', score1: 2, score2: 0, team2: 'Costa Rica', date: 'JUN 21' },
+    { team1: 'Belgium', score1: 1, score2: 1, team2: 'Costa Rica', date: 'JUN 25' },
+    { team1: 'Senegal', score1: 1, score2: 0, team2: 'Israel', date: 'JUN 25' }
+  ],
+  H: [
+    { team1: 'DR Congo', score1: 1, score2: 0, team2: 'Ecuador', date: 'JUN 17' },
+    { team1: 'Czechia', score1: 2, score2: 1, team2: 'South Korea', date: 'JUN 17' },
+    { team1: 'DR Congo', score1: 2, score2: 0, team2: 'South Korea', date: 'JUN 21' },
+    { team1: 'Ecuador', score1: 2, score2: 0, team2: 'Czechia', date: 'JUN 21' },
+    { team1: 'DR Congo', score1: 1, score2: 1, team2: 'Czechia', date: 'JUN 25' },
+    { team1: 'Ecuador', score1: 2, score2: 0, team2: 'South Korea', date: 'JUN 25' }
+  ],
+  I: [
+    { team1: 'Spain', score1: 2, score2: 0, team2: 'Croatia', date: 'JUN 18' },
+    { team1: 'Portugal', score1: 3, score2: 0, team2: 'Albania', date: 'JUN 18' },
+    { team1: 'Spain', score1: 1, score2: 0, team2: 'Portugal', date: 'JUN 22' },
+    { team1: 'Croatia', score1: 2, score2: 1, team2: 'Albania', date: 'JUN 22' },
+    { team1: 'Spain', score1: 0, score2: 0, team2: 'Albania', date: 'JUN 26' },
+    { team1: 'Portugal', score1: 2, score2: 1, team2: 'Croatia', date: 'JUN 26' }
+  ],
+  J: [
+    { team1: 'Australia', score1: 2, score2: 0, team2: 'Wales', date: 'JUN 19' },
+    { team1: 'Algeria', score1: 1, score2: 1, team2: 'Uruguay', date: 'JUN 19' },
+    { team1: 'Australia', score1: 1, score2: 0, team2: 'Algeria', date: 'JUN 23' },
+    { team1: 'Uruguay', score1: 0, score2: 0, team2: 'Wales', date: 'JUN 23' },
+    { team1: 'Australia', score1: 0, score2: 0, team2: 'Uruguay', date: 'JUN 27' },
+    { team1: 'Algeria', score1: 2, score2: 0, team2: 'Wales', date: 'JUN 27' }
+  ],
+  K: [
+    { team1: 'Chile', score1: 1, score2: 0, team2: 'Saudi Arabia', date: 'JUN 20' },
+    { team1: 'Egypt', score1: 1, score2: 1, team2: 'Iran', date: 'JUN 20' },
+    { team1: 'Chile', score1: 0, score2: 0, team2: 'Egypt', date: 'JUN 24' },
+    { team1: 'Iran', score1: 2, score2: 0, team2: 'Saudi Arabia', date: 'JUN 24' },
+    { team1: 'Chile', score1: 2, score2: 1, team2: 'Iran', date: 'JUN 28' },
+    { team1: 'Egypt', score1: 1, score2: 0, team2: 'Saudi Arabia', date: 'JUN 28' }
+  ],
+  L: [
+    { team1: 'Argentina', score1: 3, score2: 1, team2: 'Colombia', date: 'JUN 21' },
+    { team1: 'Austria', score1: 2, score2: 0, team2: 'Ghana', date: 'JUN 21' },
+    { team1: 'Argentina', score1: 2, score2: 0, team2: 'Austria', date: 'JUN 25' },
+    { team1: 'Colombia', score1: 2, score2: 1, team2: 'Ghana', date: 'JUN 25' },
+    { team1: 'Argentina', score1: 2, score2: 1, team2: 'Ghana', date: 'JUN 29' },
+    { team1: 'Austria', score1: 1, score2: 0, team2: 'Colombia', date: 'JUN 29' }
+  ]
+}
+
+// Computed from match results — standings always match displayed scores
+export const GROUPS = buildGroupsFromMatches(GROUP_MATCHES)
 
 // ═══════════════════════════════════════════
 // GOLDEN BOOT — TOP SCORERS
@@ -243,15 +247,15 @@ export const GOLDEN_BOOT = [
     goalDetails: [
       { match: 'vs Denmark', minute: 34, type: 'Open play' },
       { match: 'vs Denmark', minute: 78, type: 'Open play' },
-      { match: 'vs Sweden', minute: 55, type: 'Open play' },
-      { match: 'vs Senegal', minute: 12, type: 'Penalty' }
+      { match: 'vs Norway', minute: 55, type: 'Open play' },
+      { match: 'vs Ivory Coast', minute: 12, type: 'Penalty' }
     ],
     matchRatings: [9.0, 8.8, 9.3, 9.2, 8.5]
   },
   { rank: 3, name: 'Viktor Gyökeres', country: 'Sweden', flag: '🇸🇪', club: 'Sporting CP', goals: 3, assists: 1, mins: 270, minsPerGoal: 90, rating: 8.3, status: 'IN',
     goalDetails: [
-      { match: 'vs Peru', minute: 22, type: 'Header' },
-      { match: 'vs Peru', minute: 67, type: 'Open play' },
+      { match: 'vs Denmark', minute: 22, type: 'Header' },
+      { match: 'vs Denmark', minute: 67, type: 'Open play' },
       { match: 'vs Ivory Coast', minute: 83, type: 'Penalty' }
     ],
     matchRatings: [8.5, 8.0, 8.2, 7.8, 8.5]
@@ -267,8 +271,8 @@ export const GOLDEN_BOOT = [
   { rank: 5, name: 'Erling Haaland', country: 'Norway', flag: '🇳🇴', club: 'Man City', goals: 3, assists: 0, mins: 180, minsPerGoal: 60, rating: 8.5, status: 'IN',
     goalDetails: [
       { match: 'vs Denmark', minute: 33, type: 'Open play' },
-      { match: 'vs Peru', minute: 11, type: 'Header' },
-      { match: 'vs Peru', minute: 56, type: 'Open play' }
+      { match: 'vs Ivory Coast', minute: 11, type: 'Header' },
+      { match: 'vs Ivory Coast', minute: 56, type: 'Open play' }
     ],
     matchRatings: [8.8, 9.0, 8.2, 0, 0]
   },

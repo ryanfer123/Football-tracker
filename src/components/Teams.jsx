@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
 import { TEAMS } from '../data/teams'
+import { GROUP_MATCHES } from '../data/matchData'
+import { getTeamGroupResults, statsFromGroupResults, parseScore } from '../utils/groupStats'
 
 export default function Teams({ selectedTeamName, setSelectedTeamName }) {
   const [search, setSearch] = useState('')
@@ -40,93 +42,35 @@ export default function Teams({ selectedTeamName, setSelectedTeamName }) {
     setHoveredYear(null)
   }
 
-  // Generate Path Data
+  // Build tournament path from actual group + knockout results
   const getTournamentPath = (teamName) => {
-    if (teamName === 'Brazil') {
-      return [
-        { round: 'GS MD1', score: '4-1', vs: 'vs NIG', state: 'WON' },
-        { round: 'GS MD2', score: '3-0', vs: 'vs NED', state: 'WON' },
-        { round: 'GS MD3', score: '2-0', vs: 'vs CMR', state: 'WON' },
-        { round: 'R32', score: '1-0', vs: 'vs JAP', state: 'WON' },
-        { round: 'R16', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'QF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'SF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'FINAL', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
-      ]
-    }
-    if (teamName === 'Germany') {
-      return [
-        { round: 'GS MD1', score: '2-1', vs: 'vs ALG', state: 'WON' },
-        { round: 'GS MD2', score: '1-0', vs: 'vs POL', state: 'WON' },
-        { round: 'GS MD3', score: '1-1', vs: 'vs ECU', state: 'DREW' },
-        { round: 'R32', score: 'TBD', vs: 'vs PAR', state: 'TBD' },
-        { round: 'R16', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'QF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'SF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'FINAL', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
-      ]
-    }
-    if (teamName === 'Netherlands') {
-      return [
-        { round: 'GS MD1', score: '2-0', vs: 'vs PER', state: 'WON' },
-        { round: 'GS MD2', score: '3-1', vs: 'vs MAR', state: 'WON' },
-        { round: 'GS MD3', score: '2-2', vs: 'vs SCO', state: 'DREW' },
-        { round: 'R32', score: 'TBD', vs: 'vs MAR', state: 'TBD' },
-        { round: 'R16', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'QF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'SF', score: 'TBD', vs: 'vs TBD', state: 'TBD' },
-        { round: 'FINAL', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
-      ]
-    }
-    // Fallback
-    return [
-      { round: 'GS MD1', score: '1-0', vs: 'vs OPP', state: 'WON' },
-      { round: 'GS MD2', score: '1-2', vs: 'vs OPP', state: 'LOST' },
-      { round: 'GS MD3', score: '0-0', vs: 'vs OPP', state: 'DREW' },
-      { round: 'R32', score: 'TBD', vs: 'vs TBD', state: 'TBD' }
-    ]
+    const groupResults = getTeamGroupResults(GROUP_MATCHES, teamName)
+    const path = groupResults.map((r, i) => ({
+      round: `GS MD${i + 1}`,
+      score: r.score.replace('–', '-'),
+      vs: `vs ${r.vs.substring(0, 3).toUpperCase()}`,
+      state: r.res === 'W' ? 'WON' : r.res === 'D' ? 'DREW' : 'LOST'
+    }))
+
+    path.push({ round: 'R32', score: 'TBD', vs: 'vs TBD', state: 'TBD' })
+    return path
   }
 
-  // Generate Stats Data
   const getTournamentStats = (teamName) => {
-    if (teamName === 'Brazil') {
-      return [
-        { label: 'GOALS SCORED', value: '10', best: true },
-        { label: 'GOALS CONCEDED', value: '1', best: true },
-        { label: 'SHOTS', value: '28', best: false },
-        { label: 'POSSESSION AVG', value: '62%', best: false },
-        { label: 'CLEAN SHEETS', value: '2', best: true },
-        { label: 'xG TOTAL', value: '7.2', best: true }
-      ]
-    }
-    if (teamName === 'Germany') {
-      return [
-        { label: 'GOALS SCORED', value: '4', best: false },
-        { label: 'GOALS CONCEDED', value: '2', best: false },
-        { label: 'SHOTS', value: '22', best: false },
-        { label: 'POSSESSION AVG', value: '58%', best: false },
-        { label: 'CLEAN SHEETS', value: '1', best: false },
-        { label: 'xG TOTAL', value: '4.8', best: false }
-      ]
-    }
-    if (teamName === 'Netherlands') {
-      return [
-        { label: 'GOALS SCORED', value: '7', best: false },
-        { label: 'GOALS CONCEDED', value: '3', best: false },
-        { label: 'SHOTS', value: '19', best: false },
-        { label: 'POSSESSION AVG', value: '55%', best: false },
-        { label: 'CLEAN SHEETS', value: '1', best: false },
-        { label: 'xG TOTAL', value: '6.1', best: false }
-      ]
-    }
-    // Fallback
+    const groupResults = getTeamGroupResults(GROUP_MATCHES, teamName)
+    const stats = statsFromGroupResults(groupResults)
+    const cleanSheets = groupResults.filter(r => {
+      const { ga } = parseScore(r.score)
+      return ga === 0
+    }).length
+
     return [
-      { label: 'GOALS SCORED', value: '2', best: false },
-      { label: 'GOALS CONCEDED', value: '2', best: false },
-      { label: 'SHOTS', value: '12', best: false },
-      { label: 'POSSESSION AVG', value: '48%', best: false },
-      { label: 'CLEAN SHEETS', value: '1', best: false },
-      { label: 'xG TOTAL', value: '1.9', best: false }
+      { label: 'GOALS SCORED', value: String(stats.gf), best: stats.gf >= 6 },
+      { label: 'GOALS CONCEDED', value: String(stats.ga), best: stats.ga <= 2 },
+      { label: 'POINTS', value: String(stats.pts), best: stats.pts >= 7 },
+      { label: 'GOAL DIFFERENCE', value: stats.gd > 0 ? `+${stats.gd}` : String(stats.gd), best: stats.gd >= 3 },
+      { label: 'CLEAN SHEETS', value: String(cleanSheets), best: cleanSheets >= 2 },
+      { label: 'MATCHES PLAYED', value: String(groupResults.length), best: false }
     ]
   }
 

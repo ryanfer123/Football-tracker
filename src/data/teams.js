@@ -29,9 +29,9 @@ export const TEAMS = {
     ],
     stats: { attack: 88, defence: 78, midfield: 82, pace: 90, experience: 95, cohesion: 80 },
     groupResults: [
-      { vs: 'Haiti', result: 'W', score: '3-0' },
-      { vs: 'Scotland', result: 'W', score: '3-0' },
-      { vs: 'Morocco', result: 'D', score: '1-1' }
+      { vs: 'Scotland', result: 'W', score: '2-0' },
+      { vs: 'Netherlands', result: 'W', score: '1-0' },
+      { vs: 'Morocco', result: 'W', score: '3-1' }
     ]
   },
   Germany: {
@@ -63,7 +63,7 @@ export const TEAMS = {
     groupResults: [
       { vs: 'Cameroon', result: 'W', score: '3-0' },
       { vs: 'Paraguay', result: 'W', score: '2-1' },
-      { vs: 'Japan', result: 'D', score: '1-1' }
+      { vs: 'England', result: 'D', score: '1-1' }
     ]
   },
   France: {
@@ -94,8 +94,8 @@ export const TEAMS = {
     stats: { attack: 92, defence: 85, midfield: 85, pace: 93, experience: 90, cohesion: 88 },
     groupResults: [
       { vs: 'Denmark', result: 'W', score: '2-0' },
-      { vs: 'Sweden', result: 'W', score: '1-0' },
-      { vs: 'Peru', result: 'D', score: '1-1' }
+      { vs: 'Ivory Coast', result: 'W', score: '2-0' },
+      { vs: 'Norway', result: 'W', score: '4-1' }
     ]
   },
   Argentina: {
@@ -163,7 +163,7 @@ export const TEAMS = {
     ]
   },
   England: {
-    code: 'ENG', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', group: 'F',
+    code: 'ENG', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', group: 'D',
     flagColors: ['#FFFFFF', '#CE1124', '#FFFFFF'],
     ranking: 4, titles: 1, titleYears: [1966],
     status: 'IN', coach: 'Thomas Tuchel',
@@ -189,9 +189,9 @@ export const TEAMS = {
     ],
     stats: { attack: 87, defence: 78, midfield: 86, pace: 85, experience: 85, cohesion: 78 },
     groupResults: [
-      { vs: 'DR Congo', result: 'W', score: '2-0' },
-      { vs: 'IR Iran', result: 'W', score: '3-0' },
-      { vs: 'Serbia', result: 'D', score: '0-0' }
+      { vs: 'Cameroon', result: 'W', score: '2-0' },
+      { vs: 'Paraguay', result: 'W', score: '2-1' },
+      { vs: 'Germany', result: 'D', score: '1-1' }
     ]
   },
   Netherlands: {
@@ -222,8 +222,8 @@ export const TEAMS = {
     stats: { attack: 84, defence: 82, midfield: 85, pace: 83, experience: 80, cohesion: 82 },
     groupResults: [
       { vs: 'Morocco', result: 'D', score: '1-1' },
-      { vs: 'Nigeria', result: 'W', score: '2-0' },
-      { vs: 'Brazil', result: 'L', score: '1-3' }
+      { vs: 'Brazil', result: 'L', score: '0-1' },
+      { vs: 'Scotland', result: 'W', score: '2-0' }
     ]
   },
   Portugal: {
@@ -304,9 +304,9 @@ export const TEAMS = {
     ],
     stats: { attack: 76, defence: 72, midfield: 78, pace: 82, experience: 65, cohesion: 88 },
     groupResults: [
-      { vs: 'Netherlands', result: 'D', score: '2-2' },
-      { vs: 'Tunisia', result: 'W', score: '4-0' },
-      { vs: 'Sweden', result: 'D', score: '1-1' }
+      { vs: 'Serbia', result: 'W', score: '2-1' },
+      { vs: 'Sweden', result: 'D', score: '1-1' },
+      { vs: 'Tunisia', result: 'W', score: '1-0' }
     ]
   },
   Mexico: {
@@ -381,7 +381,7 @@ export const TEAMS = {
     groupResults: [
       { vs: 'Netherlands', result: 'D', score: '1-1' },
       { vs: 'Brazil', result: 'L', score: '1-3' },
-      { vs: 'Nigeria', result: 'W', score: '2-0' }
+      { vs: 'Scotland', result: 'W', score: '2-0' }
     ]
   },
   Belgium: {

@@ -28,7 +28,7 @@ export default function CountdownTimer({ targetDate, label }) {
 
   const renderBlock = (value, unit) => (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--surface-2)', padding: '12px 16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-      <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-1)', lineHeight: 1, fontFamily: 'Outfit' }}>
+      <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-1)', lineHeight: 1, fontFamily: 'Syne' }}>
         {value.toString().padStart(2, '0')}
       </span>
       <span style={{ fontSize: 9, color: 'var(--text-3)', fontWeight: 600, marginTop: 4, letterSpacing: '0.05em' }}>

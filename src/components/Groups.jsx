@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { GROUPS } from '../data/matchData'
+import { GROUPS, GROUP_MATCHES } from '../data/matchData'
 import { FlagComponent } from './shared'
 import { Bar } from 'react-chartjs-2'
 import {
@@ -22,85 +22,6 @@ ChartJS.register(
 )
 
 const GROUP_LETTERS = Object.keys(GROUPS).sort()
-
-// Generate realistic results for all 12 groups
-const getGroupMatches = (letter, teams) => {
-  const t = teams.map(x => x.name)
-  const tA = t[0] || 'Team A'
-  const tB = t[1] || 'Team B'
-  const tC = t[2] || 'Team C'
-  const tD = t[3] || 'Team D'
-
-  if (letter === 'A') {
-    return [
-      { team1: 'Mexico', score1: 2, score2: 0, team2: 'South Africa', date: 'JUN 11' },
-      { team1: 'Ecuador', score1: 2, score2: 1, team2: 'South Korea', date: 'JUN 11' },
-      { team1: 'Mexico', score1: 1, score2: 0, team2: 'South Korea', date: 'JUN 15' },
-      { team1: 'South Africa', score1: 2, score2: 1, team2: 'Ecuador', date: 'JUN 15' },
-      { team1: 'Mexico', score1: 3, score2: 0, team2: 'Ecuador', date: 'JUN 19' },
-      { team1: 'South Africa', score1: 1, score2: 1, team2: 'South Korea', date: 'JUN 19' }
-    ]
-  }
-  if (letter === 'B') {
-    return [
-      { team1: 'Switzerland', score1: 2, score2: 0, team2: 'Qatar', date: 'JUN 12' },
-      { team1: 'Canada', score1: 1, score2: 1, team2: 'USA', date: 'JUN 12' },
-      { team1: 'Switzerland', score1: 1, score2: 0, team2: 'USA', date: 'JUN 16' },
-      { team1: 'Canada', score1: 3, score2: 0, team2: 'Qatar', date: 'JUN 16' },
-      { team1: 'Switzerland', score1: 1, score2: 0, team2: 'Canada', date: 'JUN 20' },
-      { team1: 'USA', score1: 4, score2: 0, team2: 'Qatar', date: 'JUN 20' }
-    ]
-  }
-  if (letter === 'C') {
-    return [
-      { team1: 'Brazil', score1: 2, score2: 0, team2: 'Nigeria', date: 'JUN 13' },
-      { team1: 'Morocco', score1: 2, score2: 2, team2: 'Netherlands', date: 'JUN 13' },
-      { team1: 'Brazil', score1: 1, score2: 0, team2: 'Netherlands', date: 'JUN 17' },
-      { team1: 'Morocco', score1: 1, score2: 0, team2: 'Nigeria', date: 'JUN 17' },
-      { team1: 'Brazil', score1: 3, score2: 1, team2: 'Morocco', date: 'JUN 21' },
-      { team1: 'Netherlands', score1: 2, score2: 0, team2: 'Nigeria', date: 'JUN 21' }
-    ]
-  }
-  if (letter === 'D') {
-    return [
-      { team1: 'Japan', score1: 2, score2: 0, team2: 'Cameroon', date: 'JUN 14' },
-      { team1: 'Germany', score1: 3, score2: 1, team2: 'Paraguay', date: 'JUN 14' },
-      { team1: 'Japan', score1: 1, score2: 1, team2: 'Germany', date: 'JUN 18' },
-      { team1: 'Paraguay', score1: 1, score2: 0, team2: 'Cameroon', date: 'JUN 18' },
-      { team1: 'Japan', score1: 1, score2: 0, team2: 'Paraguay', date: 'JUN 22' },
-      { team1: 'Germany', score1: 2, score2: 0, team2: 'Cameroon', date: 'JUN 22' }
-    ]
-  }
-  if (letter === 'E') {
-    return [
-      { team1: 'France', score1: 2, score2: 0, team2: 'Denmark', date: 'JUN 15' },
-      { team1: 'Norway', score1: 2, score2: 1, team2: 'Ivory Coast', date: 'JUN 15' },
-      { team1: 'France', score1: 2, score2: 0, team2: 'Ivory Coast', date: 'JUN 19' },
-      { team1: 'Norway', score1: 3, score2: 1, team2: 'Denmark', date: 'JUN 19' },
-      { team1: 'France', score1: 1, score2: 1, team2: 'Norway', date: 'JUN 23' },
-      { team1: 'Ivory Coast', score1: 1, score2: 0, team2: 'Denmark', date: 'JUN 23' }
-    ]
-  }
-  if (letter === 'F') {
-    return [
-      { team1: 'England', score1: 3, score2: 0, team2: 'IR Iran', date: 'JUN 16' },
-      { team1: 'DR Congo', score1: 1, score2: 1, team2: 'Serbia', date: 'JUN 16' },
-      { team1: 'England', score1: 2, score2: 0, team2: 'DR Congo', date: 'JUN 20' },
-      { team1: 'Serbia', score1: 0, score2: 0, team2: 'IR Iran', date: 'JUN 20' },
-      { team1: 'England', score1: 0, score2: 0, team2: 'Serbia', date: 'JUN 24' },
-      { team1: 'DR Congo', score1: 1, score2: 1, team2: 'IR Iran', date: 'JUN 24' }
-    ]
-  }
-  // Generative fallback for G-L
-  return [
-    { team1: tA, score1: 2, score2: 1, team2: tB, date: 'JUN 17' },
-    { team1: tC, score1: 0, score2: 0, team2: tD, date: 'JUN 17' },
-    { team1: tA, score1: 3, score2: 0, team2: tC, date: 'JUN 21' },
-    { team1: tB, score1: 1, score2: 0, team2: tD, date: 'JUN 21' },
-    { team1: tA, score1: 2, score2: 0, team2: tD, date: 'JUN 25' },
-    { team1: tB, score1: 1, score2: 1, team2: tC, date: 'JUN 25' }
-  ]
-}
 
 export default function Groups({ onNavigateToTeam }) {
   const [filter, setFilter] = useState('ALL')
@@ -128,12 +49,13 @@ export default function Groups({ onNavigateToTeam }) {
       </div>
 
       {/* FILTER & SORT BAR */}
-      <div className="filter-bar" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+      <div className="filter-bar group-selector" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
         <div style={{ display: 'flex', gap: 8 }}>
           {['ALL', 'ADVANCED', 'ELIMINATED'].map(f => {
             const isActive = filter === f
             return (
-              <button 
+              <button
+                className="group-tab"
                 key={f}
                 onClick={() => setFilter(f)}
                 style={{
@@ -179,7 +101,8 @@ export default function Groups({ onNavigateToTeam }) {
       </div>
 
       {/* 12-GROUP GRID (3 COLUMNS, GAP AS BORDER) */}
-      <div 
+      <div
+        className="groups-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
@@ -190,7 +113,7 @@ export default function Groups({ onNavigateToTeam }) {
         {GROUP_LETTERS.map(letter => {
           const group = GROUPS[letter]
           const isExpanded = expandedGroup === letter
-          const matches = getGroupMatches(letter, group.teams)
+          const matches = GROUP_MATCHES[letter] || []
 
           let displayTeams = group.teams.filter(t => {
             if (filter === 'ADVANCED') return t.status === 'winner' || t.status === 'runnerup' || t.status === 'third'
@@ -267,7 +190,6 @@ export default function Groups({ onNavigateToTeam }) {
                     const isEliminated = team.status === 'eliminated'
                     const rank = i + 1
                     
-                    // Row border-left decoration
                     let borderLeftStyle = '2px solid var(--border)'
                     if (rank === 1) borderLeftStyle = '2px solid var(--accent)'
                     else if (rank === 2) borderLeftStyle = '2px solid var(--border-2)'
@@ -324,7 +246,7 @@ export default function Groups({ onNavigateToTeam }) {
                 </div>
               </div>
 
-              {/* FEATURE 8: EXPANDED GROUP MATCHES TABLE */}
+              {/* EXPANDED GROUP MATCHES TABLE */}
               {isExpanded && (
                 <div style={{ background: '#111', borderTop: '1px solid var(--border)', padding: '8px 0' }}>
                   <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8, padding: '0 12px' }}>GROUP MATCHES</div>
@@ -341,15 +263,13 @@ export default function Groups({ onNavigateToTeam }) {
                             display: 'flex',
                             alignItems: 'center',
                             padding: '0 12px',
-                            borderBottom: mIdx === 5 ? 'none' : '1px solid var(--border)'
+                            borderBottom: mIdx === matches.length - 1 ? 'none' : '1px solid var(--border)'
                           }}
                         >
-                          {/* Date */}
                           <span style={{ fontSize: 10, color: 'var(--text-3)', width: 48, flexShrink: 0 }}>
                             {m.date}
                           </span>
 
-                          {/* Team A */}
                           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end', textAlign: 'right' }}>
                             <span 
                               onClick={() => onNavigateToTeam && onNavigateToTeam(m.team1)}
@@ -360,12 +280,10 @@ export default function Groups({ onNavigateToTeam }) {
                             <FlagComponent teamName={m.team1} size="small" />
                           </div>
 
-                          {/* Score */}
                           <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-1)', width: 60, textAlign: 'center', letterSpacing: '0.1em' }}>
                             {m.score1}–{m.score2}
                           </span>
 
-                          {/* Team B */}
                           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-start', textAlign: 'left' }}>
                             <FlagComponent teamName={m.team2} size="small" />
                             <span 
@@ -385,13 +303,13 @@ export default function Groups({ onNavigateToTeam }) {
                     <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 700, letterSpacing: '0.1em', marginBottom: 16 }}>
                       GROUP GOALS ANALYSIS
                     </div>
-                    <div style={{ height: 160 }}>
+                    <div className="chart-container" style={{ height: 160 }}>
                       <Bar 
                         data={{
-                          labels: displayTeams.map(t => t.name.substring(0,3).toUpperCase()),
+                          labels: displayTeams.map(t => t.name.substring(0, 3).toUpperCase()),
                           datasets: [{
                             label: 'Goals Scored',
-                            data: displayTeams.map(t => t.stats.gf),
+                            data: displayTeams.map(t => t.gf),
                             backgroundColor: 'rgba(212, 255, 38, 0.6)',
                             borderColor: '#D4FF26',
                             borderWidth: 1,
@@ -403,7 +321,7 @@ export default function Groups({ onNavigateToTeam }) {
                           maintainAspectRatio: false,
                           scales: {
                             y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { color: '#888888', stepSize: 1 } },
-                            x: { grid: { display: false }, ticks: { color: '#888888', font: { family: 'Outfit', weight: 600 } } }
+                            x: { grid: { display: false }, ticks: { color: '#888888', font: { family: 'Space Grotesk', weight: 600 } } }
                           },
                           plugins: {
                             legend: { display: false }

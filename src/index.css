@@ -31,8 +31,8 @@
   --border:      #E0E0E2;
   --border-2:    #D0D0D2;
   --text-1:      #1D1D1F;
-  --text-2:      #6E6E73;
-  --text-3:      #86868B;
+  --text-2:      #424245;
+  --text-3:      #6E6E73;
   --accent:      #00C853;
   --accent-dim:  #00A843;
   --shadow-accent: 0 8px 32px rgba(0, 200, 83, 0.2);
@@ -912,6 +912,88 @@ button, input, select {
 
   .team-card {
     min-height: 100px !important;
+  }
+
+  /* Groups component mobile fixes */
+  .groups-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+
+  .standings-table {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .chart-container {
+    height: 200px !important;
+  }
+
+  .group-selector {
+    flex-wrap: wrap !important;
+  }
+
+  .group-tab {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Golden Boot component mobile fixes */
+  .scorers-table {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .scorer-row {
+    min-height: 60px !important;
+  }
+
+  .player-detail {
+    flex-direction: column !important;
+  }
+
+  .goal-heatmap {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .scorer-card {
+    padding: 12px !important;
+  }
+
+  /* Tracker component mobile fixes */
+  .tracker-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+
+  .tracker-card {
+    min-height: 120px !important;
+  }
+
+  .follow-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  .form-indicator {
+    flex-wrap: wrap !important;
+  }
+
+  /* Profile component mobile fixes */
+  .profile-settings {
+    flex-direction: column !important;
+  }
+
+  .profile-toggle {
+    min-height: 44px !important;
+  }
+
+  .profile-selector {
+    width: 100% !important;
+  }
+
+  .predictions-table {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 }
 

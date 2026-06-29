@@ -1,89 +1,68 @@
 import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
+import { GROUP_MATCHES, TODAY_MATCHES, UPCOMING_MATCHES, GROUPS } from '../data/matchData'
+import { getTeamGroupResults, statsFromGroupResults, getTeamGroupStats } from '../utils/groupStats'
 import { TEAMS } from '../data/teams'
 
-const DEFAULT_TRACKER_DATA = {
-  Brazil: {
-    status: 'ROUND OF 32',
-    nextMatchLabel: 'vs JAPAN · TODAY 22:30',
-    form: ['W', 'W', 'W', 'D', 'W'],
-    goalsScored: 9,
-    goalsConceded: 1,
-    keyPlayer: 'Vinicius Jr',
-    keyPlayerGoals: 3,
-    nextOpponent: 'Japan',
-    nextMatchTime: 'JUNE 29, 22:30 IST',
-    results: [
-      { vs: 'Nigeria', score: '2–0', res: 'W' },
-      { vs: 'Netherlands', score: '1–0', res: 'W' },
-      { vs: 'Morocco', score: '3–1', res: 'W' }
-    ]
-  },
-  France: {
-    status: 'ROUND OF 32',
-    nextMatchLabel: 'vs SWEDEN · JUL 01 06:30',
-    form: ['W', 'D', 'W', 'W', 'L'],
-    goalsScored: 8,
-    goalsConceded: 2,
-    keyPlayer: 'Kylian Mbappé',
-    keyPlayerGoals: 4,
-    nextOpponent: 'Sweden',
-    nextMatchTime: 'JULY 01, 06:30 IST',
-    results: [
-      { vs: 'Denmark', score: '2–0', res: 'W' },
-      { vs: 'Sweden', score: '1–1', res: 'D' },
-      { vs: 'Senegal', score: '2–1', res: 'W' }
-    ]
-  },
-  England: {
-    status: 'ROUND OF 32',
-    nextMatchLabel: 'vs DR CONGO · JUL 01 21:30',
-    form: ['W', 'W', 'D', 'W', 'W'],
-    goalsScored: 7,
-    goalsConceded: 0,
-    keyPlayer: 'Jude Bellingham',
-    keyPlayerGoals: 2,
-    nextOpponent: 'DR Congo',
-    nextMatchTime: 'JULY 01, 21:30 IST',
-    results: [
-      { vs: 'Serbia', score: '1–0', res: 'W' },
-      { vs: 'IR Iran', score: '3–0', res: 'W' },
-      { vs: 'USA', score: '1–0', res: 'W' }
-    ]
-  }
+const R32_FIXTURES = [
+  ...TODAY_MATCHES.map(m => ({
+    teamA: m.teamA,
+    teamB: m.teamB,
+    time: m.time,
+    date: m.date,
+    status: m.status
+  })),
+  ...UPCOMING_MATCHES.flatMap(d => d.matches.map(m => ({
+    teamA: m.teamA,
+    teamB: m.teamB,
+    time: m.time,
+    date: `${d.date}, 2026`,
+    status: 'UPCOMING'
+  })))
+]
+
+function findNextMatch(teamName) {
+  const fixture = R32_FIXTURES.find(m => m.teamA === teamName || m.teamB === teamName)
+  if (!fixture) return null
+  const opponent = fixture.teamA === teamName ? fixture.teamB : fixture.teamA
+  return { opponent, time: fixture.time, date: fixture.date, status: fixture.status }
 }
 
 const getTeamTrackerData = (teamName) => {
-  if (DEFAULT_TRACKER_DATA[teamName]) {
-    return DEFAULT_TRACKER_DATA[teamName]
-  }
-
-  // Generate realistic details dynamically if they follow another team
+  const groupResults = getTeamGroupResults(GROUP_MATCHES, teamName)
+  const stats = statsFromGroupResults(groupResults)
   const teamInfo = TEAMS[teamName]
-  const keyPlayerName = teamInfo?.keyPlayers?.[0] || `${teamName} Star`
+  const groupStats = getTeamGroupStats(GROUPS, teamName)
+  const keyPlayer = teamInfo?.keyPlayers?.[0]
+  const nextMatch = findNextMatch(teamName)
+
+  const status = groupStats?.status === 'eliminated'
+    ? 'ELIMINATED'
+    : nextMatch ? 'ROUND OF 32' : 'GROUP STAGE'
 
   return {
-    status: 'ROUND OF 32',
-    nextMatchLabel: 'vs GERMANY · JUL 03 00:30',
-    form: ['W', 'D', 'L', 'W', 'D'],
-    goalsScored: 5,
-    goalsConceded: 3,
-    keyPlayer: keyPlayerName,
-    keyPlayerGoals: 2,
-    nextOpponent: 'Germany',
-    nextMatchTime: 'JULY 03, 00:30 IST',
-    results: [
-      { vs: 'Italy', score: '1–1', res: 'D' },
-      { vs: 'Spain', score: '0–1', res: 'L' },
-      { vs: 'Australia', score: '2–1', res: 'W' }
-    ]
+    status,
+    nextMatchLabel: nextMatch
+      ? `vs ${nextMatch.opponent.toUpperCase()} · ${nextMatch.time}`
+      : 'NO UPCOMING MATCH',
+    form: stats.form.length ? stats.form : ['D', 'D', 'D'],
+    goalsScored: stats.gf,
+    goalsConceded: stats.ga,
+    keyPlayer: keyPlayer?.name || `${teamName} Star`,
+    keyPlayerGoals: keyPlayer?.goals ?? 0,
+    nextOpponent: nextMatch?.opponent || 'TBD',
+    nextMatchTime: nextMatch?.date?.toUpperCase() || 'TBD',
+    results: groupResults.map(r => ({
+      vs: r.vs,
+      score: r.score,
+      res: r.res
+    }))
   }
 }
 
 export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
   const [followed, setFollowed] = useState([])
 
-  // Load followed list
   useEffect(() => {
     const saved = localStorage.getItem('followedTeams')
     if (saved) {
@@ -137,7 +116,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
 
   return (
     <div>
-      {/* PAGE HEADER */}
       <div className="page-header" style={{ paddingBottom: 10 }}>
         <h1 className="text-2xl" style={{ color: 'var(--text-1)' }}>
           TEAM TRACKER
@@ -148,7 +126,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
       </div>
 
       {followed.length === 0 ? (
-        /* FEATURE 2: EMPTY STATE */
         <div 
           style={{ 
             display: 'flex', 
@@ -188,13 +165,13 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
           </button>
         </div>
       ) : (
-        /* FOLLOWED TEAMS LIST */
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {followed.map(tName => {
             const data = getTeamTrackerData(tName)
             return (
-              <div 
+              <div
                 key={tName}
+                className="tracker-card"
                 style={{
                   border: '1px solid var(--border)',
                   background: 'var(--surface)',
@@ -202,7 +179,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                   flexDirection: 'column'
                 }}
               >
-                {/* TEAM HEADER ROW */}
                 <div 
                   style={{
                     height: 48,
@@ -221,7 +197,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                     {tName}
                   </span>
                   
-                  {/* Status chip */}
                   <span 
                     style={{
                       fontSize: 9,
@@ -235,12 +210,10 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                     {data.status}
                   </span>
 
-                  {/* Next match right-aligned */}
                   <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--text-2)', textTransform: 'uppercase' }}>
                     {data.nextMatchLabel}
                   </span>
 
-                  {/* Unfollow Button */}
                   <button 
                     onClick={() => handleUnfollow(tName)}
                     style={{ 
@@ -256,9 +229,7 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                   </button>
                 </div>
 
-                {/* CONTENT ROW */}
                 <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
-                  {/* FORM BLOCK */}
                   <div style={{ flex: 1, padding: '12px 16px', borderRight: '1px solid var(--border)' }}>
                     <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 6 }}>FORM</div>
                     <div style={{ display: 'flex', gap: 4 }}>
@@ -266,7 +237,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                     </div>
                   </div>
 
-                  {/* GOALS BLOCK */}
                   <div style={{ flex: 1, padding: '12px 16px', borderRight: '1px solid var(--border)' }}>
                     <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 6 }}>GOALS</div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
@@ -281,7 +251,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                     </div>
                   </div>
 
-                  {/* KEY PLAYER BLOCK */}
                   <div style={{ flex: 1, padding: '12px 16px', borderRight: '1px solid var(--border)' }}>
                     <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 6 }}>KEY PLAYER</div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -290,7 +259,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                     </div>
                   </div>
 
-                  {/* NEXT MATCH BLOCK */}
                   <div style={{ flex: 1, padding: '12px 16px' }}>
                     <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 6 }}>NEXT MATCH</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -303,7 +271,6 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                   </div>
                 </div>
 
-                {/* RECENT RESULTS STRIP */}
                 <div 
                   style={{
                     height: 32,
@@ -346,8 +313,8 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
                           <div style={{ width: 1, height: 16, background: 'var(--border)', marginLeft: 12 }} />
                         )}
                       </div>
-                    )}
-                  )}
+                    )
+                  })}
                 </div>
               </div>
             )

@@ -1,90 +1,47 @@
 import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
+import { GOLDEN_BOOT } from '../data/matchData'
+import { TEAMS } from '../data/teams'
 
-const SCORERS = [
-  { rank: 1, name: 'Lionel Messi', code: 'ARG', country: 'Argentina', goals: 6, assists: 2, mins: 270, eliminated: false },
-  { rank: 2, name: 'Ousmane Dembélé', code: 'FRA', country: 'France', goals: 4, assists: 1, mins: 120, eliminated: false },
-  { rank: 2, name: 'Kylian Mbappé', code: 'FRA', country: 'France', goals: 4, assists: 3, mins: 270, eliminated: false },
-  { rank: 2, name: 'Erling Haaland', code: 'NOR', country: 'Norway', goals: 4, assists: 1, mins: 270, eliminated: false },
-  { rank: 2, name: 'Vinicius Jr', code: 'BRA', country: 'Brazil', goals: 4, assists: 2, mins: 245, eliminated: false },
-  { rank: 6, name: 'Harry Kane', code: 'ENG', country: 'England', goals: 3, assists: 1, mins: 270, eliminated: false },
-  { rank: 6, name: 'Ismael Saibari', code: 'MAR', country: 'Morocco', goals: 3, assists: 0, mins: 250, eliminated: false },
-  { rank: 6, name: 'Jonathan David', code: 'CAN', country: 'Canada', goals: 3, assists: 0, mins: 270, eliminated: false },
-  { rank: 6, name: 'Matheus Cunha', code: 'BRA', country: 'Brazil', goals: 3, assists: 1, mins: 180, eliminated: false },
-  { rank: 6, name: 'Deniz Undav', code: 'GER', country: 'Germany', goals: 3, assists: 2, mins: 145, eliminated: false },
-  { rank: 11, name: 'Lamine Yamal', code: 'ESP', country: 'Spain', goals: 2, assists: 2, mins: 270, eliminated: false },
-  { rank: 11, name: 'Jude Bellingham', code: 'ENG', country: 'England', goals: 2, assists: 3, mins: 270, eliminated: false },
-  { rank: 11, name: 'Bruno Fernandes', code: 'POR', country: 'Portugal', goals: 2, assists: 1, mins: 270, eliminated: false },
-  { rank: 11, name: 'Cristiano Ronaldo', code: 'POR', country: 'Portugal', goals: 2, assists: 1, mins: 240, eliminated: false },
-  { rank: 11, name: 'Julián Álvarez', code: 'ARG', country: 'Argentina', goals: 2, assists: 2, mins: 210, eliminated: false }
-]
+const getTeamCode = (country) => {
+  const team = Object.entries(TEAMS).find(([name]) => name === country)
+  return team ? team[1].code : country.substring(0, 3).toUpperCase()
+}
+
+const SCORERS = GOLDEN_BOOT.map(p => ({
+  rank: p.rank,
+  name: p.name,
+  code: getTeamCode(p.country),
+  country: p.country,
+  goals: p.goals,
+  assists: p.assists,
+  mins: p.mins,
+  eliminated: p.status !== 'IN'
+}))
 
 const getPlayerDetails = (playerName) => {
-  if (playerName === 'Lionel Messi') {
+  const player = GOLDEN_BOOT.find(p => p.name === playerName)
+  if (player?.goalDetails) {
     return {
-      goals: [
-        { match: 'ARG vs Algeria', min: "12'", type: 'Penalty' },
-        { match: 'ARG vs Algeria', min: "34'", type: 'Open play' },
-        { match: 'ARG vs Algeria', min: "67'", type: 'Open play' },
-        { match: 'ARG vs Austria', min: "45+1'", type: 'Open play' },
-        { match: 'ARG vs Austria', min: "78'", type: 'Volley' },
-        { match: 'ARG vs Jordan', min: "88'", type: 'Free kick' }
-      ],
+      goals: player.goalDetails.map(g => ({
+        match: g.match,
+        min: `${g.minute}'`,
+        type: g.type
+      })),
       dots: [
         { t: '20%', l: '45%' },
         { t: '40%', l: '55%' },
         { t: '30%', l: '50%' },
         { t: '15%', l: '38%' },
         { t: '22%', l: '48%' }
-      ],
-      ratings: [8.8, 7.9, 8.4, 9.2, 8.1]
+      ].slice(0, player.goals),
+      ratings: player.matchRatings || []
     }
   }
-  if (playerName === 'Erling Haaland') {
-    return {
-      goals: [
-        { match: 'NOR vs Senegal', min: "14'", type: 'HDR' },
-        { match: 'NOR vs Spain', min: "38'", type: 'VOL' },
-        { match: 'NOR vs Spain', min: "72'", type: 'VOL' },
-        { match: 'NOR vs Spain', min: "89'", type: 'PKN' }
-      ],
-      dots: [
-        { t: '12%', l: '50%' },
-        { t: '28%', l: '40%' },
-        { t: '32%', l: '48%' },
-        { t: '18%', l: '52%' }
-      ],
-      ratings: [9.0, 8.5, 6.2, 8.7, 7.8]
-    }
-  }
-  if (playerName === 'Kylian Mbappé') {
-    return {
-      goals: [
-        { match: 'FRA vs Australia', min: "9'", type: 'VOL' },
-        { match: 'FRA vs Denmark', min: "61'", type: 'HDR' },
-        { match: 'FRA vs Denmark', min: "86'", type: 'PKN' },
-        { match: 'FRA vs England', min: "44'", type: 'FK' }
-      ],
-      dots: [
-        { t: '30%', l: '30%' },
-        { t: '22%', l: '35%' },
-        { t: '40%', l: '48%' },
-        { t: '15%', l: '32%' }
-      ],
-      ratings: [8.4, 8.9, 7.2, 8.6, 6.4]
-    }
-  }
-  // Generic Fallback
   return {
-    goals: [
-      { match: 'Match 1', min: "18'", type: 'VOL' },
-      { match: 'Match 2', min: "55'", type: 'PKN' }
-    ],
-    dots: [
-      { t: '25%', l: '50%' },
-      { t: '35%', l: '42%' }
-    ],
-    ratings: [7.2, 6.8, 8.0, 7.4, 6.1]
+    goals: [{ match: 'Match 1', min: "18'", type: 'Open play' }],
+    dots: [{ t: '25%', l: '50%' }],
+    ratings: [7.0, 7.5, 8.0]
   }
 }
 
@@ -111,7 +68,8 @@ function ScorerRow({ row, selectedPlayerName, setSelectedPlayerName }) {
 
   return (
     <>
-      <tr 
+      <tr
+        className="scorer-row"
         onClick={() => setExpanded(!expanded)}
         style={{
           height: 48,
@@ -170,8 +128,8 @@ function ScorerRow({ row, selectedPlayerName, setSelectedPlayerName }) {
       {/* Expanded Details Panel */}
       {expanded && (
         <tr onClick={(e) => e.stopPropagation()} style={{ background: 'var(--surface)' }}>
-          <td colSpan="6" style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', gap: 24 }}>
+          <td className="scorer-card" colSpan="6" style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <div className="player-detail" style={{ display: 'flex', gap: 24 }}>
               {/* Goal Log */}
               <div style={{ flex: 1 }}>
                 <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>GOAL LOG</div>
@@ -210,7 +168,8 @@ function ScorerRow({ row, selectedPlayerName, setSelectedPlayerName }) {
               {/* Heat Map Coordinate Dots */}
               <div>
                 <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>GOAL ZONES</div>
-                <div 
+                <div
+                  className="goal-heatmap"
                   style={{
                     width: 200,
                     height: 120,
@@ -281,7 +240,6 @@ export default function GoldenBoot({ selectedPlayerName, setSelectedPlayerName }
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Override API fetch to strictly use the hardcoded 2026 data
     setScorers(SCORERS)
     setLoading(false)
   }, [])
@@ -299,7 +257,7 @@ export default function GoldenBoot({ selectedPlayerName, setSelectedPlayerName }
       </div>
 
       {/* TABLE */}
-      <div style={{ overflowX: 'auto', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+      <div className="scorers-table" style={{ overflowX: 'auto', border: '1px solid var(--border)', background: 'var(--surface)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border-2)', background: 'var(--bg)' }}>
