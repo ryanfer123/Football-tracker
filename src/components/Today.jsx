@@ -220,13 +220,16 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
         flexDirection: 'column'
       }}
     >
-      {/* ROW 1: HEAD TO HEAD */}
+      {/* ROW 1: HEAD TO HEAD & OFFICIAL LOGOS */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '12px 20px', borderBottom: '1px solid var(--border)' }}>
         <div className="text-xs" style={{ color: 'var(--text-3)', width: 32, flexShrink: 0 }}>H2H</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-1)', lineHeight: 1 }}>{details.winsA}</div>
-            <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 2 }}>{match.teamA.substring(0, 3).toUpperCase()} WINS</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {match.logoA && <img src={match.logoA} alt={match.teamA} style={{ width: 24, height: 24, objectFit: 'contain' }} />}
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-1)', lineHeight: 1 }}>{details.winsA}</div>
+              <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 2 }}>{match.teamA.substring(0, 3).toUpperCase()} WINS</div>
+            </div>
           </div>
           <div style={{ height: 24, width: 1, background: 'var(--border)' }} />
           <div style={{ textAlign: 'center' }}>
@@ -234,9 +237,12 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
             <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 2 }}>DRAWS</div>
           </div>
           <div style={{ height: 24, width: 1, background: 'var(--border)' }} />
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-1)', lineHeight: 1 }}>{details.winsB}</div>
-            <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 2 }}>{match.teamB.substring(0, 3).toUpperCase()} WINS</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-1)', lineHeight: 1 }}>{details.winsB}</div>
+              <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 2 }}>{match.teamB.substring(0, 3).toUpperCase()} WINS</div>
+            </div>
+            {match.logoB && <img src={match.logoB} alt={match.teamB} style={{ width: 24, height: 24, objectFit: 'contain' }} />}
           </div>
         </div>
       </div>
@@ -245,7 +251,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 20px 12px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={() => onNavigateToTeam(match.teamA)}>
-            <FlagComponent teamName={match.teamA} size="small" />
+            <FlagComponent teamName={match.teamA} logoUrl={match.logoA} size="small" />
             <span className="text-xs" style={{ color: 'var(--text-3)' }}>{match.teamA.toUpperCase()}</span>
           </div>
           <div style={{ display: 'flex', gap: 4 }}>
@@ -255,7 +261,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexDirection: 'row-reverse' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexDirection: 'row-reverse', cursor: 'pointer' }} onClick={() => onNavigateToTeam(match.teamB)}>
-            <FlagComponent teamName={match.teamB} size="small" />
+            <FlagComponent teamName={match.teamB} logoUrl={match.logoB} size="small" />
             <span className="text-xs" style={{ color: 'var(--text-3)' }}>{match.teamB.toUpperCase()}</span>
           </div>
           <div style={{ display: 'flex', gap: 4 }}>
@@ -297,21 +303,40 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
         </div>
       </div>
 
-      {/* ROW 4: AI QUICK PREDICTION */}
+      {/* ROW 4: MATCH INSIGHTS (Replacing AI PREDICTION) */}
       <div style={{ padding: '12px 20px', borderBottom: isBrazilJapan ? '1px solid var(--border)' : 'none' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-          <span className="text-xs" style={{ color: 'var(--accent)' }}>AI PREDICTION</span>
-          <span style={{ fontSize: 13, color: 'var(--text-2)' }}>
-            {details.pred}
-            <span style={{ color: confidenceColors[details.confidence], fontWeight: 700 }}>
-              {details.confidence}
-            </span>
-          </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ flex: 1 }}>
+            <span className="text-xs" style={{ color: 'var(--accent)' }}>WIN PROBABILITIES</span>
+            <div style={{ display: 'flex', marginTop: 8, height: 6, width: '100%', background: 'var(--border)' }}>
+              <div style={{ width: `${match.prob?.home || 33}%`, background: 'var(--accent)' }} />
+              <div style={{ width: `${match.prob?.draw || 34}%`, background: 'var(--border-2)' }} />
+              <div style={{ width: `${match.prob?.away || 33}%`, background: 'var(--red)' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 10, color: 'var(--text-3)' }}>
+              <span>{match.teamA.substring(0, 3).toUpperCase()}: {match.prob?.home || 33}%</span>
+              <span>DRAW: {match.prob?.draw || 34}%</span>
+              <span>{match.teamB.substring(0, 3).toUpperCase()}: {match.prob?.away || 33}%</span>
+            </div>
+          </div>
         </div>
-        <div style={{ display: 'flex', height: 4, width: '100%', background: 'var(--border)' }}>
-          <div style={{ width: `${details.prob[0]}%`, background: 'var(--accent)' }} />
-          <div style={{ width: `${details.prob[1]}%`, background: 'var(--border-2)' }} />
-          <div style={{ width: `${details.prob[2]}%`, background: 'var(--red)' }} />
+
+        <div style={{ display: 'flex', gap: 20 }}>
+          <div style={{ flex: 1, background: 'var(--bg)', padding: '10px 12px', border: '1px solid var(--border)' }}>
+            <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 4 }}>EXPECTED GOALS (xG)</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 16, fontWeight: 800 }}>{match.xgA || '0.0'}</span>
+              <span style={{ fontSize: 16, fontWeight: 800 }}>{match.xgB || '0.0'}</span>
+            </div>
+          </div>
+          <div style={{ flex: 1, background: 'var(--bg)', padding: '10px 12px', border: '1px solid var(--border)' }}>
+            <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 4 }}>BETTING ODDS</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 600 }}>
+              <span>{match.odds?.home || '0.0'}</span>
+              <span style={{ color: 'var(--text-3)' }}>{match.odds?.draw || '0.0'}</span>
+              <span>{match.odds?.away || '0.0'}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -573,7 +598,7 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
       {isLive ? (
         <div style={{ display: 'flex', height: 88, alignItems: 'center' }}>
           <div style={{ flex: 1, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-            <FlagComponent teamName={match.teamA} />
+            <FlagComponent teamName={match.teamA} logoUrl={match.logoA} />
             <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-1)', textTransform: 'uppercase' }}>
               {match.teamA}
             </span>
@@ -590,7 +615,7 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
           </div>
 
           <div style={{ flex: 1, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 16, flexDirection: 'row-reverse', textAlign: 'right' }}>
-            <FlagComponent teamName={match.teamB} />
+            <FlagComponent teamName={match.teamB} logoUrl={match.logoB} />
             <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-1)', textTransform: 'uppercase' }}>
               {match.teamB}
             </span>
@@ -599,7 +624,7 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
       ) : (
         <div style={{ display: 'flex', height: 72, alignItems: 'center' }}>
           <div style={{ flex: 1, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-            <FlagComponent teamName={match.teamA} />
+            <FlagComponent teamName={match.teamA} logoUrl={match.logoA} />
             <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-1)', textTransform: 'uppercase' }}>
               {match.teamA}
             </span>
@@ -615,7 +640,7 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
           </div>
 
           <div style={{ flex: 1, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 16, flexDirection: 'row-reverse', textAlign: 'right' }}>
-            <FlagComponent teamName={match.teamB} />
+            <FlagComponent teamName={match.teamB} logoUrl={match.logoB} />
             <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-1)', textTransform: 'uppercase' }}>
               {match.teamB}
             </span>
@@ -680,12 +705,12 @@ function FixtureRow({ match, onNavigateToTeam, selectedMatchId, setSelectedMatch
         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
       >
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <FlagComponent teamName={match.teamA} size="small" />
+          <FlagComponent teamName={match.teamA} logoUrl={match.logoA} size="small" />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)' }}>{match.teamA}</span>
         </div>
         <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600 }}>VS</div>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row-reverse', textAlign: 'right' }}>
-          <FlagComponent teamName={match.teamB} size="small" />
+          <FlagComponent teamName={match.teamB} logoUrl={match.logoB} size="small" />
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)' }}>{match.teamB}</span>
         </div>
         <div style={{ width: 70, textAlign: 'right', fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>
@@ -752,7 +777,7 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
 
     const intervalId = setInterval(() => {
       fetchData()
-    }, 30000)
+    }, 60000)
 
     return () => {
       active = false

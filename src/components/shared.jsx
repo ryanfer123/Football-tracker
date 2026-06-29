@@ -45,7 +45,28 @@ const ALL_CODES = [
   'DEN', 'SWE', 'AUS', 'GHA', 'CIV', 'ALG', 'CAN', 'BIH', 'CPV', 'ECU', 'AUT', 'BEL'
 ]
 
-export function FlagComponent({ teamCode, teamName, size = 'medium', className = '' }) {
+export function FlagComponent({ teamCode, teamName, logoUrl, size = 'medium', className = '' }) {
+  // Prefer rendering an official logo image when provided (from API)
+  if (logoUrl) {
+    const width = size === 'small' ? 24 : size === 'large' ? 120 : 48
+    const height = size === 'small' ? 24 : size === 'large' ? 120 : 48
+    return (
+      <img
+        src={logoUrl}
+        alt={teamName || teamCode || 'team'}
+        className={`team-logo ${className}`}
+        style={{
+          width: width,
+          height: height,
+          objectFit: 'contain',
+          borderRadius: size === 'small' ? 4 : size === 'large' ? 6 : 6,
+          border: '1px solid var(--border)',
+          background: 'transparent'
+        }}
+      />
+    )
+  }
+
   let code = teamCode;
   if (!code && teamName) {
     code = NAME_TO_CODE[teamName];
