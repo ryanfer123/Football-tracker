@@ -47,10 +47,31 @@ export default function Bracket() {
   const [predWinners, setPredWinners] = useState(null)
   const [simulationStep, setSimulationStep] = useState(0)
   const [isChampFlashing, setIsChampFlashing] = useState(false)
+  const [highlightTeam, setHighlightTeam] = useState('NONE')
 
   const [flashingMatch, setFlashingMatch] = useState(null)
   const [hoveredTeam, setHoveredTeam] = useState(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+
+  const teamList = Object.keys(TEAMS).sort()
+
+  const getR32Index = (tName) => {
+    return INITIAL_R32.findIndex(m => m.teamA === tName || m.teamB === tName)
+  }
+
+  const isMatchInPath = (roundKey, matchIdx, tName) => {
+    if (!tName || tName === 'NONE') return false
+    const r32Idx = getR32Index(tName)
+    if (r32Idx === -1) return false
+
+    if (roundKey === 'r32') return matchIdx === r32Idx
+    if (roundKey === 'r16') return matchIdx === Math.floor(r32Idx / 2)
+    if (roundKey === 'qf') return matchIdx === Math.floor(r32Idx / 4)
+    if (roundKey === 'sf') return matchIdx === Math.floor(r32Idx / 8)
+    if (roundKey === 'final') return true
+    if (roundKey === 'champion') return true
+    return false
+  }
 
   const prepareWinners = () => {
     const r32W = []
@@ -342,16 +363,24 @@ export default function Bracket() {
 
     const renderChip = (team, x, y, isWinner, isLoser, roundKey, matchIdx) => {
       const isFlashing = flashingMatch && flashingMatch.round === roundKey && flashingMatch.idx === matchIdx
-      const strokeColor = isFlashing ? 'var(--accent)' : isWinner ? 'var(--accent)' : 'var(--border)'
+      const isHighlightMode = highlightTeam !== 'NONE'
+      const inPath = isHighlightMode && isMatchInPath(roundKey, matchIdx, highlightTeam)
+
+      let strokeColor = 'var(--border)'
+      if (isFlashing) strokeColor = 'var(--accent)'
+      else if (isWinner) strokeColor = 'var(--accent)'
+      else if (inPath) strokeColor = 'var(--accent)'
+
       const bgColor = isWinner ? '#1A1F00' : 'var(--surface)'
       const textColor = isWinner ? 'var(--accent)' : 'var(--text-1)'
       const isChamp = champion !== null && champion === team
       const flashClass = isChamp && isChampFlashing ? 'champion-flash' : ''
+      const op = isHighlightMode && !inPath ? 0.25 : isLoser ? 0.35 : 1
 
       if (!team) {
         return (
-          <g key={`${x}-${y}`} onMouseMove={handleMouseMove}>
-            <rect x={x} y={y - 14} width="140" height="28" fill="var(--bg)" stroke="var(--border)" strokeDasharray="3,3" strokeWidth="1" />
+          <g key={`${x}-${y}`} onMouseMove={handleMouseMove} style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}>
+            <rect x={x} y={y - 14} width="140" height="28" fill="var(--bg)" stroke={strokeColor} strokeDasharray="3,3" strokeWidth="1" />
             <text x={x + 10} y={y + 4} fill="var(--text-3)" fontSize="10" fontWeight="600">TBD</text>
           </g>
         )
@@ -364,7 +393,7 @@ export default function Bracket() {
           onMouseEnter={(e) => handleMouseEnter(team, e)}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          style={{ opacity: isLoser ? 0.35 : 1, transition: 'opacity 80ms ease' }}
+          style={{ opacity: op, transition: 'opacity 80ms ease' }}
         >
           <rect 
             x={x} 
@@ -373,7 +402,7 @@ export default function Bracket() {
             height="28" 
             fill={bgColor} 
             stroke={strokeColor} 
-            strokeWidth="1"
+            strokeWidth={inPath ? 2 : 1}
             style={isFlashing ? { animation: 'flash-accent 0.1s ease 2' } : {}}
           />
           <foreignObject x={x + 8} y={y - 7} width="20" height="13">
@@ -423,8 +452,19 @@ export default function Bracket() {
 
       const nextX = x + colW
       const nextY = getMatchY(1, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
+      
+      const isHighlightMode = highlightTeam !== 'NONE'
+      const inPath = isHighlightMode && isMatchInPath('r32', idx, highlightTeam)
+
       paths.push(
-        <path key={`p32-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+        <path 
+          key={`p32-${idx}`} 
+          d={drawLine(x + 140, y, nextX, nextY)} 
+          fill="none" 
+          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
+          strokeWidth={inPath ? 2 : 1} 
+          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
+        />
       )
     })
 
@@ -442,8 +482,19 @@ export default function Bracket() {
 
       const nextX = x + colW
       const nextY = getMatchY(2, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
+      
+      const isHighlightMode = highlightTeam !== 'NONE'
+      const inPath = isHighlightMode && isMatchInPath('r16', idx, highlightTeam)
+
       paths.push(
-        <path key={`p16-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+        <path 
+          key={`p16-${idx}`} 
+          d={drawLine(x + 140, y, nextX, nextY)} 
+          fill="none" 
+          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
+          strokeWidth={inPath ? 2 : 1}
+          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
+        />
       )
     })
 
@@ -461,8 +512,19 @@ export default function Bracket() {
 
       const nextX = x + colW
       const nextY = getMatchY(3, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
+      
+      const isHighlightMode = highlightTeam !== 'NONE'
+      const inPath = isHighlightMode && isMatchInPath('qf', idx, highlightTeam)
+
       paths.push(
-        <path key={`pqf-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+        <path 
+          key={`pqf-${idx}`} 
+          d={drawLine(x + 140, y, nextX, nextY)} 
+          fill="none" 
+          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
+          strokeWidth={inPath ? 2 : 1}
+          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
+        />
       )
     })
 
@@ -480,8 +542,19 @@ export default function Bracket() {
 
       const nextX = x + colW
       const nextY = getMatchY(4, 0) + (idx === 0 ? -18 : 18)
+      
+      const isHighlightMode = highlightTeam !== 'NONE'
+      const inPath = isHighlightMode && isMatchInPath('sf', idx, highlightTeam)
+
       paths.push(
-        <path key={`psf-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+        <path 
+          key={`psf-${idx}`} 
+          d={drawLine(x + 140, y, nextX, nextY)} 
+          fill="none" 
+          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
+          strokeWidth={inPath ? 2 : 1}
+          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
+        />
       )
     })
 
@@ -496,8 +569,18 @@ export default function Bracket() {
     chips.push(renderChip(final.teamA, finalX, finalY - 18, isWinnerA, isLoserA, 'final', 0))
     chips.push(renderChip(final.teamB, finalX, finalY + 18, isWinnerB, isLoserB, 'final', 0))
 
+    const isHighlightMode = highlightTeam !== 'NONE'
+    const inPath = isHighlightMode
+
     paths.push(
-      <path key="pfinal" d={drawLine(finalX + 140, finalY, finalX + colW, finalY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+      <path 
+        key="pfinal" 
+        d={drawLine(finalX + 140, finalY, finalX + colW, finalY)} 
+        fill="none" 
+        stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
+        strokeWidth={inPath ? 2 : 1}
+        style={{ opacity: isHighlightMode ? 1 : 1 }}
+      />
     )
 
     // Champion
@@ -516,13 +599,40 @@ export default function Bracket() {
   return (
     <div>
       {/* PAGE HEADER */}
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 10 }}>
         <div>
           <h1 className="text-2xl" style={{ color: 'var(--text-1)' }}>
             BRACKET
           </h1>
           <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 4 }}>
             ROUND OF 32 → FINAL
+          </div>
+        </div>
+
+        {/* FEATURE 7: HIGHLIGHT PATH DROPDOWN */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 16 }}>
+          <span className="text-xs" style={{ color: 'var(--text-3)', fontSize: 10 }}>HIGHLIGHT PATH FOR:</span>
+          <div style={{ position: 'relative' }}>
+            <select
+              value={highlightTeam}
+              onChange={(e) => setHighlightTeam(e.target.value)}
+              style={{
+                background: 'var(--surface)',
+                border: '1px solid var(--border-2)',
+                color: 'var(--text-1)',
+                fontSize: 12,
+                fontWeight: 600,
+                padding: '6px 24px 6px 12px',
+                appearance: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              <option value="NONE">NONE</option>
+              {teamList.map(t => (
+                <option key={t} value={t}>{t.toUpperCase()}</option>
+              ))}
+            </select>
+            <span style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none', fontSize: 10 }}>▾</span>
           </div>
         </div>
 
@@ -553,7 +663,6 @@ export default function Bracket() {
             </button>
           ) : (
             <>
-              {/* FEATURE 8: STEP THROUGH BUTTON */}
               <button 
                 onClick={stepThrough}
                 disabled={isSimulating}
@@ -612,12 +721,19 @@ export default function Bracket() {
         </div>
       </div>
 
+      {/* FEATURE 7: HIGHUGHT PATH LABEL ABOVE BRACKET */}
+      {highlightTeam !== 'NONE' && (
+        <div className="text-xs" style={{ color: 'var(--accent)', marginBottom: 8, fontSize: 10 }}>
+          {highlightTeam.toUpperCase()}'S PATH TO FINAL
+        </div>
+      )}
+
       {/* SVG CONTAINER */}
       <div style={{ overflowX: 'auto', overflowY: 'hidden', border: '1px solid var(--border)', padding: 16, background: '#0a0a0a' }}>
         {renderBracketSVG()}
       </div>
 
-      {/* FEATURE 8: SIMULATED WINNER TEXT */}
+      {/* SIMULATED WINNER TEXT */}
       {champion && (
         <div 
           style={{ 

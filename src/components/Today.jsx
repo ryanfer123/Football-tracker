@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
 
 const FALLBACK_TODAY = [
@@ -166,6 +166,7 @@ const getMatchDetails = (teamA, teamB) => {
 function MatchExpansionContent({ match, onNavigateToTeam }) {
   const details = getMatchDetails(match.teamA, match.teamB)
   const isBrazilJapan = match.teamA === 'Brazil' && match.teamB === 'Japan'
+  const [activeTab, setActiveTab] = useState('EVENTS')
 
   const renderFormSquare = (result, idx) => {
     let bg = 'var(--surface-2)'
@@ -242,7 +243,6 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
 
       {/* ROW 2: FORM GUIDE */}
       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 20px 12px', borderBottom: '1px solid var(--border)' }}>
-        {/* Team A Form */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={() => onNavigateToTeam(match.teamA)}>
             <FlagComponent teamName={match.teamA} size="small" />
@@ -253,7 +253,6 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
           </div>
         </div>
 
-        {/* Team B Form */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexDirection: 'row-reverse' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexDirection: 'row-reverse', cursor: 'pointer' }} onClick={() => onNavigateToTeam(match.teamB)}>
             <FlagComponent teamName={match.teamB} size="small" />
@@ -265,9 +264,8 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
         </div>
       </div>
 
-      {/* ROW 3: KEY PLAYERS TO WATCH */}
+      {/* ROW 3: KEY PLAYERS */}
       <div style={{ display: 'flex', padding: '12px 20px', gap: 20, borderBottom: '1px solid var(--border)' }}>
-        {/* Col A */}
         <div style={{ flex: 1 }}>
           <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 6 }}>{match.teamA.toUpperCase()} KEY PLAYERS</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -283,7 +281,6 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
           </div>
         </div>
 
-        {/* Col B */}
         <div style={{ flex: 1 }}>
           <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 6 }}>{match.teamB.toUpperCase()} KEY PLAYERS</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -301,7 +298,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
       </div>
 
       {/* ROW 4: AI QUICK PREDICTION */}
-      <div style={{ padding: '12px 20px' }}>
+      <div style={{ padding: '12px 20px', borderBottom: isBrazilJapan ? '1px solid var(--border)' : 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
           <span className="text-xs" style={{ color: 'var(--accent)' }}>AI PREDICTION</span>
           <span style={{ fontSize: 13, color: 'var(--text-2)' }}>
@@ -318,105 +315,259 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
         </div>
       </div>
 
-      {/* FEATURE 3: MATCH EVENTS TIMELINE (Brazil vs Japan only) */}
+      {/* ADVANCED TAB OVERLAYS FOR BRAZIL VS JAPAN */}
       {isBrazilJapan && (
-        <div style={{ borderTop: '1px solid var(--border)' }}>
-          <div className="text-xs" style={{ color: 'var(--text-3)', padding: '12px 20px 8px' }}>MATCH EVENTS</div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {[
-              { min: "12'", type: 'G', pName: 'Vinicius Jr', team: 'BRAZIL', iconBg: 'var(--accent)', iconColor: '#000', iconText: 'G' },
-              { min: "34'", type: 'Y', pName: 'Endo', team: 'JAPAN', iconBg: 'var(--amber)', iconColor: '#000', iconText: 'Y' },
-              { min: "45+2'", type: 'Y', pName: 'Casemiro', team: 'BRAZIL', iconBg: 'var(--amber)', iconColor: '#000', iconText: 'Y' },
-              { min: "58'", type: 'S', pName: 'Rodrygo → Savinho', team: 'BRAZIL', iconBg: 'var(--surface-2)', iconColor: 'var(--text-2)', iconText: '↕' }
-            ].map((ev, idx) => (
-              <div 
-                key={idx} 
-                style={{ 
-                  height: 32, 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  padding: '0 20px', 
-                  borderBottom: '1px solid var(--border)' 
-                }}
-              >
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-3)', width: 32 }}>{ev.min}</span>
-                <div 
-                  style={{ 
-                    width: 16, 
-                    height: 16, 
-                    background: ev.iconBg, 
-                    color: ev.iconColor, 
-                    fontSize: 10, 
-                    fontWeight: 700, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    marginRight: 12 
+        <div>
+          {/* FEATURE 4: TAB SWITCH PILLS */}
+          <div style={{ display: 'flex', background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
+            {['EVENTS', 'STATS', 'SHOT MAP', 'COMMENTARY'].map(tab => {
+              const isActive = activeTab === tab
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  style={{
+                    flex: 1,
+                    height: 32,
+                    fontSize: 10,
+                    fontWeight: 600,
+                    border: 'none',
+                    borderBottom: isActive ? '2px solid var(--accent)' : 'none',
+                    color: isActive ? 'var(--accent)' : 'var(--text-3)',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase'
                   }}
                 >
-                  {ev.iconText}
-                </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)' }}>{ev.pName}</span>
-                <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-3)', fontWeight: 600 }}>{ev.team}</span>
-              </div>
-            ))}
+                  {tab}
+                </button>
+              )
+            })}
           </div>
-        </div>
-      )}
 
-      {/* FEATURE 4: LIVE MATCH STATS (Brazil vs Japan only) */}
-      {isBrazilJapan && (
-        <div style={{ borderTop: '1px solid var(--border)', padding: '12px 20px' }}>
-          <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>MATCH STATS</div>
-          {[
-            { label: 'POSSESSION', valA: '62%', valB: '38%', pctA: 62, pctB: 38 },
-            { label: 'SHOTS', valA: '9', valB: '4', pctA: 69, pctB: 31 },
-            { label: 'ON TARGET', valA: '4', valB: '2', pctA: 67, pctB: 33 },
-            { label: 'CORNERS', valA: '5', valB: '3', pctA: 62, pctB: 38 },
-            { label: 'FOULS', valA: '8', valB: '11', pctA: 42, pctB: 58 },
-            { label: 'xG', valA: '1.8', valB: '0.6', pctA: 75, pctB: 25 }
-          ].map((st, idx) => (
-            <div key={idx} style={{ height: 28, display: 'flex', alignItems: 'center' }}>
-              {/* Team A Value */}
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-1)', width: 36, textAlign: 'right' }}>
-                {st.valA}
-              </span>
+          {/* TAB CONTENT: EVENTS */}
+          {activeTab === 'EVENTS' && (
+            <div>
+              <div className="text-xs" style={{ color: 'var(--text-3)', padding: '12px 20px 8px' }}>MATCH EVENTS</div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {[
+                  { min: "12'", type: 'G', pName: 'Vinicius Jr', team: 'BRAZIL', iconBg: 'var(--accent)', iconColor: '#000', iconText: 'G' },
+                  { min: "34'", type: 'Y', pName: 'Endo', team: 'JAPAN', iconBg: 'var(--amber)', iconColor: '#000', iconText: 'Y' },
+                  { min: "45+2'", type: 'Y', pName: 'Casemiro', team: 'BRAZIL', iconBg: 'var(--amber)', iconColor: '#000', iconText: 'Y' },
+                  { min: "58'", type: 'S', pName: 'Rodrygo → Savinho', team: 'BRAZIL', iconBg: 'var(--surface-2)', iconColor: 'var(--text-2)', iconText: '↕' }
+                ].map((ev, idx) => (
+                  <div 
+                    key={idx} 
+                    style={{ 
+                      height: 32, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      padding: '0 20px', 
+                      borderBottom: '1px solid var(--border)' 
+                    }}
+                  >
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-3)', width: 32 }}>{ev.min}</span>
+                    <div 
+                      style={{ 
+                        width: 16, 
+                        height: 16, 
+                        background: ev.iconBg, 
+                        color: ev.iconColor, 
+                        fontSize: 10, 
+                        fontWeight: 700, 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        marginRight: 12 
+                      }}
+                    >
+                      {ev.iconText}
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)' }}>{ev.pName}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-3)', fontWeight: 600 }}>{ev.team}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-              {/* Progress Bars */}
-              <div style={{ flex: 1, height: 4, background: 'var(--border)', margin: '0 12px', display: 'flex' }}>
-                <div style={{ width: `${st.pctA}%`, height: '100%', background: 'var(--accent)' }} />
-                <div style={{ flex: 1 }} />
-                <div style={{ width: `${st.pctB}%`, height: '100%', background: 'var(--text-3)' }} />
+          {/* TAB CONTENT: STATS */}
+          {activeTab === 'STATS' && (
+            <div style={{ padding: '12px 20px' }}>
+              <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>MATCH STATS</div>
+              {[
+                { label: 'POSSESSION', valA: '62%', valB: '38%', pctA: 62, pctB: 38 },
+                { label: 'SHOTS', valA: '9', valB: '4', pctA: 69, pctB: 31 },
+                { label: 'ON TARGET', valA: '4', valB: '2', pctA: 67, pctB: 33 },
+                { label: 'CORNERS', valA: '5', valB: '3', pctA: 62, pctB: 38 },
+                { label: 'FOULS', valA: '8', valB: '11', pctA: 42, pctB: 58 },
+                // FEATURE 6: ADVANCED STATS ROWS
+                { label: 'xG', valA: '1.82', valB: '0.61', pctA: 75, pctB: 25, highlight: true },
+                { label: 'PASS ACCURACY', valA: '89%', valB: '82%', pctA: 89, pctB: 82 },
+                { label: 'DUELS WON', valA: '54%', valB: '46%', pctA: 54, pctB: 46 },
+                { label: 'AERIAL DUELS', valA: '62%', valB: '38%', pctA: 62, pctB: 38 },
+                { label: 'OFFSIDES', valA: '2', valB: '1', pctA: 67, pctB: 33 },
+                { label: 'SAVES', valA: '2', valB: '4', pctA: 33, pctB: 67 }
+              ].map((st, idx) => (
+                <div key={idx} style={{ height: 28, display: 'flex', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: st.highlight ? 'var(--accent)' : 'var(--text-1)', width: 36, textAlign: 'right' }}>
+                    {st.valA}
+                  </span>
+
+                  <div style={{ flex: 1, height: 4, background: 'var(--border)', margin: '0 12px', display: 'flex' }}>
+                    <div style={{ width: `${st.pctA}%`, height: '100%', background: st.highlight ? 'var(--accent)' : 'var(--accent)' }} />
+                    <div style={{ flex: 1 }} />
+                    <div style={{ width: `${st.pctB}%`, height: '100%', background: 'var(--text-3)' }} />
+                  </div>
+
+                  <span style={{ fontSize: 13, fontWeight: 700, color: st.highlight ? 'var(--accent)' : 'var(--text-2)', width: 36, textAlign: 'left' }}>
+                    {st.valB}
+                  </span>
+
+                  <span className="text-xs" style={{ width: 120, textAlign: 'center', color: 'var(--text-3)', marginLeft: 8 }}>
+                    {st.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* FEATURE 3: TAB CONTENT: SHOT MAP */}
+          {activeTab === 'SHOT MAP' && (
+            <div style={{ padding: '12px 20px' }}>
+              <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>SHOT MAP</div>
+              
+              <div 
+                style={{
+                  width: 400,
+                  height: 280,
+                  background: '#0A1A0A',
+                  border: '1px solid var(--border)',
+                  position: 'relative',
+                  margin: '0 auto',
+                  overflow: 'hidden'
+                }}
+              >
+                {/* CSS Markings */}
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'none' }}>
+                  {/* Halfway line */}
+                  <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                  {/* Centre circle */}
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 80, height: 80, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.08)' }} />
+                  {/* Penalty boxes */}
+                  <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 180, height: 60, border: '1px solid rgba(255,255,255,0.08)', borderTop: 'none' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 180, height: 60, border: '1px solid rgba(255,255,255,0.08)', borderBottom: 'none' }} />
+                  {/* Goal lines */}
+                  <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 60, height: 5, background: 'rgba(255,255,255,0.15)' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 60, height: 5, background: 'rgba(255,255,255,0.15)' }} />
+                </div>
+
+                {/* Brazil Shot Dots (left side, left < 50%) */}
+                {/* Goal (10px accent) */}
+                <div style={{ position: 'absolute', left: '35%', top: '75%', width: 10, height: 10, background: 'var(--accent)', borderRadius: '50%', transform: 'translate(-50%, -50%)' }} />
+                {/* On Target (8px hollow) */}
+                <div style={{ position: 'absolute', left: '30%', top: '80%', width: 8, height: 8, border: '2px solid var(--accent)', borderRadius: '50%', transform: 'translate(-50%, -50%)' }} />
+                <div style={{ position: 'absolute', left: '20%', top: '65%', width: 8, height: 8, border: '2px solid var(--accent)', borderRadius: '50%', transform: 'translate(-50%, -50%)' }} />
+                {/* Off Target (cross symbol) */}
+                <div style={{ position: 'absolute', left: '40%', top: '70%', color: 'var(--text-3)', fontSize: 10, fontWeight: 800, transform: 'translate(-50%, -50%)' }}>×</div>
+                <div style={{ position: 'absolute', left: '15%', top: '60%', color: 'var(--text-3)', fontSize: 10, fontWeight: 800, transform: 'translate(-50%, -50%)' }}>×</div>
+                <div style={{ position: 'absolute', left: '25%', top: '85%', color: 'var(--text-3)', fontSize: 10, fontWeight: 800, transform: 'translate(-50%, -50%)' }}>×</div>
+
+                {/* Japan Shot Dots (right side, left > 50%) */}
+                {/* On Target (8px hollow, grey border) */}
+                <div style={{ position: 'absolute', left: '70%', top: '25%', width: 8, height: 8, border: '2px solid var(--text-2)', borderRadius: '50%', transform: 'translate(-50%, -50%)' }} />
+                <div style={{ position: 'absolute', left: '65%', top: '30%', width: 8, height: 8, border: '2px solid var(--text-2)', borderRadius: '50%', transform: 'translate(-50%, -50%)' }} />
+                {/* Off Target (cross symbol) */}
+                <div style={{ position: 'absolute', left: '80%', top: '20%', color: 'var(--text-3)', fontSize: 10, fontWeight: 800, transform: 'translate(-50%, -50%)' }}>×</div>
               </div>
 
-              {/* Team B Value */}
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', width: 36, textAlign: 'left' }}>
-                {st.valB}
-              </span>
-
-              {/* Label */}
-              <span className="text-xs" style={{ width: 100, textAlign: 'center', color: 'var(--text-3)', marginLeft: 8 }}>
-                {st.label}
-              </span>
+              {/* Legend */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 12, fontSize: 10, color: 'var(--text-3)', fontWeight: 600 }}>
+                <span><span style={{ color: 'var(--accent)' }}>●</span> GOAL</span>
+                <span><span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', border: '2.5px solid var(--accent)', background: 'transparent' }} /> ON TARGET</span>
+                <span><span style={{ color: 'var(--text-3)', fontWeight: 800 }}>×</span> OFF TARGET</span>
+              </div>
             </div>
-          ))}
+          )}
+
+          {/* FEATURE 4: TAB CONTENT: COMMENTARY */}
+          {activeTab === 'COMMENTARY' && (
+            <div style={{ padding: '12px 20px' }}>
+              <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>LIVE COMMENTARY</div>
+              <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid var(--border)', background: 'var(--bg)' }}>
+                {[
+                  { min: "63'", text: "Vinicius Jr dribbles past two defenders on the left flank, Brazil pressing high." },
+                  { min: "61'", text: "Japan win a corner but the delivery is poor. Brazil clear." },
+                  { min: "58'", text: "SUBSTITUTION — Rodrygo comes off, Savinho enters for Brazil.", isSub: true },
+                  { min: "52'", text: "Shot from Kubo! Goes wide of the right post. Japan threatening." },
+                  { min: "45+2'", text: "YELLOW CARD — Casemiro catches Endo late. Referee shows yellow.", isYellow: true },
+                  { min: "45'", text: "Two minutes of added time signalled." },
+                  { min: "39'", text: "Possession: Brazil 63% Japan 37% through the first half." },
+                  { min: "34'", text: "YELLOW CARD — Endo cautioned for a foul on Vinicius Jr.", isYellow: true },
+                  { min: "27'", text: "Brazil dominating. Japan struggling to get out of their half." },
+                  { min: "20'", text: "Japan's first real chance. Kubo fires over from outside the box." },
+                  { min: "12'", text: "GOAL! VINICIUS JR! Brazil take the lead! Beautiful solo run, slots home low into the bottom corner. 1-0.", isGoal: true },
+                  { min: "1'", text: "KICK OFF — Brazil get us underway at NRG Stadium, Houston." }
+                ].map((com, idx) => {
+                  let bg = 'transparent'
+                  let borderLeft = 'none'
+                  let textColor = 'var(--text-2)'
+
+                  if (com.isGoal) {
+                    bg = '#1A1F00'
+                    textColor = 'var(--text-1)'
+                    borderLeft = '2px solid var(--accent)'
+                  } else if (com.isYellow) {
+                    bg = '#1A1500'
+                    borderLeft = '2px solid var(--amber)'
+                  } else if (com.isSub) {
+                    bg = 'var(--surface-2)'
+                  }
+
+                  return (
+                    <div 
+                      key={idx}
+                      style={{
+                        padding: '8px 12px',
+                        borderBottom: '1px solid var(--border)',
+                        background: bg,
+                        borderLeft: borderLeft,
+                        display: 'flex',
+                        gap: 12
+                      }}
+                    >
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)', width: 32, flexShrink: 0 }}>{com.min}</span>
+                      <span style={{ fontSize: 12, color: textColor }}>{com.text}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
   )
 }
 
-function MatchCard({ match, onNavigateToTeam }) {
+function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchId }) {
   const [expanded, setExpanded] = useState(false)
   const isLive = match.status === 'LIVE'
+
+  useEffect(() => {
+    if (selectedMatchId && match.id === selectedMatchId) {
+      setExpanded(true)
+      if (setSelectedMatchId) {
+        setSelectedMatchId(null)
+      }
+    }
+  }, [selectedMatchId])
 
   return (
     <div 
       className={`match-card ${isLive ? 'is-live' : ''}`} 
       onClick={() => setExpanded(!expanded)}
       style={{
-        overflow: 'hidden',
-        transition: 'max-height 200ms ease'
+        overflow: 'hidden'
       }}
     >
       {isLive ? (
@@ -498,8 +649,17 @@ function MatchCard({ match, onNavigateToTeam }) {
   )
 }
 
-function FixtureRow({ match, onNavigateToTeam }) {
+function FixtureRow({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchId }) {
   const [expanded, setExpanded] = useState(false)
+
+  useEffect(() => {
+    if (selectedMatchId && match.id === selectedMatchId) {
+      setExpanded(true)
+      if (setSelectedMatchId) {
+        setSelectedMatchId(null)
+      }
+    }
+  }, [selectedMatchId])
 
   return (
     <div 
@@ -540,7 +700,7 @@ function FixtureRow({ match, onNavigateToTeam }) {
   )
 }
 
-export default function Today({ onNavigateToTeam }) {
+export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMatchId }) {
   const [loading, setLoading] = useState(true)
   const [todayMatches, setTodayMatches] = useState(FALLBACK_TODAY)
   const [filter, setFilter] = useState('ALL')
@@ -610,7 +770,7 @@ export default function Today({ onNavigateToTeam }) {
   // Filtering Logic
   const filteredToday = todayMatches.filter(m => {
     if (filter === 'LIVE') return m.status === 'LIVE'
-    return true // ALL, TODAY, THIS WEEK include today's matches
+    return true
   })
 
   const showUpcoming = filter === 'ALL' || filter === 'THIS WEEK'
@@ -714,7 +874,13 @@ export default function Today({ onNavigateToTeam }) {
             </div>
           ) : (
             filteredToday.map(match => (
-              <MatchCard key={match.id} match={match} onNavigateToTeam={onNavigateToTeam} />
+              <MatchCard 
+                key={match.id} 
+                match={match} 
+                onNavigateToTeam={onNavigateToTeam} 
+                selectedMatchId={selectedMatchId}
+                setSelectedMatchId={setSelectedMatchId}
+              />
             ))
           )}
         </div>
@@ -747,7 +913,13 @@ export default function Today({ onNavigateToTeam }) {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {day.matches.map(m => (
-                    <FixtureRow key={m.id} match={m} onNavigateToTeam={onNavigateToTeam} />
+                    <FixtureRow 
+                      key={m.id} 
+                      match={m} 
+                      onNavigateToTeam={onNavigateToTeam} 
+                      selectedMatchId={selectedMatchId}
+                      setSelectedMatchId={setSelectedMatchId}
+                    />
                   ))}
                 </div>
               </div>

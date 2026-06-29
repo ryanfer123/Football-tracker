@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
 
 const SCORERS = [
@@ -24,10 +24,10 @@ const getPlayerDetails = (playerName) => {
     return {
       goals: [
         { match: 'ARG vs Saudi Arabia', min: "22'", type: 'PKN' },
-        { match: 'ARG vs Mexico', min: "64'", type: 'FK' },
-        { match: 'ARG vs Poland', min: "88'", type: 'VOL' },
-        { match: 'ARG vs France', min: "45'", type: 'HDR' },
-        { match: 'ARG vs France', min: "108'", type: 'PKN' }
+        { match: 'ARG vs Cape Verde', min: "12'", type: 'FK' },
+        { match: 'ARG vs Cape Verde', min: "45'", type: 'Open play' },
+        { match: 'ARG vs Cape Verde', min: "67'", type: 'Penalty' },
+        { match: 'ARG vs Ghana', min: "78'", type: 'Open play' }
       ],
       dots: [
         { t: '20%', l: '45%' },
@@ -87,7 +87,7 @@ const getPlayerDetails = (playerName) => {
   }
 }
 
-function ScorerRow({ row }) {
+function ScorerRow({ row, selectedPlayerName, setSelectedPlayerName }) {
   const [expanded, setExpanded] = useState(false)
   const isFirst = row.rank === 1
   const rowBorderLeft = isFirst ? '2px solid var(--accent)' : 'none'
@@ -98,6 +98,15 @@ function ScorerRow({ row }) {
     if (val >= 6.5) return 'var(--border-2)'
     return 'var(--red)'
   }
+
+  useEffect(() => {
+    if (selectedPlayerName && row.name === selectedPlayerName) {
+      setExpanded(true)
+      if (setSelectedPlayerName) {
+        setSelectedPlayerName(null)
+      }
+    }
+  }, [selectedPlayerName])
 
   return (
     <>
@@ -266,7 +275,7 @@ function ScorerRow({ row }) {
   )
 }
 
-export default function GoldenBoot() {
+export default function GoldenBoot({ selectedPlayerName, setSelectedPlayerName }) {
   return (
     <div>
       {/* PAGE HEADER */}
@@ -294,7 +303,12 @@ export default function GoldenBoot() {
           </thead>
           <tbody>
             {SCORERS.map((row) => (
-              <ScorerRow key={row.rank} row={row} />
+              <ScorerRow 
+                key={row.rank} 
+                row={row} 
+                selectedPlayerName={selectedPlayerName}
+                setSelectedPlayerName={setSelectedPlayerName}
+              />
             ))}
           </tbody>
         </table>
