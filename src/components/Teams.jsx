@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react'
 import { TEAMS, ALL_TEAM_NAMES } from '../data/teams'
+import { BRACKET } from '../data/matchData'
 import { TeamFlag } from './shared'
 
 const WC_YEARS = [1930,1934,1938,1950,1954,1958,1962,1966,1970,1974,1978,1982,1986,1990,1994,1998,2002,2006,2010,2014,2018,2022,2026]
 const RESULT_LABELS = { WON: '🏆', FINAL: 'F', SF: 'SF', QF: 'QF', R16: 'R16', R32: 'R32', R2: 'R2', R1: 'R1', GROUP: 'GS', DNQ: '—' }
+const R32_MATCHES = [...BRACKET.roundOf32.left, ...BRACKET.roundOf32.right]
 
 function RadarChart({ stats }) {
   const labels = ['Attack', 'Defence', 'Midfield', 'Pace', 'Experience', 'Cohesion']
@@ -45,7 +47,7 @@ function RadarChart({ stats }) {
           const lx = cx + (r + 20) * Math.cos(angles[i])
           const ly = cy + (r + 20) * Math.sin(angles[i])
           return (
-            <text key={i} x={lx} y={ly} fontSize="9" fontWeight="700" fontFamily="Space Grotesk"
+            <text key={i} x={lx} y={ly} fontSize="9" fontWeight="700" fontFamily="Inter, system-ui, sans-serif"
               textAnchor="middle" dominantBaseline="middle" fill="#000"
               style={{ textTransform: 'uppercase' }}>
               {label}
@@ -54,7 +56,7 @@ function RadarChart({ stats }) {
         })}
         {/* Values */}
         {points.map((p, i) => (
-          <text key={`v-${i}`} x={p.x} y={p.y - 8} fontSize="9" fontWeight="700" fontFamily="Space Grotesk"
+          <text key={`v-${i}`} x={p.x} y={p.y - 8} fontSize="9" fontWeight="700" fontFamily="Inter, system-ui, sans-serif"
             textAnchor="middle" fill="#FF2D00">
             {stats[keys[i]] || 50}
           </text>
@@ -70,7 +72,6 @@ function TeamProfile({ team, teamName, onBack }) {
   const formationParts = (team.formation || '4-3-3').split('-').map(Number)
   const squad = team.squad || {}
 
-  // Build flat player list for formation
   const allPlayers = [
     ...(squad.GK || ['GK']),
     ...(squad.DEF || ['DEF','DEF','DEF','DEF']),
@@ -78,13 +79,16 @@ function TeamProfile({ team, teamName, onBack }) {
     ...(squad.FW || ['FW','FW','FW'])
   ]
 
-  // Build rows from formation
   const rows = [allPlayers.slice(0, 1)] // GK
   let idx = 1
   for (const count of formationParts) {
     rows.push(allPlayers.slice(idx, idx + count))
     idx += count
   }
+  const knockoutMatch = R32_MATCHES.find(match => match.teamA === teamName || match.teamB === teamName)
+  const knockoutOpponent = knockoutMatch
+    ? (knockoutMatch.teamA === teamName ? knockoutMatch.teamB : knockoutMatch.teamA)
+    : 'winner of adjacent tie'
 
   return (
     <div className="team-profile">
@@ -183,7 +187,7 @@ function TeamProfile({ team, teamName, onBack }) {
             <div className="detail-title">Knockout Stage</div>
             <div className="upcoming-match-row" style={{ cursor: 'default', opacity: 0.5 }}>
               <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: 13, color: '#888' }}>
-                Round of 32 — vs TBD
+                Round of 32 — vs {knockoutOpponent}
               </span>
             </div>
           </div>
@@ -217,7 +221,7 @@ export default function Teams() {
 
       <div className="search-bar">
         <input className="input" style={{ width: '100%' }}
-          placeholder="SEARCH TEAM..."
+          placeholder="Search by country, federation, or contender..."
           value={search}
           onChange={(e) => setSearch(e.target.value)} />
       </div>
@@ -225,7 +229,7 @@ export default function Teams() {
       {filteredTeams.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">⚽</div>
-          <div className="empty-text">NO DATA</div>
+          <div className="empty-text">No teams match that search</div>
         </div>
       ) : (
         <div className="teams-grid">

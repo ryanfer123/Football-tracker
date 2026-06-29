@@ -62,7 +62,8 @@
 .flag-PAR::after {
   content: ''; position: absolute;
   top: 40%; left: 42%; width: 16%; height: 20%;
-  background: #000; border-radius: 50%; /* Coat of arms placeholder */
+  background: radial-gradient(circle, #F6C343 0 35%, #164A9B 36% 58%, #D52B1E 59%);
+  border-radius: 50%;
 }
 
 /* Morocco */

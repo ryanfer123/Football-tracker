@@ -1266,6 +1266,147 @@ button {
   border-color: var(--line-dark);
 }
 
+.account-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 560px) minmax(280px, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.account-card {
+  padding: clamp(22px, 3vw, 34px);
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--card), var(--card-soft));
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.account-card-dark {
+  position: relative;
+  overflow: hidden;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at 80% 8%, rgba(198, 255, 61, 0.22), transparent 18rem),
+    linear-gradient(135deg, rgba(17, 52, 31, 0.96), rgba(7, 17, 12, 0.96));
+}
+
+.account-card-dark::after {
+  content: '';
+  position: absolute;
+  right: -90px;
+  bottom: -90px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 42px rgba(255, 255, 255, 0.03);
+}
+
+.account-eyebrow {
+  color: var(--grass-2);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.account-card-dark .account-eyebrow {
+  color: var(--lime);
+}
+
+.account-title {
+  margin: 8px 0 10px;
+  color: inherit;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+}
+
+.account-copy {
+  margin: 0 0 22px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.account-card-dark .account-copy {
+  color: var(--text-secondary);
+}
+
+.auth-switch,
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.account-form {
+  display: grid;
+  gap: 14px;
+}
+
+.account-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-form .input {
+  color: var(--ink);
+  background: white;
+  border-color: var(--line-dark);
+}
+
+.account-message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.account-message.success {
+  color: #14532d;
+  background: #dcfce7;
+}
+
+.account-message.error {
+  color: #7f1d1d;
+  background: #fee2e2;
+}
+
+.account-list {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.account-list li {
+  padding-left: 28px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.account-list li::before {
+  content: '⚽';
+  margin-left: -28px;
+  margin-right: 8px;
+}
+
 .bracket-container {
   overflow: auto;
   padding: 18px;
@@ -1355,7 +1496,8 @@ button {
   .match-card-main,
   .upcoming-match-row,
   .predict-selector,
-  .tournament-bar {
+  .tournament-bar,
+  .account-grid {
     grid-template-columns: 1fr;
   }
 

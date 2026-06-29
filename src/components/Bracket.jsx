@@ -19,10 +19,10 @@ function BracketChip({ team, isWinner, isLoser, isUpcoming, x, y, onClick, onMou
     >
       <rect x={x} y={y} width={w} height={h} fill={isWinner ? '#000' : '#fff'} stroke="#000" strokeWidth="2"
         strokeDasharray={isUpcoming && !team ? '4,4' : 'none'} />
-      <text x={x + 8} y={y + 18} fontSize="11" fontWeight="700" fontFamily="Space Grotesk"
+      <text x={x + 8} y={y + 18} fontSize="11" fontWeight="700" fontFamily="Inter, system-ui, sans-serif"
         fill={isWinner ? '#fff' : team ? '#000' : '#FF2D00'} textAnchor="start"
         style={{ textTransform: 'uppercase', textDecoration: isLoser ? 'line-through' : 'none' }}>
-        {team ? `${teamData?.flag || ''} ${team}` : 'TBD'}
+        {team ? `${teamData?.flag || ''} ${team}` : 'Awaiting winner'}
       </text>
       {isWinner && (
         <text x={x + w - 8} y={y + 18} fontSize="12" fill="#AAFF00" textAnchor="end">✓</text>
@@ -339,7 +339,7 @@ export default function Bracket() {
       elements.push(
         <g key="FINAL">
           <rect x={x - 4} y={y - 30} width={148} height={24} fill="#000" />
-          <text x={x + 70} y={y - 12} fontSize="13" fontWeight="700" fill="#fff" fontFamily="Space Grotesk" textAnchor="middle">
+          <text x={x + 70} y={y - 12} fontSize="13" fontWeight="700" fill="#fff" fontFamily="Inter, system-ui, sans-serif" textAnchor="middle">
             FINAL
           </text>
           <BracketChip team={match?.teamA || null} x={x} y={y}
@@ -354,10 +354,10 @@ export default function Bracket() {
             onMouseLeave={() => setTooltip(null)} />
           {match?.winner && (
             <>
-              <text x={x + 70} y={y + 80} fontSize="20" fontWeight="700" fill="#000" fontFamily="Space Grotesk" textAnchor="middle">
+              <text x={x + 70} y={y + 80} fontSize="20" fontWeight="700" fill="#000" fontFamily="Inter, system-ui, sans-serif" textAnchor="middle">
                 🏆 {match.winner.toUpperCase()}
               </text>
-              <text x={x + 70} y={y + 96} fontSize="11" fontWeight="600" fill="#FF2D00" fontFamily="Space Grotesk" textAnchor="middle">
+              <text x={x + 70} y={y + 96} fontSize="11" fontWeight="600" fill="#FF2D00" fontFamily="Inter, system-ui, sans-serif" textAnchor="middle">
                 WORLD CHAMPIONS 2026
               </text>
             </>
@@ -372,7 +372,7 @@ export default function Bracket() {
     roundLabels.forEach((label, i) => {
       elements.push(
         <text key={`label-${i}`} x={labelXs[i]} y={svgH - 10} fontSize="9" fontWeight="700" fill="#888"
-          fontFamily="Space Grotesk" textAnchor="middle" style={{ textTransform: 'uppercase', letterSpacing: '1px' }}>
+          fontFamily="Inter, system-ui, sans-serif" textAnchor="middle" style={{ textTransform: 'uppercase', letterSpacing: '1px' }}>
           {label}
         </text>
       )
@@ -403,7 +403,7 @@ export default function Bracket() {
           {tooltip && (
             <g>
               <rect x={tooltip.x - 80} y={tooltip.y - 22} width={160} height={20} fill="#000" />
-              <text x={tooltip.x} y={tooltip.y - 8} fontSize="9" fill="#fff" fontFamily="Space Grotesk"
+              <text x={tooltip.x} y={tooltip.y - 8} fontSize="9" fill="#fff" fontFamily="Inter, system-ui, sans-serif"
                 textAnchor="middle" fontWeight="600">
                 {tooltip.text}
               </text>
