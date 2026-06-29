@@ -294,6 +294,7 @@ export default function GoldenBoot({ selectedPlayerName, setSelectedPlayerName }
             name: s.name || 'Unknown',
             code: s.code || '',
             country: s.country || '',
+            logo: s.logo || null,
             goals: s.goals || 0,
             assists: s.assists || 0,
             mins: s.mins || s.minutes || 0,
