@@ -11,6 +11,11 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
+// Log incoming requests for debugging routing and to ensure API routes are invoked
+app.use((req, res, next) => {
+  try { console.log('REQ', req.method, req.path) } catch (e) {}
+  next()
+})
 const port = process.env.PORT || 5050
 const isProduction = process.env.NODE_ENV === 'production'
 
