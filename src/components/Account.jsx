@@ -83,6 +83,7 @@ export default function Account({ onAuthSuccess }) {
       }
       setForm(initialForm)
       setStatus(mode === 'register' ? 'Account created.' : 'Signed in.')
+      window.location.reload()
     } catch (authError) {
       setError(authError.message)
     } finally {
