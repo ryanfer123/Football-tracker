@@ -304,6 +304,7 @@ app.get('/api/matches/today', async (req, res) => {
 // GOLDEN BOOT: Top scorers endpoint with 60s cache
 let goldenBootCache = { data: null, timestamp: 0 }
 app.get('/api/stats/goldenboot', async (req, res) => {
+  console.log('/api/stats/goldenboot route invoked')
   try {
     const now = Date.now()
     if (goldenBootCache.data && (now - goldenBootCache.timestamp < 60000)) {
