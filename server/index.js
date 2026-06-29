@@ -269,13 +269,27 @@ app.get('/api/matches/today', async (req, res) => {
         id: String(m.match_id),
         teamA: m.home_team.team_name,
         teamB: m.away_team.team_name,
+        logoA: m.home_team.team_logo,
+        logoB: m.away_team.team_logo,
         scoreA: m.score.home,
         scoreB: m.score.away,
         status,
         time: status === 'LIVE' ? (m.status_localized || 'LIVE') : timeStr,
         venue: m.venue.stadium_name || 'TBA',
         city: m.venue.stadium_location || '',
-        date: dateStr
+        date: dateStr,
+        xgA: m.xg?.home || 0,
+        xgB: m.xg?.away || 0,
+        odds: {
+          home: m.odds?.home_win || 0,
+          draw: m.odds?.draw || 0,
+          away: m.odds?.away_win || 0
+        },
+        prob: {
+          home: m.probabilities?.home_win || 33,
+          draw: m.probabilities?.draw || 34,
+          away: m.probabilities?.away_win || 33
+        }
       }
     })
     
@@ -284,6 +298,96 @@ app.get('/api/matches/today', async (req, res) => {
   } catch (error) {
     console.error('Error fetching matches:', error)
     res.status(500).json({ message: 'Could not fetch live matches' })
+  }
+})
+
+// GOLDEN BOOT: Top scorers endpoint with 60s cache
+let goldenBootCache = { data: null, timestamp: 0 }
+app.get('/api/stats/goldenboot', async (req, res) => {
+  try {
+    const now = Date.now()
+    if (goldenBootCache.data && (now - goldenBootCache.timestamp < 60000)) {
+      return res.json(goldenBootCache.data)
+    }
+
+    const keysString = process.env.FOOTBALL_API_KEYS || process.env.FOOTBALL_API_KEY || ''
+    const keys = keysString.split(',').map(k => k.trim()).filter(Boolean)
+
+    if (keys.length === 0) {
+      return res.json([])
+    }
+
+    const endpoints = [
+      'https://footballdata.io/api/v1/stats/topscorers',
+      'https://footballdata.io/api/v1/stats/top_scorers',
+      'https://footballdata.io/api/v1/players/topscorers',
+      'https://footballdata.io/api/v1/players/top_scorers',
+      'https://footballdata.io/api/v1/stats/scorers',
+      'https://footballdata.io/api/v1/scorers'
+    ]
+
+    let json = null
+    let success = false
+
+    for (const key of keys) {
+      for (const ep of endpoints) {
+        try {
+          const response = await fetch(ep, { headers: { 'Authorization': `Bearer ${key}` } })
+          if (!response.ok) continue
+          json = await response.json()
+          // Accept several shapes
+          const candidates = json.data && (Array.isArray(json.data) ? json.data : json.data.scorers || json.data.top_scorers)
+          const rootArray = Array.isArray(json) ? json : null
+          if (Array.isArray(candidates) && candidates.length > 0) {
+            json = { scorers: candidates }
+            success = true
+            break
+          } else if (Array.isArray(rootArray) && rootArray.length > 0) {
+            json = { scorers: rootArray }
+            success = true
+            break
+          }
+        } catch (err) {
+          // try next endpoint
+        }
+      }
+      if (success) break
+    }
+
+    if (!success) throw new Error('All API keys/endpoints failed or returned no data')
+
+    const raw = json.scorers || []
+    const normalized = raw.map((s, idx) => {
+      const player = s.player || s.player_info || {}
+      const team = s.team || s.team_info || s.club || {}
+      return {
+        rank: s.rank || s.position || idx + 1,
+        name: player.name || s.name || s.full_name || (player.first_name ? `${player.first_name} ${player.last_name}` : 'Unknown'),
+        playerId: player.id || s.player_id || null,
+        code: team.code || team.tla || s.team_code || (team.name ? team.name.substring(0,3).toUpperCase() : ''),
+        country: team.name || s.country || s.team_name || '',
+        goals: Number(s.goals || s.totalGoals || s.goals_scored || 0),
+        assists: Number(s.assists || s.totalAssists || 0),
+        mins: Number(s.minutes_played || s.mins || s.minutes || 0),
+        eliminated: !!s.eliminated
+      }
+    })
+
+    // Sort: goals desc, assists desc, mins asc
+    normalized.sort((a,b) => {
+      if (b.goals !== a.goals) return b.goals - a.goals
+      if (b.assists !== a.assists) return b.assists - a.assists
+      return a.mins - b.mins
+    })
+
+    // Reassign ranks
+    const final = normalized.map((r, i) => ({ ...r, rank: i + 1 }))
+
+    goldenBootCache = { data: final, timestamp: now }
+    res.json(final)
+  } catch (error) {
+    console.error('Error fetching golden boot:', error)
+    res.status(500).json([])
   }
 })
 

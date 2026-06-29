@@ -276,6 +276,45 @@ function ScorerRow({ row, selectedPlayerName, setSelectedPlayerName }) {
 }
 
 export default function GoldenBoot({ selectedPlayerName, setSelectedPlayerName }) {
+  const [scorers, setScorers] = useState(SCORERS)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+
+    async function fetchScorers() {
+      try {
+        const res = await fetch('/api/stats/goldenboot')
+        const data = await res.json()
+        if (!active) return
+
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((s, idx) => ({
+            rank: s.rank || idx + 1,
+            name: s.name || 'Unknown',
+            code: s.code || '',
+            country: s.country || '',
+            goals: s.goals || 0,
+            assists: s.assists || 0,
+            mins: s.mins || s.minutes || 0,
+            eliminated: !!s.eliminated
+          }))
+          setScorers(mapped)
+        } else {
+          setScorers(SCORERS)
+        }
+      } catch (err) {
+        setScorers(SCORERS)
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    fetchScorers()
+    const id = setInterval(fetchScorers, 60000)
+    return () => { active = false; clearInterval(id) }
+  }, [])
+
   return (
     <div>
       {/* PAGE HEADER */}
@@ -302,9 +341,9 @@ export default function GoldenBoot({ selectedPlayerName, setSelectedPlayerName }
             </tr>
           </thead>
           <tbody>
-            {SCORERS.map((row) => (
+            {scorers.map((row) => (
               <ScorerRow 
-                key={row.rank} 
+                key={row.rank + '::' + row.name} 
                 row={row} 
                 selectedPlayerName={selectedPlayerName}
                 setSelectedPlayerName={setSelectedPlayerName}
