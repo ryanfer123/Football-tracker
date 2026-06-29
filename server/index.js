@@ -432,14 +432,27 @@ app.get('/api/stats/goldenboot', async (req, res) => {
             if (!leagueId && candidates.length > 0) {
               leagueId = candidates[0].league?.id || candidates[0].id || null
             }
-            if (!leagueId) continue
+            if (!leagueId) {
+              console.log('/api/stats/goldenboot: no leagueId found from leagues search result')
+              continue
+            }
 
             // Query top scorers for World Cup 2026
-            const topsResp = await fetchWithTimeout(`https://v3.football.api-sports.io/players/topscorers?league=${leagueId}&season=2026`, { headers: { 'x-apisports-key': key } }, 10000)
-            if (!topsResp.ok) continue
+            const topsUrl = `https://v3.football.api-sports.io/players/topscorers?league=${leagueId}&season=2026`
+            console.log(`/api/stats/goldenboot: querying topscorers ${topsUrl} for leagueId=${leagueId}`)
+            const topsResp = await fetchWithTimeout(topsUrl, { headers: { 'x-apisports-key': key } }, 10000)
+            console.log(`/api/stats/goldenboot: topscorers response status ${topsResp.status}`)
+            if (!topsResp.ok) {
+              // capture body for debugging when non-200 (avoid printing keys)
+              try { const txt = await topsResp.text(); console.log('/api/stats/goldenboot: topscorers non-ok body snippet:', txt.slice(0,300)) } catch(e){}
+              continue
+            }
             const topsJson = await topsResp.json()
             const respArr = topsJson.response || topsJson.data || []
-            if (!Array.isArray(respArr) || respArr.length === 0) continue
+            console.log('/api/stats/goldenboot: topscorers response items', Array.isArray(respArr) ? respArr.length : 'not-array')
+            if (!Array.isArray(respArr) || respArr.length === 0) {
+              continue
+            }
 
             const raw = respArr
             const normalized = raw.map((item, idx) => {
