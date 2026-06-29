@@ -403,7 +403,83 @@ app.get('/api/stats/goldenboot', async (req, res) => {
       console.log(`/api/stats/goldenboot: fetched ${Array.isArray(json.scorers) ? json.scorers.length : 0} scorers from ${usedEndpoint} using key index ${usedKeyIdx}`)
     }
 
-    if (!success) throw new Error('All API keys/endpoints failed or returned no data')
+    if (!success) {
+      // Fallback: try api-football (api-sports) for World Cup top scorers specifically (limited scope)
+      const afKeysString = process.env.API_FOOTBALL_KEYS || process.env.API_FOOTBALL_KEY || process.env.FOOTBALL_API_KEYS || process.env.FOOTBALL_API_KEY || ''
+      const afKeys = afKeysString.split(',').map(k => k.trim()).filter(Boolean)
+      if (afKeys.length > 0) {
+        console.log('/api/stats/goldenboot: attempting api-football fallback for World Cup')
+        for (const key of afKeys) {
+          try {
+            // Find league id for World Cup (season 2026)
+            const leaguesResp = await fetchWithTimeout('https://v3.football.api-sports.io/leagues?search=World%20Cup', { headers: { 'x-apisports-key': key } }, 10000)
+            if (!leaguesResp.ok) continue
+            const leaguesJson = await leaguesResp.json()
+            const candidates = leaguesJson.response || leaguesJson.data || []
+            let leagueId = null
+            for (const item of candidates) {
+              const lname = (item.league && item.league.name) || item.name || ''
+              if (/world cup/i.test(lname)) {
+                // item.seasons may be an array of objects with 'season' or 'year'
+                const seasons = item.seasons || item.league?.seasons || []
+                const has2026 = seasons.some(s => String(s?.season || s?.year || s).includes('2026'))
+                if (has2026) {
+                  leagueId = item.league?.id || item.id
+                  break
+                }
+              }
+            }
+            if (!leagueId && candidates.length > 0) {
+              leagueId = candidates[0].league?.id || candidates[0].id || null
+            }
+            if (!leagueId) continue
+
+            // Query top scorers for World Cup 2026
+            const topsResp = await fetchWithTimeout(`https://v3.football.api-sports.io/players/topscorers?league=${leagueId}&season=2026`, { headers: { 'x-apisports-key': key } }, 10000)
+            if (!topsResp.ok) continue
+            const topsJson = await topsResp.json()
+            const respArr = topsJson.response || topsJson.data || []
+            if (!Array.isArray(respArr) || respArr.length === 0) continue
+
+            const raw = respArr
+            const normalized = raw.map((item, idx) => {
+              const player = item.player || item.player?.player || {}
+              const stats = (item.statistics && item.statistics[0]) || item.statistics || {}
+              const team = (stats.team || item.team || stats.club || {})
+              const goals = (stats.goals && (stats.goals.total ?? stats.goals)) || item.goals || 0
+              const assists = (stats.goals && (stats.goals.assists ?? 0)) || (stats.assists || 0)
+              const mins = (stats.games && stats.games.minutes) || item.minutes || 0
+              return {
+                rank: idx + 1,
+                name: player.name || `${player.firstname || ''} ${player.lastname || ''}`.trim() || item.name || 'Unknown',
+                playerId: player.id || player.player_id || null,
+                code: team.code || team.tla || '',
+                country: team.name || item.country || '',
+                logo: team.logo || team.photo || null,
+                goals: Number(goals || 0),
+                assists: Number(assists || 0),
+                mins: Number(mins || 0),
+                eliminated: false
+              }
+            })
+
+            normalized.sort((a,b) => {
+              if (b.goals !== a.goals) return b.goals - a.goals
+              if (b.assists !== a.assists) return b.assists - a.assists
+              return a.mins - b.mins
+            })
+
+            const final = normalized.map((r, i) => ({ ...r, rank: i + 1 }))
+            goldenBootCache = { data: final, timestamp: now }
+            console.log('/api/stats/goldenboot: returning aggregated api-football top scorers')
+            return res.json(final)
+          } catch (err) {
+            // try next key
+          }
+        }
+      }
+      throw new Error('All API keys/endpoints failed or returned no data')
+    }
 
     const raw = json.scorers || []
     const normalized = raw.map((s, idx) => {
