@@ -1,27 +1,44 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './index.css'
-import Today from './components/Today'
-import Bracket from './components/Bracket'
-import Predict from './components/Predict'
-import Teams from './components/Teams'
-import Groups from './components/Groups'
-import GoldenBoot from './components/GoldenBoot'
-import Tracker from './components/Tracker'
-import DreamXI from './components/DreamXI'
-import Profile from './components/Profile'
 import Account from './components/Account'
 import AnnouncementBar from './components/AnnouncementBar'
+import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 
 import { TEAMS } from './data/teams'
 import { PLAYERS } from './data/players'
 import { FlagComponent } from './components/shared'
+import { ALL_MATCHES_LIST } from './data/matches'
+
+// Lazy load large components
+const Today = lazy(() => import('./components/Today'))
+const Bracket = lazy(() => import('./components/Bracket'))
+const Predict = lazy(() => import('./components/Predict'))
+const Teams = lazy(() => import('./components/Teams'))
+const Groups = lazy(() => import('./components/Groups'))
+const GoldenBoot = lazy(() => import('./components/GoldenBoot'))
+const Tracker = lazy(() => import('./components/Tracker'))
+const DreamXI = lazy(() => import('./components/DreamXI'))
+const Profile = lazy(() => import('./components/Profile'))
 
 const SVG_ICONS = {
   search: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
       <circle cx="11" cy="11" r="8" />
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  ),
+  theme: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
     </svg>
   ),
   today: (
@@ -96,7 +113,8 @@ const TABS = [
   { id: 'golden-boot', label: 'GOLDEN BOOT' },
 ]
 
-export default function App() {
+function AppContent() {
+  const { theme, toggleTheme } = useTheme()
   const [currentUser, setCurrentUser] = useState(null)
   const [authChecking, setAuthChecking] = useState(true)
 
@@ -207,42 +225,63 @@ export default function App() {
   }, [])
 
   const renderTab = () => {
-    switch (activeTab) {
-      case 'today': 
-        return (
-          <Today 
-            onNavigateToTeam={viewTeamProfile} 
-            selectedMatchId={selectedMatchId} 
-            setSelectedMatchId={setSelectedMatchId} 
-            onGoalScored={handleGoalScored}
-          />
-        )
-      case 'tracker': 
-        return <Tracker onNavigateToTeam={viewTeamProfile} onGoToTeams={() => setActiveTab('teams')} />
-      case 'bracket': 
-        return <Bracket />
-      case 'predict': 
-        return <Predict />
-      case 'dream-xi': 
-        return <DreamXI />
-      case 'teams': 
-        return <Teams selectedTeamName={selectedTeamName} setSelectedTeamName={setSelectedTeamName} />
-      case 'groups': 
-        return <Groups onNavigateToTeam={viewTeamProfile} />
-      case 'golden-boot': 
-        return <GoldenBoot selectedPlayerName={selectedPlayerName} setSelectedPlayerName={setSelectedPlayerName} />
-      case 'profile':
-        return (
-          <Profile 
-            onNavigateToPredict={() => setActiveTab('predict')} 
-            currentUser={currentUser}
-            onLogout={() => setCurrentUser(null)}
-            onUpdateUser={(user) => setCurrentUser(user)}
-          />
-        )
-      default: 
-        return <Today onNavigateToTeam={viewTeamProfile} onGoalScored={handleGoalScored} />
-    }
+    const content = (() => {
+      switch (activeTab) {
+        case 'today': 
+          return (
+            <Today 
+              onNavigateToTeam={viewTeamProfile} 
+              selectedMatchId={selectedMatchId} 
+              setSelectedMatchId={setSelectedMatchId} 
+              onGoalScored={handleGoalScored}
+            />
+          )
+        case 'tracker': 
+          return <Tracker onNavigateToTeam={viewTeamProfile} onGoToTeams={() => setActiveTab('teams')} />
+        case 'bracket': 
+          return <Bracket />
+        case 'predict': 
+          return <Predict />
+        case 'dream-xi': 
+          return <DreamXI />
+        case 'teams': 
+          return <Teams selectedTeamName={selectedTeamName} setSelectedTeamName={setSelectedTeamName} />
+        case 'groups': 
+          return <Groups onNavigateToTeam={viewTeamProfile} />
+        case 'golden-boot': 
+          return <GoldenBoot selectedPlayerName={selectedPlayerName} setSelectedPlayerName={setSelectedPlayerName} />
+        case 'profile':
+          return (
+            <Profile 
+              onNavigateToPredict={() => setActiveTab('predict')} 
+              currentUser={currentUser}
+              onLogout={() => setCurrentUser(null)}
+              onUpdateUser={(user) => setCurrentUser(user)}
+            />
+          )
+        default: 
+          return <Today onNavigateToTeam={viewTeamProfile} onGoalScored={handleGoalScored} />
+      }
+    })()
+
+    return (
+      <Suspense fallback={
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          height: '100vh',
+          color: 'var(--text-3)',
+          fontSize: 13,
+          fontWeight: 600,
+          letterSpacing: '0.08em'
+        }}>
+          LOADING...
+        </div>
+      }>
+        {content}
+      </Suspense>
+    )
   }
 
   // Filter Search lists
@@ -256,26 +295,7 @@ export default function App() {
     p.team.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // Today matches + upcoming matches for search
-  const allMatchesList = [
-    { id: 'bra-jpn', teamA: 'Brazil', teamB: 'Japan', status: 'LIVE', time: '12:00' },
-    { id: 'ger-par', teamA: 'Germany', teamB: 'Paraguay', status: 'PRE', time: '16:30' },
-    { id: 'ned-mar', teamA: 'Netherlands', teamB: 'Morocco', status: 'PRE', time: '21:00' },
-    { id: 'civ-nor', teamA: 'Ivory Coast', teamB: 'Norway', status: 'PRE', time: '17:00' },
-    { id: 'fra-swe', teamA: 'France', teamB: 'Sweden', status: 'PRE', time: '21:00' },
-    { id: 'mex-ecu', teamA: 'Mexico', teamB: 'Ecuador', status: 'PRE', time: '01:00' },
-    { id: 'eng-cod', teamA: 'England', teamB: 'DR Congo', status: 'PRE', time: '12:00' },
-    { id: 'bel-sen', teamA: 'Belgium', teamB: 'Senegal', status: 'PRE', time: '16:00' },
-    { id: 'usa-bih', teamA: 'USA', teamB: 'Bosnia and Herzegovina', status: 'PRE', time: '20:00' },
-    { id: 'esp-aut', teamA: 'Spain', teamB: 'Austria', status: 'PRE', time: '15:00' },
-    { id: 'por-cro', teamA: 'Portugal', teamB: 'Croatia', status: 'PRE', time: '19:00' },
-    { id: 'sui-alg', teamA: 'Switzerland', teamB: 'Algeria', status: 'PRE', time: '23:00' },
-    { id: 'aus-egy', teamA: 'Australia', teamB: 'Egypt', status: 'PRE', time: '14:00' },
-    { id: 'arg-cpv', teamA: 'Argentina', teamB: 'Cape Verde', status: 'PRE', time: '18:00' },
-    { id: 'col-gha', teamA: 'Colombia', teamB: 'Ghana', status: 'PRE', time: '21:30' }
-  ]
-
-  const matchingMatches = searchQuery.trim() === '' ? [] : allMatchesList.filter(m =>
+  const matchingMatches = searchQuery.trim() === '' ? [] : ALL_MATCHES_LIST.filter(m =>
     m.teamA.toLowerCase().includes(searchQuery.toLowerCase()) ||
     m.teamB.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -333,8 +353,20 @@ export default function App() {
           onClick={() => setIsSearchOpen(true)}
           data-label="SEARCH"
           style={{ marginBottom: 12 }}
+          aria-label="Open search"
         >
           {SVG_ICONS.search}
+        </button>
+
+        {/* Theme Toggle Button */}
+        <button 
+          className="sidebar-tab"
+          onClick={toggleTheme}
+          data-label="THEME"
+          style={{ marginBottom: 12 }}
+          aria-label="Toggle theme"
+        >
+          {SVG_ICONS.theme}
         </button>
 
         {/* Navigation list */}
@@ -366,6 +398,7 @@ export default function App() {
             }}
             data-label="PROFILE"
             style={{ marginTop: 'auto' }}
+            aria-label="Profile"
           >
             {SVG_ICONS.profile}
           </button>
@@ -392,6 +425,7 @@ export default function App() {
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div 
+            className="search-overlay"
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             animate={{ opacity: 1, backdropFilter: 'blur(16px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
@@ -423,6 +457,7 @@ export default function App() {
           >
             <input 
               ref={searchInputRef}
+              className="search-input"
               type="text"
               placeholder="SEARCH TEAMS, PLAYERS, MATCHES..."
               value={searchQuery}
@@ -602,6 +637,7 @@ export default function App() {
 
       {/* NEOBRUTALIST TOAST NOTIFICATION CONTAINER (NOW SMOOTH) */}
       <div 
+        className="toast-container"
         style={{ 
           position: 'fixed', 
           top: 20, 
@@ -661,5 +697,13 @@ export default function App() {
       </div>
     </div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   )
 }

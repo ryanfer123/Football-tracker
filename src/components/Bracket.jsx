@@ -1,30 +1,7 @@
 import { useState } from 'react'
 import { FlagComponent } from './shared'
 import { TEAMS } from '../data/teams'
-
-const ODDS = {
-  'France': 18, 'Brazil': 15, 'Argentina': 15, 'Germany': 10, 'Portugal': 8,
-  'England': 8, 'Spain': 8, 'Netherlands': 6, 'Belgium': 5, 'Croatia': 4, 'USA': 3
-}
-
-const INITIAL_R32 = [
-  { teamA: 'Canada', teamB: 'South Africa', winner: 'Canada', completed: true },
-  { teamA: 'Brazil', teamB: 'Japan', winner: null, completed: false },
-  { teamA: 'Germany', teamB: 'Paraguay', winner: null, completed: false },
-  { teamA: 'Netherlands', teamB: 'Morocco', winner: null, completed: false },
-  { teamA: 'Ivory Coast', teamB: 'Norway', winner: null, completed: false },
-  { teamA: 'France', teamB: 'Sweden', winner: null, completed: false },
-  { teamA: 'Mexico', teamB: 'Ecuador', winner: null, completed: false },
-  { teamA: 'England', teamB: 'DR Congo', winner: null, completed: false },
-  { teamA: 'Belgium', teamB: 'Senegal', winner: null, completed: false },
-  { teamA: 'USA', teamB: 'Bosnia & Herz.', winner: null, completed: false },
-  { teamA: 'Spain', teamB: 'Austria', winner: null, completed: false },
-  { teamA: 'Portugal', teamB: 'Croatia', winner: null, completed: false },
-  { teamA: 'Switzerland', teamB: 'Algeria', winner: null, completed: false },
-  { teamA: 'Australia', teamB: 'Egypt', winner: null, completed: false },
-  { teamA: 'Argentina', teamB: 'Cape Verde', winner: null, completed: false },
-  { teamA: 'Colombia', teamB: 'Ghana', winner: null, completed: false }
-]
+import { ODDS, INITIAL_R32 } from '../data/odds'
 
 function getWinner(teamA, teamB) {
   const oddA = ODDS[teamA] || 1

@@ -23,6 +23,22 @@
   --radius-lg:     24px;
 }
 
+[data-theme="light"] {
+  --bg:          #F5F5F7;
+  --surface:     #FFFFFF;
+  --surface-2:   #F0F0F2;
+  --border:      #E0E0E2;
+  --border-2:    #D0D0D2;
+  --text-1:      #1D1D1F;
+  --text-2:      #6E6E73;
+  --text-3:      #86868B;
+  --accent:      #00C853;
+  --accent-dim:  #00A843;
+  --shadow-accent: 0 8px 32px rgba(0, 200, 83, 0.2);
+  --shadow-white:  0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-dim:    0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
@@ -41,13 +57,14 @@
 
 body {
   background: var(--bg);
-  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(128, 128, 128, 0.1) 1px, transparent 1px);
   background-size: 24px 24px;
   color: var(--text-1);
   font-family: 'Inter', -apple-system, sans-serif;
   overflow: hidden;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6, .outfit-font {
@@ -549,20 +566,26 @@ button, input, select {
 @media (max-width: 768px) {
   .app {
     flex-direction: column-reverse; /* Sidebar at the bottom */
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .sidebar {
     width: 100%;
     min-width: 100%;
-    height: 60px;
+    height: calc(64px + env(safe-area-inset-bottom));
     flex-direction: row;
-    padding: 0 12px;
+    padding: 0 8px;
+    padding-bottom: env(safe-area-inset-bottom);
     border-right: none;
     border-top: 1px solid var(--border);
     overflow-x: auto;
     overflow-y: hidden;
-    gap: 12px;
-    justify-content: flex-start;
+    gap: 4px;
+    justify-content: space-around;
+    background: var(--surface);
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
   }
 
   .sidebar-logo {
@@ -571,23 +594,51 @@ button, input, select {
 
   .sidebar-tab {
     flex-shrink: 0;
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.2s ease;
   }
-  
+
   .sidebar-tab::after {
     display: none; /* Hide tooltips on mobile */
   }
 
+  .sidebar-tab.active {
+    background: rgba(212, 255, 38, 0.15);
+    color: var(--accent);
+    transform: scale(1.05);
+  }
+
+  .sidebar-tab.active::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .sidebar-tab:hover {
+    background: var(--surface-2);
+    transform: scale(1.02);
+  }
+
   .main-content {
     padding: 16px;
-    padding-bottom: 24px;
+    padding-bottom: 80px;
+    padding-top: calc(16px + env(safe-area-inset-top));
   }
 
   /* Table responsiveness */
   .table-container {
     overflow-x: auto;
     width: 100%;
+    -webkit-overflow-scrolling: touch;
   }
 
   .responsive-flex {
@@ -598,6 +649,72 @@ button, input, select {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 16px !important;
+  }
+
+  /* Toast notifications - center on mobile */
+  .toast-container {
+    top: auto !important;
+    bottom: 80px !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+    left: auto !important;
+    width: 90% !important;
+    max-width: 320px !important;
+  }
+
+  /* Search overlay - full screen on mobile */
+  .search-overlay {
+    padding: 0 !important;
+  }
+
+  .search-input {
+    font-size: 16px !important; /* Prevent iOS zoom */
+  }
+
+  /* Announcement bar - smaller text on mobile */
+  .announcement-bar {
+    font-size: 10px !important;
+  }
+
+  /* Today component mobile fixes */
+  .match-card {
+    margin-bottom: 12px;
+  }
+
+  .score-text {
+    font-size: 48px !important;
+  }
+
+  .upcoming-row {
+    padding: 0 8px !important;
+  }
+
+  /* Shot map responsive */
+  .shot-map-container {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 400/280;
+  }
+
+  /* Stats table on mobile */
+  .stats-row {
+    flex-wrap: wrap !important;
+  }
+
+  .stats-row span {
+    font-size: 11px !important;
+  }
+
+  /* H2H section on mobile */
+  .h2h-section {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Form guide on mobile */
+  .form-guide {
+    flex-direction: column !important;
+    gap: 8px !important;
   }
 }
 

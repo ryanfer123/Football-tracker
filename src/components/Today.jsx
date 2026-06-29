@@ -1,141 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { FlagComponent } from './shared'
 import CountdownTimer from './CountdownTimer'
-
-const FALLBACK_TODAY = [
-  {
-    id: 'bra-jpn',
-    teamA: 'Brazil',
-    teamB: 'Japan',
-    scoreA: 0,
-    scoreB: 0,
-    status: 'PRE',
-    minute: "0'",
-    time: '22:30',
-    venue: 'NRG Stadium',
-    city: 'Houston',
-    date: 'JUNE 29, 2026'
-  },
-  {
-    id: 'ger-par',
-    teamA: 'Germany',
-    teamB: 'Paraguay',
-    scoreA: 0,
-    scoreB: 0,
-    status: 'PRE',
-    time: '02:00',
-    venue: 'Gillette Stadium',
-    city: 'Boston',
-    date: 'JUNE 29, 2026'
-  },
-  {
-    id: 'ned-mar',
-    teamA: 'Netherlands',
-    teamB: 'Morocco',
-    scoreA: 0,
-    scoreB: 0,
-    status: 'PRE',
-    time: '06:30',
-    venue: 'Estadio BBVA',
-    city: 'Monterrey',
-    date: 'JUNE 29, 2026'
-  }
-]
-
-const UPCOMING_FIXTURES = [
-  {
-    date: 'JUN 30',
-    matches: [
-      { id: 'civ-nor', teamA: 'Ivory Coast', teamB: 'Norway', time: '02:30', venue: 'Dallas', city: 'Dallas', date: 'JUNE 30, 2026' },
-      { id: 'fra-swe', teamA: 'France', teamB: 'Sweden', time: '06:30', venue: 'MetLife NJ', city: 'East Rutherford', date: 'JUNE 30, 2026' },
-      { id: 'mex-ecu', teamA: 'Mexico', teamB: 'Ecuador', time: '10:30', venue: 'Azteca', city: 'Mexico City', date: 'JUNE 30, 2026' }
-    ]
-  },
-  {
-    date: 'JUL 1',
-    matches: [
-      { id: 'eng-cod', teamA: 'England', teamB: 'DR Congo', time: '21:30', venue: 'Atlanta', city: 'Atlanta', date: 'JULY 01, 2026' },
-      { id: 'bel-sen', teamA: 'Belgium', teamB: 'Senegal', time: '02:00', venue: 'Seattle', city: 'Seattle', date: 'JULY 01, 2026' },
-      { id: 'usa-bih', teamA: 'USA', teamB: 'Bosnia and Herzegovina', time: '05:30', venue: 'SF Bay', city: 'Santa Clara', date: 'JULY 01, 2026' }
-    ]
-  },
-  {
-    date: 'JUL 2',
-    matches: [
-      { id: 'esp-aut', teamA: 'Spain', teamB: 'Austria', time: '00:30', venue: 'LA', city: 'Los Angeles', date: 'JULY 02, 2026' },
-      { id: 'por-cro', teamA: 'Portugal', teamB: 'Croatia', time: '04:30', venue: 'Toronto', city: 'Toronto', date: 'JULY 02, 2026' },
-      { id: 'sui-alg', teamA: 'Switzerland', teamB: 'Algeria', time: '08:30', venue: 'Vancouver', city: 'Vancouver', date: 'JULY 02, 2026' }
-    ]
-  },
-  {
-    date: 'JUL 3',
-    matches: [
-      { id: 'aus-egy', teamA: 'Australia', teamB: 'Egypt', time: '23:30', venue: 'Dallas', city: 'Dallas', date: 'JULY 03, 2026' },
-      { id: 'arg-cpv', teamA: 'Argentina', teamB: 'Cape Verde', time: '03:30', venue: 'Miami', city: 'Miami', date: 'JULY 03, 2026' },
-      { id: 'col-gha', teamA: 'Colombia', teamB: 'Ghana', time: '07:00', venue: 'Kansas City', city: 'Kansas City', date: 'JULY 03, 2026' }
-    ]
-  }
-]
-
-const DETAIL_DATA = {
-  Brazil: {
-    wins: 10, draws: 2, vsWins: 0,
-    form: ['W', 'W', 'W', 'D', 'W'],
-    players: [
-      { name: 'Vinicius Jr', pos: 'FWD', stats: '2G 2A' },
-      { name: 'Rodrygo', pos: 'FWD', stats: '2G 1A' }
-    ],
-    pred: 'BRAZIL WIN · 2-0 · CONFIDENCE: ',
-    confidence: 'HIGH',
-    prob: [64, 18, 18]
-  },
-  Japan: {
-    wins: 0, draws: 2, vsWins: 10,
-    form: ['W', 'L', 'W', 'W', 'D'],
-    players: [
-      { name: 'Kubo', pos: 'FWD', stats: '1G 1A' },
-      { name: 'Endo', pos: 'MID', stats: '0G 2A' }
-    ]
-  },
-  Germany: {
-    wins: 4, draws: 2, vsWins: 1,
-    form: ['W', 'W', 'D', 'W', 'W'],
-    players: [
-      { name: 'Musiala', pos: 'MID', stats: '2G 1A' },
-      { name: 'Wirtz', pos: 'MID', stats: '1G 2A' }
-    ],
-    pred: 'GERMANY WIN · 3-1 · CONFIDENCE: ',
-    confidence: 'MED',
-    prob: [52, 28, 20]
-  },
-  Paraguay: {
-    wins: 1, draws: 2, vsWins: 4,
-    form: ['L', 'W', 'D', 'L', 'W'],
-    players: [
-      { name: 'Sanchez', pos: 'FWD', stats: '2G 0A' },
-      { name: 'Alonso', pos: 'MID', stats: '0G 1A' }
-    ]
-  },
-  Netherlands: {
-    wins: 2, draws: 1, vsWins: 1,
-    form: ['W', 'W', 'W', 'D', 'W'],
-    players: [
-      { name: 'Gakpo', pos: 'FWD', stats: '2G 1A' },
-      { name: 'De Jong', pos: 'MID', stats: '0G 2A' }
-    ],
-    pred: 'NETHERLANDS WIN · 2-1 · CONFIDENCE: ',
-    confidence: 'LOW',
-    prob: [38, 34, 28]
-  },
-  Morocco: {
-    wins: 1, draws: 1, vsWins: 2,
-    form: ['W', 'D', 'W', 'W', 'L'],
-    players: [
-      { name: 'Ziyech', pos: 'FWD', stats: '1G 2A' },
-      { name: 'Amrabat', pos: 'MID', stats: '0G 1A' }
-    ]
-  }
-}
+import { FALLBACK_TODAY, UPCOMING_FIXTURES, DETAIL_DATA } from '../data/matches'
 
 const getMatchDetails = (teamA, teamB) => {
   const dataA = DETAIL_DATA[teamA]
@@ -222,7 +88,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
       }}
     >
       {/* ROW 1: HEAD TO HEAD & OFFICIAL LOGOS */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '12px 20px', borderBottom: '1px solid var(--border)' }}>
+      <div className="h2h-section" style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '12px 20px', borderBottom: '1px solid var(--border)' }}>
         <div className="text-xs" style={{ color: 'var(--text-3)', width: 32, flexShrink: 0 }}>H2H</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -263,7 +129,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
       </div>
 
       {/* ROW 2: FORM GUIDE */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 20px 12px', borderBottom: '1px solid var(--border)' }}>
+      <div className="form-guide" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 20px 12px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={() => onNavigateToTeam(match.teamA)}>
             <FlagComponent teamName={match.teamA} logoUrl={match.logoA} size="small" />
@@ -477,6 +343,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
               <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>SHOT MAP</div>
               
               <div 
+                className="shot-map-container"
                 style={{
                   width: 400,
                   height: 280,

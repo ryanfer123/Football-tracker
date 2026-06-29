@@ -2,24 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FlagComponent, predictMatch } from './shared'
 import { TEAMS } from '../data/teams'
-
-const TOURNAMENT_ODDS_DATA = [
-  { rank: '01', team: 'France', odds: 18 },
-  { rank: '02', team: 'Brazil', odds: 15 },
-  { rank: '03', team: 'Argentina', odds: 15 },
-  { rank: '04', team: 'Germany', odds: 10 },
-  { rank: '05', team: 'Portugal', odds: 8 },
-  { rank: '06', team: 'England', odds: 8 },
-  { rank: '07', team: 'Spain', odds: 8 },
-  { rank: '08', team: 'Netherlands', odds: 6 },
-  { rank: '09', team: 'Belgium', odds: 5 },
-  { rank: '10', team: 'Croatia', odds: 4 },
-  { rank: '11', team: 'USA', odds: 3 },
-  { rank: '12', team: 'Uruguay', odds: 2 },
-  { rank: '13', team: 'Morocco', odds: 2 },
-  { rank: '14', team: 'Senegal', odds: 1 },
-  { rank: '15', team: 'Japan', odds: 1 }
-]
+import { TOURNAMENT_ODDS_DATA } from '../data/odds'
 
 const getH2HHistory = (teamA, teamB) => {
   const isBraJap = (teamA === 'Brazil' && teamB === 'Japan') || (teamA === 'Japan' && teamB === 'Brazil')

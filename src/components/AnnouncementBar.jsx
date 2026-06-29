@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 export default function AnnouncementBar() {
   return (
     <div 
+      className="announcement-bar"
       style={{
         background: 'var(--accent)',
         color: '#1A1F00',
