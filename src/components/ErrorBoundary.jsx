@@ -39,7 +39,7 @@ class ErrorBoundary extends Component {
             fontSize: '24px',
             fontWeight: '800',
             marginBottom: '12px',
-            fontFamily: 'Outfit, sans-serif'
+            fontFamily: 'Syne, sans-serif'
           }}>
             SOMETHING WENT WRONG
           </h2>
@@ -61,7 +61,7 @@ class ErrorBoundary extends Component {
               borderRadius: '8px',
               fontSize: '13px',
               fontWeight: '700',
-              fontFamily: 'Outfit, sans-serif',
+              fontFamily: 'Space Grotesk, sans-serif',
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               cursor: 'pointer',

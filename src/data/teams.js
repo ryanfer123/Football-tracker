@@ -7,6 +7,7 @@ export const TEAMS = {
     flagColors: ['#009C3B', '#FFDF00', '#002776'],
     ranking: 3, titles: 5, titleYears: [1958, 1962, 1970, 1994, 2002],
     status: 'IN', coach: 'Dorival Júnior',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/uvxvpp1448818216.png',
     wcHistory: {
       1930: 'GROUP', 1934: 'R1', 1938: 'SF', 1950: 'FINAL', 1954: 'QF',
       1958: 'WON', 1962: 'WON', 1966: 'GROUP', 1970: 'WON', 1974: 'R2',
@@ -38,6 +39,7 @@ export const TEAMS = {
     flagColors: ['#000000', '#DD0000', '#FFCC00'],
     ranking: 8, titles: 4, titleYears: [1954, 1974, 1990, 2014],
     status: 'IN', coach: 'Julian Nagelsmann',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yrtrnw1448818219.png',
     wcHistory: {
       1930: 'DNQ', 1934: 'SF', 1938: 'R1', 1950: 'DNQ', 1954: 'WON',
       1958: 'SF', 1962: 'QF', 1966: 'FINAL', 1970: 'SF', 1974: 'WON',
@@ -69,6 +71,7 @@ export const TEAMS = {
     flagColors: ['#002395', '#FFFFFF', '#ED2939'],
     ranking: 2, titles: 2, titleYears: [1998, 2018],
     status: 'IN', coach: 'Didier Deschamps',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/ywxvye1448818220.png',
     wcHistory: {
       1930: 'GROUP', 1934: 'R1', 1938: 'QF', 1950: 'DNQ', 1954: 'GROUP',
       1958: 'SF', 1962: 'DNQ', 1966: 'GROUP', 1970: 'DNQ', 1974: 'DNQ',
@@ -100,6 +103,7 @@ export const TEAMS = {
     flagColors: ['#74ACDF', '#FFFFFF', '#F6B40E'],
     ranking: 1, titles: 3, titleYears: [1978, 1986, 2022],
     status: 'IN', coach: 'Lionel Scaloni',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xtrwpy1448818234.png',
     wcHistory: {
       1930: 'FINAL', 1934: 'R1', 1938: 'DNQ', 1950: 'DNQ', 1954: 'DNQ',
       1958: 'GROUP', 1962: 'GROUP', 1966: 'QF', 1970: 'DNQ', 1974: 'R2',
@@ -131,6 +135,7 @@ export const TEAMS = {
     flagColors: ['#AA151B', '#F1BF00', '#AA151B'],
     ranking: 5, titles: 1, titleYears: [2010],
     status: 'IN', coach: 'Luis de la Fuente',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/uvxvpp1448818216.png',
     wcHistory: {
       1930: 'DNQ', 1934: 'QF', 1938: 'DNQ', 1950: 'R2', 1954: 'DNQ',
       1958: 'DNQ', 1962: 'GROUP', 1966: 'GROUP', 1970: 'DNQ', 1974: 'DNQ',
@@ -162,6 +167,7 @@ export const TEAMS = {
     flagColors: ['#FFFFFF', '#CE1124', '#FFFFFF'],
     ranking: 4, titles: 1, titleYears: [1966],
     status: 'IN', coach: 'Thomas Tuchel',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xpwpur1448818226.png',
     wcHistory: {
       1930: 'DNQ', 1934: 'DNQ', 1938: 'DNQ', 1950: 'GROUP', 1954: 'QF',
       1958: 'GROUP', 1962: 'QF', 1966: 'WON', 1970: 'QF', 1974: 'DNQ',
@@ -193,6 +199,7 @@ export const TEAMS = {
     flagColors: ['#AE1C28', '#FFFFFF', '#21468B'],
     ranking: 6, titles: 0, titleYears: [],
     status: 'IN', coach: 'Ronald Koeman',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: {
       1930: 'DNQ', 1934: 'R1', 1938: 'R1', 1950: 'DNQ', 1954: 'DNQ',
       1958: 'DNQ', 1962: 'DNQ', 1966: 'DNQ', 1970: 'DNQ', 1974: 'FINAL',
@@ -224,6 +231,7 @@ export const TEAMS = {
     flagColors: ['#006600', '#FF0000', '#FFCC00'],
     ranking: 7, titles: 0, titleYears: [],
     status: 'IN', coach: 'Roberto Martínez',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/uvxvpp1448818216.png',
     wcHistory: {
       1930: 'DNQ', 1934: 'DNQ', 1938: 'DNQ', 1950: 'DNQ', 1954: 'DNQ',
       1958: 'DNQ', 1962: 'DNQ', 1966: 'SF', 1970: 'DNQ', 1974: 'DNQ',
@@ -256,6 +264,7 @@ export const TEAMS = {
     flagColors: ['#FF0000', '#FFFFFF', '#FF0000'],
     ranking: 33, titles: 0, titleYears: [],
     status: 'IN', coach: 'Jesse Marsch',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 1986: 'GROUP', 2022: 'GROUP', 2026: 'R32' },
     formation: '4-4-2',
     squad: {
@@ -280,6 +289,7 @@ export const TEAMS = {
     flagColors: ['#FFFFFF', '#BC002D', '#FFFFFF'],
     ranking: 15, titles: 0, titleYears: [],
     status: 'IN', coach: 'Hajime Moriyasu',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/uvxvpp1448818216.png',
     wcHistory: { 1998: 'GROUP', 2002: 'R16', 2006: 'GROUP', 2010: 'R16', 2014: 'GROUP', 2018: 'R16', 2022: 'R16', 2026: 'R32' },
     formation: '4-2-3-1',
     squad: {
@@ -304,6 +314,7 @@ export const TEAMS = {
     flagColors: ['#006847', '#FFFFFF', '#CE1126'],
     ranking: 12, titles: 0, titleYears: [],
     status: 'IN', coach: 'Javier Aguirre',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 1930: 'GROUP', 1950: 'GROUP', 1954: 'GROUP', 1958: 'GROUP', 1962: 'GROUP', 1966: 'GROUP', 1970: 'QF', 1978: 'GROUP', 1986: 'QF', 1994: 'R16', 1998: 'R16', 2002: 'R16', 2006: 'R16', 2010: 'R16', 2014: 'R16', 2018: 'R16', 2022: 'GROUP', 2026: 'R32' },
     formation: '4-3-3',
     squad: {
@@ -328,6 +339,7 @@ export const TEAMS = {
     flagColors: ['#B31942', '#FFFFFF', '#0A3161'],
     ranking: 11, titles: 0, titleYears: [],
     status: 'IN', coach: 'Mauricio Pochettino',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/uvxvpp1448818216.png',
     wcHistory: { 1930: 'SF', 1934: 'R1', 1950: 'GROUP', 1990: 'GROUP', 1994: 'R16', 1998: 'GROUP', 2002: 'QF', 2006: 'GROUP', 2010: 'R16', 2014: 'R16', 2022: 'R16', 2026: 'R32' },
     formation: '4-3-3',
     squad: {
@@ -352,6 +364,7 @@ export const TEAMS = {
     flagColors: ['#C1272D', '#006233', '#C1272D'],
     ranking: 10, titles: 0, titleYears: [],
     status: 'IN', coach: 'Walid Regragui',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 1970: 'GROUP', 1986: 'R16', 1994: 'GROUP', 1998: 'GROUP', 2018: 'GROUP', 2022: 'SF', 2026: 'R32' },
     formation: '4-3-3',
     squad: {
@@ -376,6 +389,7 @@ export const TEAMS = {
     flagColors: ['#000000', '#FAE042', '#ED2939'],
     ranking: 9, titles: 0, titleYears: [],
     status: 'IN', coach: 'Domenico Tedesco',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xpwpur1448818226.png',
     wcHistory: { 1930: 'GROUP', 1934: 'R1', 1938: 'R1', 1954: 'GROUP', 1970: 'GROUP', 1982: 'R2', 1986: 'SF', 1990: 'R16', 1994: 'R16', 1998: 'GROUP', 2002: 'R16', 2014: 'QF', 2018: 'SF', 2022: 'GROUP', 2026: 'R32' },
     formation: '4-3-3',
     squad: {
@@ -400,6 +414,7 @@ export const TEAMS = {
     flagColors: ['#007A4D', '#FFB612', '#DE3831'],
     ranking: 58, titles: 0, titleYears: [],
     status: 'OUT', coach: 'Hugo Broos',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 1998: 'GROUP', 2002: 'GROUP', 2010: 'GROUP', 2026: 'R32' },
     formation: '4-4-2',
     squad: { GK: ['Ronwen Williams'], DEF: ['S. Xulu', 'G. Mphahlele', 'S. Hlatshwayo', 'R. Zungu'], MID: ['T. Mokoena', 'R. Mokwena', 'P. Tau', 'K. Billiat'], FW: ['L. Mothiba', 'P. Shalulile'] },
@@ -420,6 +435,7 @@ export const TEAMS = {
     flagColors: ['#D52B1E', '#FFFFFF', '#0038A8'],
     ranking: 42, titles: 0, titleYears: [],
     status: 'IN', coach: 'Alfredo Moreno',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xpwpur1448818226.png',
     wcHistory: { 1930: 'GROUP', 1950: 'GROUP', 1958: 'GROUP', 1986: 'R16', 1998: 'R16', 2002: 'R16', 2006: 'R16', 2010: 'QF', 2026: 'R32' },
     formation: '4-4-2',
     squad: { GK: ['Antony Silva'], DEF: ['G. Gómez', 'F. Balbuena', 'J. Alonso', 'R. Rojas'], MID: ['M. Almirón', 'Á. Romero', 'M. Villasanti', 'H. Velázquez'], FW: ['A. Enciso', 'J. Arce'] },
@@ -440,6 +456,7 @@ export const TEAMS = {
     flagColors: ['#FF8200', '#FFFFFF', '#009A44'],
     ranking: 38, titles: 0, titleYears: [],
     status: 'IN', coach: 'Emerse Faé',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 2006: 'GROUP', 2010: 'GROUP', 2014: 'GROUP', 2026: 'R32' },
     formation: '4-3-3',
     squad: { GK: ['Y. Fofana'], DEF: ['S. Aurier', 'W. Boly', 'O. Deli', 'G. Konan'], MID: ['F. Kessié', 'S. Fofana', 'I. Sangaré'], FW: ['N. Pépé', 'S. Haller', 'S. Aké'] },
@@ -460,6 +477,7 @@ export const TEAMS = {
     flagColors: ['#EF2B2D', '#FFFFFF', '#002868'],
     ranking: 25, titles: 0, titleYears: [],
     status: 'IN', coach: 'Ståle Solbakken',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xpwpur1448818226.png',
     wcHistory: { 1938: 'R1', 1994: 'GROUP', 1998: 'R16', 2026: 'R32' },
     formation: '4-3-3',
     squad: { GK: ['Ørjan Nyland'], DEF: ['K. Ajer', 'L. Ostigard', 'A. Hanche-Olsen', 'B. Meling'], MID: ['M. Ødegaard', 'S. Berge', 'F. Aursnes'], FW: ['E. Haaland', 'A. Sørloth', 'O. Bobb'] },
@@ -480,6 +498,7 @@ export const TEAMS = {
     flagColors: ['#006AA7', '#FECC00', '#006AA7'],
     ranking: 20, titles: 0, titleYears: [],
     status: 'IN', coach: 'Jon Dahl Tomasson',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xpwpur1448818226.png',
     wcHistory: { 1934: 'QF', 1938: 'SF', 1950: 'SF', 1958: 'FINAL', 1970: 'GROUP', 1974: 'R2', 1978: 'GROUP', 1990: 'GROUP', 1994: 'SF', 2002: 'R16', 2006: 'R16', 2018: 'QF', 2026: 'R32' },
     formation: '4-4-2',
     squad: { GK: ['Robin Olsen'], DEF: ['E. Krafth', 'V. Lindelöf', 'I. Hien', 'L. Augustinsson'], MID: ['A. Isak', 'J. Forsberg', 'D. Kulusevski', 'H. Larsson'], FW: ['A. Isak', 'V. Gyökeres'] },
@@ -500,6 +519,7 @@ export const TEAMS = {
     flagColors: ['#FFD100', '#003DA5', '#CE1126'],
     ranking: 28, titles: 0, titleYears: [],
     status: 'IN', coach: 'Sebastián Beccacece',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 2002: 'GROUP', 2006: 'R16', 2014: 'GROUP', 2022: 'GROUP', 2026: 'R32' },
     formation: '4-3-3',
     squad: { GK: ['H. Galíndez'], DEF: ['A. Preciado', 'P. Hincapié', 'X. Arreaga', 'P. Estupiñán'], MID: ['M. Caicedo', 'C. Gruezo', 'J. Cifuentes'], FW: ['G. Plata', 'E. Valencia', 'K. Rodríguez'] },
@@ -520,6 +540,7 @@ export const TEAMS = {
     flagColors: ['#007FFF', '#CE1021', '#F7D618'],
     ranking: 52, titles: 0, titleYears: [],
     status: 'IN', coach: 'Sébastien Desabre',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 1974: 'GROUP', 2026: 'R32' },
     formation: '4-4-2',
     squad: { GK: ['L. Matampi'], DEF: ['C. Luyindama', 'A. Mbemba', 'D. Bope', 'A. Mabiala'], MID: ['Y. Kakuta', 'G. Bakambu', 'C. Mulumba', 'S. Bastien'], FW: ['C. Bakambu', 'S. Wissa'] },
@@ -540,6 +561,7 @@ export const TEAMS = {
     flagColors: ['#00853F', '#FDEF42', '#E31B23'],
     ranking: 18, titles: 0, titleYears: [],
     status: 'IN', coach: 'Aliou Cissé',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/yvwvur1448818227.png',
     wcHistory: { 2002: 'QF', 2018: 'GROUP', 2022: 'R16', 2026: 'R32' },
     formation: '4-3-3',
     squad: { GK: ['É. Mendy'], DEF: ['K. Koulibaly', 'A. Diallo', 'Y. Sabaly', 'F. Mendy'], MID: ['I. Gueye', 'N. Mendy', 'P. Gueye'], FW: ['S. Mané', 'I. Sarr', 'N. Jackson'] },
@@ -560,6 +582,7 @@ export const TEAMS = {
     flagColors: ['#002395', '#FECB00', '#002395'],
     ranking: 45, titles: 0, titleYears: [],
     status: 'IN', coach: 'Sergej Barbarez',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xpwpur1448818226.png',
     wcHistory: { 2014: 'GROUP', 2026: 'R32' },
     formation: '4-2-3-1',
     squad: { GK: ['N. Vasilj'], DEF: ['S. Kolašinac', 'E. Ahmedhodžić', 'D. Šaranović', 'A. Mujkić'], MID: ['M. Pjanić', 'A. Bešić', 'E. Višća', 'A. Hajradinović', 'B. Krunić'], FW: ['E. Džeko'] },
@@ -580,6 +603,7 @@ export const TEAMS = {
     flagColors: ['#ED2939', '#FFFFFF', '#ED2939'],
     ranking: 22, titles: 0, titleYears: [],
     status: 'IN', coach: 'Ralf Rangnick',
+    logoUrl: 'https://www.thesportsdb.com/images/media/team/logo/xpwpur1448818226.png',
     wcHistory: { 1934: 'SF', 1954: 'SF', 1958: 'GROUP', 1978: 'R2', 1982: 'R2', 1990: 'GROUP', 1998: 'GROUP', 2026: 'R32' },
     formation: '4-2-3-1',
     squad: { GK: ['P. Pentz'], DEF: ['S. Posch', 'K. Danso', 'P. Lienhart', 'D. Alaba'], MID: ['K. Laimer', 'N. Seiwald', 'M. Sabitzer', 'C. Baumgartner', 'P. Wimmer'], FW: ['M. Arnautović'] },

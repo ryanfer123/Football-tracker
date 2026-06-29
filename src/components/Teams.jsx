@@ -225,7 +225,7 @@ export default function Teams({ selectedTeamName, setSelectedTeamName }) {
         </button>
 
         {/* Header Row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+        <div className="team-detail" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
           <FlagComponent teamName={selectedTeam} size="large" style={{ width: 64, height: 42 }} />
           <div>
             <h1 style={{ fontSize: 32, fontWeight: 900, color: 'var(--text-1)', textTransform: 'uppercase', lineHeight: 1 }}>
@@ -368,7 +368,7 @@ export default function Teams({ selectedTeamName, setSelectedTeamName }) {
           <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
             WC 2026 PATH
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflowX: 'auto', paddingBottom: 8 }}>
+          <div className="tournament-path" style={{ display: 'flex', alignItems: 'center', gap: 6, overflowX: 'auto', paddingBottom: 8 }}>
             {path.map((step, idx) => {
               let chipBorder = '1px solid var(--border)'
               let scoreColor = 'var(--text-1)'
@@ -419,7 +419,8 @@ export default function Teams({ selectedTeamName, setSelectedTeamName }) {
           <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
             TOURNAMENT STATS
           </div>
-          <div 
+          <div
+            className="team-stats"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
@@ -512,7 +513,8 @@ export default function Teams({ selectedTeamName, setSelectedTeamName }) {
       />
 
       {/* TEAMS GRID (GAP AS BORDER) */}
-      <div 
+      <div
+        className="teams-grid"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 1fr)',

@@ -163,16 +163,32 @@ function AppContent() {
       if (e.key === 'Escape') {
         setIsSearchOpen(false)
       }
+      // Keyboard shortcut for search (Cmd/Ctrl + K)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // Auto-focus search input
+  // Auto-focus search input and trap focus
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus()
       setSearchQuery('')
+      
+      // Trap focus within search overlay
+      const handleTab = (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault()
+          searchInputRef.current?.focus()
+        }
+      }
+      
+      window.addEventListener('keydown', handleTab)
+      return () => window.removeEventListener('keydown', handleTab)
     }
   }, [isSearchOpen])
 
@@ -354,6 +370,7 @@ function AppContent() {
           data-label="SEARCH"
           style={{ marginBottom: 12 }}
           aria-label="Open search"
+          title="Search (⌘K)"
         >
           {SVG_ICONS.search}
         </button>
@@ -370,7 +387,7 @@ function AppContent() {
         </button>
 
         {/* Navigation list */}
-        <nav className="sidebar-nav" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <nav className="sidebar-nav" style={{ flex: 1, display: 'flex', flexDirection: 'column' }} role="navigation" aria-label="Main navigation">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -382,6 +399,8 @@ function AppContent() {
                 setSelectedMatchId(null)
               }}
               data-label={tab.label}
+              aria-label={tab.label}
+              aria-current={activeTab === tab.id ? 'page' : undefined}
             >
               {SVG_ICONS[tab.id]}
             </button>
@@ -406,7 +425,7 @@ function AppContent() {
       </aside>
 
       {/* MAIN VIEW */}
-      <main className="main-content">
+      <main className="main-content" role="main" aria-label="Main content area">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -431,6 +450,9 @@ function AppContent() {
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             transition={{ duration: 0.3 }}
             onClick={() => setIsSearchOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search"
             style={{
               position: 'fixed',
               inset: 0,
@@ -462,6 +484,7 @@ function AppContent() {
               placeholder="SEARCH TEAMS, PLAYERS, MATCHES..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search input"
               style={{
                 width: '100%',
                 height: 56,

@@ -509,7 +509,7 @@ export default function Bracket() {
   return (
     <div>
       {/* PAGE HEADER */}
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 10 }}>
+      <div className="page-header bracket-controls" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 10 }}>
         <div>
           <h1 className="text-2xl" style={{ color: 'var(--text-1)' }}>
             BRACKET
@@ -520,9 +520,9 @@ export default function Bracket() {
         </div>
 
         {/* FEATURE 7: HIGHLIGHT PATH DROPDOWN */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 16 }}>
+        <div className="bracket-controls" style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 16 }}>
           <span className="text-xs" style={{ color: 'var(--text-3)', fontSize: 10 }}>HIGHLIGHT PATH FOR:</span>
-          <div style={{ position: 'relative' }}>
+          <div className="bracket-select" style={{ position: 'relative' }}>
             <select
               value={highlightTeam}
               onChange={(e) => setHighlightTeam(e.target.value)}
@@ -546,9 +546,10 @@ export default function Bracket() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="bracket-buttons" style={{ display: 'flex', gap: 8 }}>
           {hasSimulated ? (
-            <button 
+            <button
+              className="bracket-btn"
               onClick={resetAll}
               style={{
                 border: '1px solid var(--border-2)',
@@ -573,7 +574,8 @@ export default function Bracket() {
             </button>
           ) : (
             <>
-              <button 
+              <button
+                className="bracket-btn"
                 onClick={stepThrough}
                 disabled={isSimulating}
                 style={{
@@ -600,7 +602,8 @@ export default function Bracket() {
                 {simulationStep === 0 ? 'STEP THROUGH →' : `STEP ROUND ${simulationStep + 1} →`}
               </button>
 
-              <button 
+              <button
+                className="bracket-btn"
                 onClick={simulateAll}
                 disabled={isSimulating}
                 style={{
@@ -639,7 +642,7 @@ export default function Bracket() {
       )}
 
       {/* SVG CONTAINER */}
-      <div style={{ overflowX: 'auto', overflowY: 'hidden', border: '1px solid var(--border)', padding: 16, background: '#0a0a0a' }}>
+      <div className="bracket-container" style={{ overflowX: 'auto', overflowY: 'hidden', border: '1px solid var(--border)', padding: 16, background: '#0a0a0a' }}>
         {renderBracketSVG()}
       </div>
 
@@ -662,7 +665,8 @@ export default function Bracket() {
 
       {/* REACT STATE HOVER TOOLTIP */}
       {hoveredTeam && (
-        <div 
+        <div
+          className="bracket-tooltip"
           style={{
             position: 'fixed',
             left: tooltipPos.x,

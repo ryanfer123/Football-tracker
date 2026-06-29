@@ -46,12 +46,18 @@ const ALL_CODES = [
 ]
 
 export function FlagComponent({ teamCode, teamName, logoUrl, size = 'medium', className = '' }) {
-  // Prefer rendering an official logo image when provided (from API)
-  if (logoUrl) {
+  // First check if team has logoUrl in TEAMS data
+  let teamLogoUrl = logoUrl
+  if (!teamLogoUrl && teamName && TEAMS[teamName]) {
+    teamLogoUrl = TEAMS[teamName].logoUrl
+  }
+  
+  // Prefer rendering an official logo image when provided (from API or team data)
+  if (teamLogoUrl) {
     // Validate logoUrl to avoid rendering potentially unsafe data URLs or malformed values
     let validLogo = false
     try {
-      const parsed = new URL(logoUrl)
+      const parsed = new URL(teamLogoUrl)
       // Only allow https to be extra safe
       if (parsed.protocol === 'https:') {
         validLogo = true
@@ -65,7 +71,7 @@ export function FlagComponent({ teamCode, teamName, logoUrl, size = 'medium', cl
       const height = size === 'small' ? 24 : size === 'large' ? 120 : 48
       return (
         <img
-          src={logoUrl}
+          src={teamLogoUrl}
           alt={teamName || teamCode || 'team'}
           className={`team-logo ${className}`}
           style={{

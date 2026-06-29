@@ -229,8 +229,9 @@ export default function Predict() {
             {/* SELECTORS ROW */}
             <div className="predict-selector" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
               <div style={{ position: 'relative' }}>
-                <select 
-                  value={teamA} 
+                <select
+                  className="predict-team-select"
+                  value={teamA}
                   onChange={(e) => setTeamA(e.target.value)}
                   style={{
                     background: 'var(--surface)',
@@ -253,8 +254,9 @@ export default function Predict() {
               <div className="text-xs" style={{ color: 'var(--text-3)', fontSize: 11 }}>VS</div>
 
               <div style={{ position: 'relative' }}>
-                <select 
-                  value={teamB} 
+                <select
+                  className="predict-team-select"
+                  value={teamB}
                   onChange={(e) => setTeamB(e.target.value)}
                   style={{
                     background: 'var(--surface)',
@@ -310,7 +312,7 @@ export default function Predict() {
             <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
               LAST 5 MEETINGS
             </div>
-            <div style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+            <div className="h2h-table-container" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
               {h2hHistory.map((h, idx) => {
                 const isDraw = h.winner === 'Draw'
                 const isTeamAWinner = h.winner === prediction.teamA
@@ -387,7 +389,7 @@ export default function Predict() {
 
           {/* FEATURE 6: BOTH TEAMS' LAST 3 MATCHES */}
           <div style={{ marginBottom: 32 }}>
-            <div style={{ display: 'flex', gap: 24 }}>
+            <div className="recent-matches" style={{ display: 'flex', gap: 24 }}>
               {/* Team A */}
               <div style={{ flex: 1 }}>
                 <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
@@ -444,7 +446,8 @@ export default function Predict() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <div 
+            <div
+              className="predict-card"
               style={{
                 background: 'var(--surface)',
                 border: '1px solid var(--border-2)',

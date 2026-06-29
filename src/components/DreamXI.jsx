@@ -161,11 +161,12 @@ export default function DreamXI() {
         {/* LEFT PANEL: PITCH */}
         <div style={{ flex: 1, padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* Formation selector */}
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div className="formation-selector" style={{ display: 'flex', gap: 6 }}>
             {['4-3-3', '4-4-2', '4-2-3-1', '3-5-2'].map(f => {
               const isActive = formation === f
               return (
                 <button
+                  className="formation-btn"
                   key={f}
                   onClick={() => {
                     setFormation(f)
@@ -188,7 +189,8 @@ export default function DreamXI() {
           </div>
 
           {/* Visual Pitch Container */}
-          <div 
+          <div
+            className="pitch-container"
             style={{
               height: 520,
               background: '#0A1A0A',
@@ -219,6 +221,7 @@ export default function DreamXI() {
               return (
                 <div
                   key={slot.id}
+                  className="player-slot"
                   onClick={() => isFilled && removePlayer(idx)}
                   style={{
                     position: 'absolute',
@@ -324,9 +327,10 @@ export default function DreamXI() {
         >
           {/* Search + Filter */}
           <div style={{ padding: 12, borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <input 
-              type="text" 
-              placeholder="SEARCH PLAYER..." 
+            <input
+              className="player-search"
+              type="text"
+              placeholder="SEARCH PLAYER..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -367,7 +371,7 @@ export default function DreamXI() {
           </div>
 
           {/* List */}
-          <div style={{ flex: 1, overflowY: 'auto', maxHeight: 440 }}>
+          <div className="player-list" style={{ flex: 1, overflowY: 'auto', maxHeight: 440 }}>
             {filteredPlayers.map(p => {
               const isSelected = squad.some(s => s && s.name === p.name)
               return (

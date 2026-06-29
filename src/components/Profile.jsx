@@ -97,8 +97,11 @@ export default function Profile({ onNavigateToPredict, currentUser, onLogout, on
   ]
 
   const stats = {
-    predictionsMade: 8,
-    correct: 5,
+    predictionsMade: predictions.length,
+    correct: predictions.filter(p => p.result === 'CORRECT').length,
+    accuracy: predictions.length > 0 
+      ? Math.round((predictions.filter(p => p.result === 'CORRECT').length / predictions.length) * 100)
+      : 0,
     teamsFollowed: followed.length,
     matchesViewed: 14,
     bracketRuns: 3,
