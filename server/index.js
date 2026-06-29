@@ -438,18 +438,28 @@ app.get('/api/stats/goldenboot', async (req, res) => {
             }
 
             // Query top scorers for World Cup 2026
-            const topsUrl = `https://v3.football.api-sports.io/players/topscorers?league=${leagueId}&season=2026`
+            let topsUrl = `https://v3.football.api-sports.io/players/topscorers?league=${leagueId}&season=2026`
             console.log(`/api/stats/goldenboot: querying topscorers ${topsUrl} for leagueId=${leagueId}`)
-            const topsResp = await fetchWithTimeout(topsUrl, { headers: { 'x-apisports-key': key } }, 10000)
+            let topsResp = await fetchWithTimeout(topsUrl, { headers: { 'x-apisports-key': key } }, 10000)
             console.log(`/api/stats/goldenboot: topscorers response status ${topsResp.status}`)
             if (!topsResp.ok) {
-              // capture body for debugging when non-200 (avoid printing keys)
               try { const txt = await topsResp.text(); console.log('/api/stats/goldenboot: topscorers non-ok body snippet:', txt.slice(0,300)) } catch(e){}
               continue
             }
-            const topsJson = await topsResp.json()
-            const respArr = topsJson.response || topsJson.data || []
-            console.log('/api/stats/goldenboot: topscorers response items', Array.isArray(respArr) ? respArr.length : 'not-array')
+            let topsJson = await topsResp.json()
+            let respArr = topsJson.response || topsJson.data || []
+            console.log('/api/stats/goldenboot: topscorers 2026 response items', Array.isArray(respArr) ? respArr.length : 'not-array')
+            
+            if (!Array.isArray(respArr) || respArr.length === 0) {
+              console.log('/api/stats/goldenboot: 2026 empty, falling back to 2022')
+              topsUrl = `https://v3.football.api-sports.io/players/topscorers?league=${leagueId}&season=2022`
+              topsResp = await fetchWithTimeout(topsUrl, { headers: { 'x-apisports-key': key } }, 10000)
+              if (!topsResp.ok) continue
+              topsJson = await topsResp.json()
+              respArr = topsJson.response || topsJson.data || []
+              console.log('/api/stats/goldenboot: topscorers 2022 response items', Array.isArray(respArr) ? respArr.length : 'not-array')
+            }
+            
             if (!Array.isArray(respArr) || respArr.length === 0) {
               continue
             }
