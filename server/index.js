@@ -379,10 +379,11 @@ app.get('/api/stats/goldenboot', async (req, res) => {
         playerId: player.id || s.player_id || null,
         code: team.code || team.tla || s.team_code || (team.name ? team.name.substring(0,3).toUpperCase() : ''),
         country: team.name || s.country || s.team_name || '',
-        goals: Number(s.goals || s.totalGoals || s.goals_scored || 0),
-        assists: Number(s.assists || s.totalAssists || 0),
-        mins: Number(s.minutes_played || s.mins || s.minutes || 0),
-        eliminated: !!s.eliminated
+      logo: team.team_logo || team.logo || team.logo_url || s.team_logo || s.logo || null,
+      goals: Number(s.goals || s.totalGoals || s.goals_scored || 0),
+      assists: Number(s.assists || s.totalAssists || 0),
+      mins: Number(s.minutes_played || s.mins || s.minutes || 0),
+      eliminated: !!s.eliminated
       }
     })
 

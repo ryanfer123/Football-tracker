@@ -48,6 +48,16 @@ const ALL_CODES = [
 export function FlagComponent({ teamCode, teamName, logoUrl, size = 'medium', className = '' }) {
   // Prefer rendering an official logo image when provided (from API)
   if (logoUrl) {
+    // Validate logoUrl to avoid rendering potentially unsafe data URLs or malformed values
+    try {
+      const parsed = new URL(logoUrl)
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        throw new Error('Invalid protocol')
+      }
+    } catch (err) {
+      // Fall back to flag rendering if logoUrl isn't a valid http/https URL
+    }
+
     const width = size === 'small' ? 24 : size === 'large' ? 120 : 48
     const height = size === 'small' ? 24 : size === 'large' ? 120 : 48
     return (
@@ -63,6 +73,7 @@ export function FlagComponent({ teamCode, teamName, logoUrl, size = 'medium', cl
           border: '1px solid var(--border)',
           background: 'transparent'
         }}
+        onError={(e) => { e.currentTarget.style.display = 'none' }}
       />
     )
   }

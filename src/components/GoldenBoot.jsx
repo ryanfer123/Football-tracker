@@ -131,7 +131,7 @@ function ScorerRow({ row, selectedPlayerName, setSelectedPlayerName }) {
         {/* Player Name */}
         <td style={{ padding: '0 16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <FlagComponent teamCode={row.code} size="tiny" style={{ width: 20, height: 13 }} />
+            <FlagComponent teamCode={row.code} logoUrl={row.logo} size="tiny" style={{ width: 20, height: 13 }} />
             <span 
               style={{ 
                 fontSize: 14, 
