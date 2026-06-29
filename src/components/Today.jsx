@@ -271,7 +271,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
       </div>
 
       {/* ROW 3: KEY PLAYERS */}
-      <div style={{ display: 'flex', padding: '12px 20px', gap: 20, borderBottom: '1px solid var(--border)' }}>
+      <div className="responsive-flex" style={{ display: 'flex', padding: '12px 20px', gap: 20, borderBottom: '1px solid var(--border)' }}>
         <div style={{ flex: 1 }}>
           <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 6 }}>{match.teamA.toUpperCase()} KEY PLAYERS</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -321,7 +321,7 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 20 }}>
+        <div className="responsive-flex" style={{ display: 'flex', gap: 20 }}>
           <div style={{ flex: 1, background: 'var(--bg)', padding: '10px 12px', border: '1px solid var(--border)' }}>
             <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 4 }}>EXPECTED GOALS (xG)</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -596,7 +596,7 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
       }}
     >
       {isLive ? (
-        <div style={{ display: 'flex', height: 88, alignItems: 'center' }}>
+        <div className="responsive-flex-row" style={{ display: 'flex', height: 'auto', minHeight: 88, alignItems: 'center', padding: '12px 0' }}>
           <div style={{ flex: 1, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
             <FlagComponent teamName={match.teamA} logoUrl={match.logoA} />
             <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-1)', textTransform: 'uppercase' }}>
@@ -622,7 +622,7 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', height: 72, alignItems: 'center' }}>
+        <div className="responsive-flex-row" style={{ display: 'flex', height: 'auto', minHeight: 72, alignItems: 'center', padding: '12px 0' }}>
           <div style={{ flex: 1, padding: '0 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
             <FlagComponent teamName={match.teamA} logoUrl={match.logoA} />
             <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-1)', textTransform: 'uppercase' }}>
