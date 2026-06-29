@@ -49,33 +49,37 @@ export function FlagComponent({ teamCode, teamName, logoUrl, size = 'medium', cl
   // Prefer rendering an official logo image when provided (from API)
   if (logoUrl) {
     // Validate logoUrl to avoid rendering potentially unsafe data URLs or malformed values
+    let validLogo = false
     try {
       const parsed = new URL(logoUrl)
-      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-        throw new Error('Invalid protocol')
+      // Only allow https to be extra safe
+      if (parsed.protocol === 'https:') {
+        validLogo = true
       }
     } catch (err) {
-      // Fall back to flag rendering if logoUrl isn't a valid http/https URL
+      // Invalid URL -> fall through to default rendering
     }
 
-    const width = size === 'small' ? 24 : size === 'large' ? 120 : 48
-    const height = size === 'small' ? 24 : size === 'large' ? 120 : 48
-    return (
-      <img
-        src={logoUrl}
-        alt={teamName || teamCode || 'team'}
-        className={`team-logo ${className}`}
-        style={{
-          width: width,
-          height: height,
-          objectFit: 'contain',
-          borderRadius: size === 'small' ? 4 : size === 'large' ? 6 : 6,
-          border: '1px solid var(--border)',
-          background: 'transparent'
-        }}
-        onError={(e) => { e.currentTarget.style.display = 'none' }}
-      />
-    )
+    if (validLogo) {
+      const width = size === 'small' ? 24 : size === 'large' ? 120 : 48
+      const height = size === 'small' ? 24 : size === 'large' ? 120 : 48
+      return (
+        <img
+          src={logoUrl}
+          alt={teamName || teamCode || 'team'}
+          className={`team-logo ${className}`}
+          style={{
+            width: width,
+            height: height,
+            objectFit: 'contain',
+            borderRadius: size === 'small' ? 4 : size === 'large' ? 6 : 6,
+            border: '1px solid var(--border)',
+            background: 'transparent'
+          }}
+          onError={(e) => { e.currentTarget.style.display = 'none' }}
+        />
+      )
+    }
   }
 
   let code = teamCode;
