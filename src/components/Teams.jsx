@@ -1,256 +1,398 @@
-import { useState, useMemo } from 'react'
-import { TEAMS, ALL_TEAM_NAMES } from '../data/teams'
-import { BRACKET } from '../data/matchData'
-import { TeamFlag } from './shared'
-
-const WC_YEARS = [1930,1934,1938,1950,1954,1958,1962,1966,1970,1974,1978,1982,1986,1990,1994,1998,2002,2006,2010,2014,2018,2022,2026]
-const RESULT_LABELS = { WON: '🏆', FINAL: 'F', SF: 'SF', QF: 'QF', R16: 'R16', R32: 'R32', R2: 'R2', R1: 'R1', GROUP: 'GS', DNQ: '—' }
-const R32_MATCHES = [...BRACKET.roundOf32.left, ...BRACKET.roundOf32.right]
-
-function RadarChart({ stats }) {
-  const labels = ['Attack', 'Defence', 'Midfield', 'Pace', 'Experience', 'Cohesion']
-  const keys = ['attack', 'defence', 'midfield', 'pace', 'experience', 'cohesion']
-  const cx = 150, cy = 150, r = 110
-  const angles = keys.map((_, i) => (Math.PI * 2 * i) / keys.length - Math.PI / 2)
-
-  const points = keys.map((k, i) => {
-    const val = (stats[k] || 50) / 100
-    return {
-      x: cx + r * val * Math.cos(angles[i]),
-      y: cy + r * val * Math.sin(angles[i])
-    }
-  })
-
-  const polygon = points.map(p => `${p.x},${p.y}`).join(' ')
-
-  // Grid lines
-  const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0]
-
-  return (
-    <div className="radar-container">
-      <svg width="300" height="300" className="radar-svg" viewBox="0 0 300 300">
-        {/* Grid */}
-        {gridLevels.map((level, li) => (
-          <polygon key={li}
-            points={angles.map(a => `${cx + r * level * Math.cos(a)},${cy + r * level * Math.sin(a)}`).join(' ')}
-            fill="none" stroke="#000" strokeWidth="1" opacity={0.15} />
-        ))}
-        {/* Axes */}
-        {angles.map((a, i) => (
-          <line key={i} x1={cx} y1={cy} x2={cx + r * Math.cos(a)} y2={cy + r * Math.sin(a)}
-            stroke="#000" strokeWidth="1" opacity={0.2} />
-        ))}
-        {/* Data polygon */}
-        <polygon points={polygon} fill="#F5F500" stroke="#000" strokeWidth="2.5" fillOpacity="0.7" />
-        {/* Labels */}
-        {labels.map((label, i) => {
-          const lx = cx + (r + 20) * Math.cos(angles[i])
-          const ly = cy + (r + 20) * Math.sin(angles[i])
-          return (
-            <text key={i} x={lx} y={ly} fontSize="9" fontWeight="700" fontFamily="Inter, system-ui, sans-serif"
-              textAnchor="middle" dominantBaseline="middle" fill="#000"
-              style={{ textTransform: 'uppercase' }}>
-              {label}
-            </text>
-          )
-        })}
-        {/* Values */}
-        {points.map((p, i) => (
-          <text key={`v-${i}`} x={p.x} y={p.y - 8} fontSize="9" fontWeight="700" fontFamily="Inter, system-ui, sans-serif"
-            textAnchor="middle" fill="#FF2D00">
-            {stats[keys[i]] || 50}
-          </text>
-        ))}
-      </svg>
-    </div>
-  )
-}
-
-function TeamProfile({ team, teamName, onBack }) {
-  const [tooltipYear, setTooltipYear] = useState(null)
-
-  const formationParts = (team.formation || '4-3-3').split('-').map(Number)
-  const squad = team.squad || {}
-
-  const allPlayers = [
-    ...(squad.GK || ['GK']),
-    ...(squad.DEF || ['DEF','DEF','DEF','DEF']),
-    ...(squad.MID || ['MID','MID','MID']),
-    ...(squad.FW || ['FW','FW','FW'])
-  ]
-
-  const rows = [allPlayers.slice(0, 1)] // GK
-  let idx = 1
-  for (const count of formationParts) {
-    rows.push(allPlayers.slice(idx, idx + count))
-    idx += count
-  }
-  const knockoutMatch = R32_MATCHES.find(match => match.teamA === teamName || match.teamB === teamName)
-  const knockoutOpponent = knockoutMatch
-    ? (knockoutMatch.teamA === teamName ? knockoutMatch.teamB : knockoutMatch.teamA)
-    : 'winner of adjacent tie'
-
-  return (
-    <div className="team-profile">
-      <button className="back-btn" onClick={onBack}>← ALL TEAMS</button>
-
-      <div className="profile-header">
-        <TeamFlag teamName={teamName} size="large" className="profile-flag" />
-        <div>
-          <div className="profile-name">{teamName}</div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-            <span className="ranking-badge">FIFA #{team.ranking}</span>
-            {team.titles > 0 && <span className="ranking-badge" style={{ background: '#C9A84C', color: '#000' }}>⭐ {team.titles} TITLE{team.titles > 1 ? 'S' : ''}</span>}
-            <span className={`status-chip ${team.status === 'IN' ? 'in' : 'out'}`}>{team.status}</span>
-          </div>
-          <div style={{ marginTop: 4, fontSize: 12, color: '#888' }}>Coach: {team.coach}</div>
-        </div>
-      </div>
-
-      {/* WC History Timeline */}
-      <div className="profile-section">
-        <div className="profile-section-title">World Cup History</div>
-        <div className="wc-timeline">
-          {WC_YEARS.map(year => {
-            const result = team.wcHistory?.[year]
-            if (!result) return null
-            return (
-              <div key={year} className={`wc-year-chip ${result}`}
-                onMouseEnter={() => setTooltipYear(year)}
-                onMouseLeave={() => setTooltipYear(null)}>
-                <span className="year-label">{year}</span>
-                <span className="result-label">{RESULT_LABELS[result]}</span>
-                {tooltipYear === year && (
-                  <div className="chip-tooltip">{year}: {result}</div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Squad / Formation */}
-      <div className="profile-section">
-        <div className="profile-section-title">WC 2026 Squad — {team.formation}</div>
-        <div className="pitch">
-          {rows.reverse().map((row, i) => (
-            <div key={i} className="pitch-row">
-              {row.map((p, j) => (
-                <div key={j} className="pitch-player">{p}</div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Key Players */}
-      <div className="profile-section">
-        <div className="profile-section-title">Key Players</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-          {(team.keyPlayers || []).map((p, i) => (
-            <div key={i} className="card-static" style={{ padding: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 700 }}>{p.name}</div>
-                  <div style={{ fontSize: 11, textTransform: 'uppercase', color: '#888' }}>{p.position} · {p.club}</div>
-                </div>
-                <div style={{ textAlign: 'right', fontSize: 12, fontWeight: 700 }}>
-                  <div>{p.goals}G · {p.assists}A</div>
-                  <div style={{ color: '#FF2D00' }}>★ {p.rating}</div>
-                </div>
-              </div>
-              <div style={{ fontSize: 12, marginTop: 8, lineHeight: 1.5, color: '#444' }}>{p.note}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats Radar */}
-      <div className="profile-section">
-        <div className="profile-section-title">Stats Radar</div>
-        <RadarChart stats={team.stats || {}} />
-      </div>
-
-      {/* Tournament Path */}
-      <div className="profile-section">
-        <div className="profile-section-title">Tournament Path</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div className="detail-title">Group Stage — Group {team.group}</div>
-          {(team.groupResults || []).map((r, i) => (
-            <div key={i} className="upcoming-match-row" style={{ cursor: 'default' }}>
-              <div className={`form-pill ${r.result}`} style={{ width: 28, height: 28 }}>{r.result}</div>
-              <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: 13 }}>vs {r.vs}</span>
-              <span style={{ fontWeight: 700, fontSize: 14, marginLeft: 'auto' }}>{r.score}</span>
-            </div>
-          ))}
-          <div style={{ marginTop: 12 }}>
-            <div className="detail-title">Knockout Stage</div>
-            <div className="upcoming-match-row" style={{ cursor: 'default', opacity: 0.5 }}>
-              <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: 13, color: '#888' }}>
-                Round of 32 — vs {knockoutOpponent}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { useState } from 'react'
+import { FlagComponent } from './shared'
+import { TEAMS } from '../data/teams'
 
 export default function Teams() {
   const [search, setSearch] = useState('')
   const [selectedTeam, setSelectedTeam] = useState(null)
+  const [hoveredYear, setHoveredYear] = useState(null)
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
 
-  const filteredTeams = useMemo(() => {
-    return ALL_TEAM_NAMES.filter(name =>
-      name.toLowerCase().includes(search.toLowerCase())
-    )
-  }, [search])
+  const teamNames = Object.keys(TEAMS).sort()
+  const filteredTeams = teamNames.filter(name => 
+    name.toLowerCase().includes(search.toLowerCase()) ||
+    TEAMS[name].code.toLowerCase().includes(search.toLowerCase())
+  )
 
-  if (selectedTeam) {
-    const team = TEAMS[selectedTeam]
-    return <TeamProfile team={team} teamName={selectedTeam} onBack={() => setSelectedTeam(null)} />
+  const handleYearHover = (year, stage, e) => {
+    setHoveredYear({ year, stage })
+    setTooltipPos({ x: e.clientX + 10, y: e.clientY + 10 })
   }
 
-  return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">👥 Teams</h1>
-        <p className="page-subtitle">32 teams • profiles & history</p>
-      </div>
+  const handleMouseMove = (e) => {
+    setTooltipPos({ x: e.clientX + 10, y: e.clientY + 10 })
+  }
 
-      <div className="search-bar">
-        <input className="input" style={{ width: '100%' }}
-          placeholder="Search by country, federation, or contender..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)} />
-      </div>
+  const handleYearLeave = () => {
+    setHoveredYear(null)
+  }
 
-      {filteredTeams.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">⚽</div>
-          <div className="empty-text">No teams match that search</div>
+  // Pitch layout rows
+  const renderSquadPitch = (team) => {
+    const isSpecialTeam = ['Brazil', 'France', 'Germany', 'Argentina', 'Spain'].includes(selectedTeam)
+    if (!isSpecialTeam) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 230, border: '1px solid var(--border)', background: '#0A0A0A', color: 'var(--text-3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          LINEUP DATA UNAVAILABLE
         </div>
-      ) : (
-        <div className="teams-grid">
-          {filteredTeams.map(name => {
-            const team = TEAMS[name]
-            return (
-              <div key={name} className="team-card" onClick={() => setSelectedTeam(name)}>
-                <TeamFlag teamName={name} size="large" className="flag-large" />
-                <div className="team-card-name">{name}</div>
-                {team.titles > 0 && (
-                  <div className="titles-badge">⭐ {team.titles} TITLE{team.titles > 1 ? 'S' : ''}</div>
-                )}
-                <div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <span className="group-badge">GROUP {team.group}</span>
-                  <span className={`status-chip ${team.status === 'IN' ? 'in' : 'out'}`}>{team.status}</span>
+      )
+    }
+
+    const { squad, formation } = team
+    // Map squad positions to rows
+    const rows = [
+      { key: 'FW', players: squad.FW || [] },
+      { key: 'MID', players: squad.MID || [] },
+      { key: 'DEF', players: squad.DEF || [] },
+      { key: 'GK', players: squad.GK || [] }
+    ]
+
+    return (
+      <div 
+        style={{ 
+          background: '#0A1A0A', 
+          border: '1px solid #1F3F1F', 
+          height: 280, 
+          padding: 16, 
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-around',
+          alignItems: 'center'
+        }}
+      >
+        {/* Pitch markings */}
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, borderLeft: '1px dashed rgba(31,63,31,0.6)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 60, height: 60, border: '1px solid rgba(31,63,31,0.6)', borderRadius: '50%', pointerEvents: 'none' }} />
+
+        {rows.map((row) => (
+          <div key={row.key} style={{ display: 'flex', justifyContent: 'space-around', width: '100%', zIndex: 1 }}>
+            {row.players.map((p, idx) => (
+              <div 
+                key={idx}
+                style={{
+                  width: 80,
+                  height: 32,
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border-2)',
+                  color: 'var(--text-1)',
+                  fontSize: 10,
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'border-color 80ms ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--accent)'}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-2)'}
+              >
+                {p.substring(0, 12)}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  // Details profile view
+  if (selectedTeam) {
+    const team = TEAMS[selectedTeam]
+    const historyYears = Object.keys(team.wcHistory).sort()
+
+    return (
+      <div>
+        {/* Back Button */}
+        <button 
+          onClick={() => setSelectedTeam(null)}
+          className="text-xs"
+          style={{ 
+            color: 'var(--text-2)', 
+            marginBottom: 20, 
+            cursor: 'pointer',
+            transition: 'color 80ms ease' 
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-1)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-2)'}
+        >
+          ← ALL TEAMS
+        </button>
+
+        {/* Header Row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+          <FlagComponent teamName={selectedTeam} size="large" style={{ width: 64, height: 42 }} />
+          <div>
+            <h1 style={{ fontSize: 32, fontWeight: 900, color: 'var(--text-1)', textTransform: 'uppercase', lineHeight: 1 }}>
+              {selectedTeam}
+            </h1>
+            <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 6 }}>
+              {team.titles} WORLD CUP TITLES · FIFA RANK #{team.ranking}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ borderBottom: '1px solid var(--border)', margin: '16px 0' }} />
+
+        {/* Section: WC History Timeline */}
+        <div style={{ marginBottom: 28 }}>
+          <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
+            WORLD CUP HISTORY
+          </div>
+          
+          <div 
+            style={{ 
+              display: 'flex', 
+              gap: 4, 
+              overflowX: 'auto', 
+              paddingBottom: 8 
+            }}
+          >
+            {historyYears.map(year => {
+              const stage = team.wcHistory[year]
+              let bgColor = 'var(--bg)'
+              let borderColor = 'var(--border)'
+              let textColor = 'var(--text-3)'
+              let opacity = 1
+
+              if (stage === 'WON') {
+                bgColor = '#1A1F00'
+                borderColor = 'var(--accent)'
+                textColor = 'var(--accent)'
+              } else if (stage === 'FINAL') {
+                bgColor = 'var(--surface-2)'
+                textColor = 'var(--text-1)'
+              } else if (stage === 'SF') {
+                bgColor = 'var(--surface)'
+                textColor = 'var(--text-2)'
+              } else if (stage === 'QF') {
+                bgColor = 'var(--surface)'
+                textColor = 'var(--text-3)'
+              } else if (stage === 'GROUP' || stage === 'R16' || stage === 'R32' || stage === 'R2' || stage === 'R1') {
+                bgColor = 'var(--bg)'
+                textColor = 'var(--text-3)'
+                opacity = 0.5
+              } else if (stage === 'DNQ') {
+                bgColor = 'var(--bg)'
+                textColor = 'var(--text-3)'
+                opacity = 0.25
+              }
+
+              return (
+                <div 
+                  key={year}
+                  onMouseEnter={(e) => handleYearHover(year, stage, e)}
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleYearLeave}
+                  style={{
+                    width: 42,
+                    height: 26,
+                    border: `1px solid ${borderColor}`,
+                    background: bgColor,
+                    color: textColor,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    opacity: opacity,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {year.substring(2)}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Section: Squad */}
+        <div style={{ marginBottom: 28 }}>
+          <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
+            SQUAD — {team.formation}
+          </div>
+          {renderSquadPitch(team)}
+        </div>
+
+        {/* Section: Key Players */}
+        <div>
+          <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
+            KEY PLAYERS
+          </div>
+
+          <div style={{ display: 'flex', gap: 12 }}>
+            {team.keyPlayers?.map((player, idx) => (
+              <div 
+                key={idx}
+                style={{
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  padding: 12,
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-1)' }}>
+                    {player.name}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', marginTop: 2 }}>
+                    {player.position} · {player.club}
+                  </div>
+                </div>
+
+                <div style={{ borderBottom: '1px solid var(--border)' }} />
+
+                <div style={{ fontSize: 11, color: 'var(--text-2)' }}>
+                  Goals: {player.goals} &nbsp; Assists: {player.assists} &nbsp; Rating: {player.rating}
+                </div>
+
+                <div style={{ fontSize: 12, color: 'var(--text-2)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                  "{player.note}"
                 </div>
               </div>
-            )
-          })}
+            ))}
+          </div>
         </div>
-      )}
+
+        {/* Tooltip Overlay */}
+        {hoveredYear && (
+          <div 
+            style={{
+              position: 'fixed',
+              left: tooltipPos.x,
+              top: tooltipPos.y,
+              background: 'var(--surface-2)',
+              border: '1px solid var(--border-2)',
+              color: 'var(--text-1)',
+              padding: '4px 8px',
+              fontSize: 10,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              zIndex: 1000,
+              pointerEvents: 'none',
+              boxShadow: 'var(--shadow-dim)'
+            }}
+          >
+            {hoveredYear.year} — {hoveredYear.stage}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Grid Grid-as-border view
+  return (
+    <div>
+      {/* PAGE HEADER */}
+      <div className="page-header">
+        <h1 className="text-2xl" style={{ color: 'var(--text-1)' }}>
+          TEAMS
+        </h1>
+        <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 4 }}>
+          32 NATIONS
+        </div>
+      </div>
+
+      {/* SEARCH BAR */}
+      <input 
+        type="text"
+        placeholder="SEARCH NATIONS..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          width: '100%',
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          padding: '10px 14px',
+          fontSize: 14,
+          color: 'var(--text-1)',
+          marginBottom: 16
+        }}
+        onFocus={(e) => e.target.style.borderColor = 'var(--border-2)'}
+        onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+      />
+
+      {/* TEAMS GRID (GAP AS BORDER) */}
+      <div 
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: 1,
+          background: 'var(--border)'
+        }}
+      >
+        {filteredTeams.map(name => {
+          const team = TEAMS[name]
+          const isWinner = team.status === 'IN'
+
+          return (
+            <div 
+              key={name}
+              onClick={() => setSelectedTeam(name)}
+              style={{
+                background: 'var(--surface)',
+                padding: '16px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+                minHeight: 100,
+                cursor: 'pointer',
+                transition: 'background 80ms ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-2)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'var(--surface)'}
+            >
+              <FlagComponent teamName={name} style={{ width: 48, height: 32, border: '1px solid var(--border-2)' }} />
+              <div 
+                style={{ 
+                  fontSize: 11, 
+                  fontWeight: 700, 
+                  color: 'var(--text-1)', 
+                  textAlign: 'center', 
+                  marginTop: 4,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {name}
+              </div>
+
+              {/* Status Row */}
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                <span 
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 600,
+                    color: 'var(--text-3)',
+                    border: '1px solid var(--border)',
+                    padding: '1px 4px',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  GRP {team.group}
+                </span>
+
+                <span 
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 700,
+                    color: isWinner ? 'var(--accent)' : 'var(--red)',
+                    border: `1px solid ${isWinner ? 'var(--accent)' : 'var(--red)'}`,
+                    padding: '1px 4px'
+                  }}
+                >
+                  {team.status}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

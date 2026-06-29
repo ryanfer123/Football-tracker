@@ -1,463 +1,474 @@
-import { useState, useCallback } from 'react'
-import { BRACKET } from '../data/matchData'
+import { useState } from 'react'
+import { FlagComponent } from './shared'
 import { TEAMS } from '../data/teams'
-import { seededRandom, predictMatch } from './shared'
 
-const ROUNDS = ['ROUND OF 32', 'ROUND OF 16', 'QUARTERFINALS', 'SEMIFINALS', 'FINAL', '🏆']
+const ODDS = {
+  'France': 18, 'Brazil': 15, 'Argentina': 15, 'Germany': 10, 'Portugal': 8,
+  'England': 8, 'Spain': 8, 'Netherlands': 6, 'Belgium': 5, 'Croatia': 4, 'USA': 3
+}
 
-function BracketChip({ team, isWinner, isLoser, isUpcoming, x, y, onClick, onMouseEnter, onMouseLeave }) {
-  const w = 140, h = 28
-  const teamData = TEAMS[team]
+const INITIAL_R32 = [
+  { teamA: 'Canada', teamB: 'Bosnia and Herzegovina', winner: 'Canada', completed: true },
+  { teamA: 'Brazil', teamB: 'Japan', winner: null, completed: false },
+  { teamA: 'Germany', teamB: 'Paraguay', winner: null, completed: false },
+  { teamA: 'Netherlands', teamB: 'Morocco', winner: null, completed: false },
+  { teamA: 'Ivory Coast', teamB: 'Norway', winner: null, completed: false },
+  { teamA: 'France', teamB: 'Sweden', winner: null, completed: false },
+  { teamA: 'Mexico', teamB: 'Ecuador', winner: null, completed: false },
+  { teamA: 'England', teamB: 'DR Congo', winner: null, completed: false },
+  { teamA: 'Belgium', teamB: 'Senegal', winner: null, completed: false },
+  { teamA: 'USA', teamB: 'South Korea', winner: null, completed: false },
+  { teamA: 'Spain', teamB: 'Austria', winner: null, completed: false },
+  { teamA: 'Portugal', teamB: 'Croatia', winner: null, completed: false },
+  { teamA: 'Switzerland', teamB: 'Algeria', winner: null, completed: false },
+  { teamA: 'Australia', teamB: 'Egypt', winner: null, completed: false },
+  { teamA: 'Argentina', teamB: 'Cape Verde', winner: null, completed: false },
+  { teamA: 'Colombia', teamB: 'Ghana', winner: null, completed: false }
+]
 
-  return (
-    <g
-      className={`bracket-chip ${isWinner ? 'winner' : ''} ${isLoser ? 'loser' : ''}`}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      style={{ cursor: 'pointer' }}
-    >
-      <rect x={x} y={y} width={w} height={h} fill={isWinner ? '#000' : '#fff'} stroke="#000" strokeWidth="2"
-        strokeDasharray={isUpcoming && !team ? '4,4' : 'none'} />
-      <text x={x + 8} y={y + 18} fontSize="11" fontWeight="700" fontFamily="Inter, system-ui, sans-serif"
-        fill={isWinner ? '#fff' : team ? '#000' : '#FF2D00'} textAnchor="start"
-        style={{ textTransform: 'uppercase', textDecoration: isLoser ? 'line-through' : 'none' }}>
-        {team ? `${teamData?.flag || ''} ${team}` : 'Awaiting winner'}
-      </text>
-      {isWinner && (
-        <text x={x + w - 8} y={y + 18} fontSize="12" fill="#AAFF00" textAnchor="end">✓</text>
-      )}
-    </g>
-  )
+function getWinner(teamA, teamB) {
+  const oddA = ODDS[teamA] || 1
+  const oddB = ODDS[teamB] || 1
+  const total = oddA + oddB
+  const rand = Math.random() * total
+  return rand < oddA ? teamA : teamB
 }
 
 export default function Bracket() {
-  const [simulated, setSimulated] = useState(null)
-  const [tooltip, setTooltip] = useState(null)
-  const [drawer, setDrawer] = useState(null)
+  const [r32, setR32] = useState(INITIAL_R32)
+  const [r16, setR16] = useState(Array(8).fill({ teamA: null, teamB: null, winner: null }))
+  const [qf, setQf] = useState(Array(4).fill({ teamA: null, teamB: null, winner: null }))
+  const [sf, setSf] = useState(Array(2).fill({ teamA: null, teamB: null, winner: null }))
+  const [final, setFinal] = useState({ teamA: null, teamB: null, winner: null })
+  const [champion, setChampion] = useState(null)
 
-  const simulateAll = useCallback(() => {
-    const rng = seededRandom(2026)
-    const results = { left: [], right: [] }
+  const [isSimulating, setIsSimulating] = useState(false)
+  const [hasSimulated, setHasSimulated] = useState(false)
+  const [flashingMatch, setFlashingMatch] = useState(null) // { round: string, idx: number }
+  const [hoveredTeam, setHoveredTeam] = useState(null)
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
 
-    // Simulate remaining R32 matches
-    const allR32 = [...BRACKET.roundOf32.left, ...BRACKET.roundOf32.right]
-    const r32Winners = allR32.map(m => {
-      if (m.completed) return m.winner
-      const pred = predictMatch(m.teamA, m.teamB)
-      if (!pred) return m.teamA
-      return rng() < (pred.probA / 100) ? m.teamA : m.teamB
+  const simulateAll = () => {
+    setIsSimulating(true)
+    let queue = []
+
+    // R32
+    const r32Winners = []
+    r32.forEach((m, idx) => {
+      if (m.completed) {
+        r32Winners.push(m.winner)
+      } else {
+        const winner = getWinner(m.teamA, m.teamB)
+        r32Winners.push(winner)
+        queue.push({ round: 'r32', matchIdx: idx, winner, teamA: m.teamA, teamB: m.teamB })
+      }
     })
 
-    const leftWinners = r32Winners.slice(0, 8)
-    const rightWinners = r32Winners.slice(8, 16)
-
     // R16
-    const r16Left = [], r16Right = []
-    for (let i = 0; i < 8; i += 2) {
-      const a = leftWinners[i], b = leftWinners[i + 1]
-      const winner = rng() < 0.55 ? a : b
-      r16Left.push({ teamA: a, teamB: b, winner })
-    }
-    for (let i = 0; i < 8; i += 2) {
-      const a = rightWinners[i], b = rightWinners[i + 1]
-      const winner = rng() < 0.55 ? a : b
-      r16Right.push({ teamA: a, teamB: b, winner })
+    const r16Winners = []
+    for (let i = 0; i < 8; i++) {
+      const teamA = r32Winners[i * 2]
+      const teamB = r32Winners[i * 2 + 1]
+      const winner = getWinner(teamA, teamB)
+      r16Winners.push(winner)
+      queue.push({ round: 'r16', matchIdx: i, teamA, teamB, winner })
     }
 
     // QF
-    const qfLeft = [], qfRight = []
-    for (let i = 0; i < 4; i += 2) {
-      const a = r16Left[i].winner, b = r16Left[i + 1].winner
-      qfLeft.push({ teamA: a, teamB: b, winner: rng() < 0.5 ? a : b })
-    }
-    for (let i = 0; i < 4; i += 2) {
-      const a = r16Right[i].winner, b = r16Right[i + 1].winner
-      qfRight.push({ teamA: a, teamB: b, winner: rng() < 0.5 ? a : b })
+    const qfWinners = []
+    for (let i = 0; i < 4; i++) {
+      const teamA = r16Winners[i * 2]
+      const teamB = r16Winners[i * 2 + 1]
+      const winner = getWinner(teamA, teamB)
+      qfWinners.push(winner)
+      queue.push({ round: 'qf', matchIdx: i, teamA, teamB, winner })
     }
 
     // SF
-    const sfLeft = { teamA: qfLeft[0].winner, teamB: qfLeft[1].winner, winner: rng() < 0.5 ? qfLeft[0].winner : qfLeft[1].winner }
-    const sfRight = { teamA: qfRight[0].winner, teamB: qfRight[1].winner, winner: rng() < 0.5 ? qfRight[0].winner : qfRight[1].winner }
+    const sfWinners = []
+    for (let i = 0; i < 2; i++) {
+      const teamA = qfWinners[i * 2]
+      const teamB = qfWinners[i * 2 + 1]
+      const winner = getWinner(teamA, teamB)
+      sfWinners.push(winner)
+      queue.push({ round: 'sf', matchIdx: i, teamA, teamB, winner })
+    }
 
     // Final
-    const final = { teamA: sfLeft.winner, teamB: sfRight.winner, winner: rng() < 0.5 ? sfLeft.winner : sfRight.winner }
+    const finalA = sfWinners[0]
+    const finalB = sfWinners[1]
+    const finalWinner = getWinner(finalA, finalB)
+    queue.push({ round: 'final', matchIdx: 0, teamA: finalA, teamB: finalB, winner: finalWinner })
 
-    setSimulated({
-      r32Winners, leftWinners, rightWinners,
-      r16Left, r16Right, qfLeft, qfRight,
-      sfLeft, sfRight, final
+    // Champion
+    queue.push({ round: 'champion', winner: finalWinner })
+
+    // Execute stagger
+    queue.forEach((step, index) => {
+      setTimeout(() => {
+        if (step.round === 'r32') {
+          setR32(prev => {
+            const next = [...prev]
+            next[step.matchIdx] = { ...next[step.matchIdx], winner: step.winner }
+            return next
+          })
+          setFlashingMatch({ round: 'r32', idx: step.matchIdx })
+        } else if (step.round === 'r16') {
+          setR16(prev => {
+            const next = [...prev]
+            next[step.matchIdx] = { teamA: step.teamA, teamB: step.teamB, winner: step.winner }
+            return next
+          })
+          setFlashingMatch({ round: 'r16', idx: step.matchIdx })
+        } else if (step.round === 'qf') {
+          setQf(prev => {
+            const next = [...prev]
+            next[step.matchIdx] = { teamA: step.teamA, teamB: step.teamB, winner: step.winner }
+            return next
+          })
+          setFlashingMatch({ round: 'qf', idx: step.matchIdx })
+        } else if (step.round === 'sf') {
+          setSf(prev => {
+            const next = [...prev]
+            next[step.matchIdx] = { teamA: step.teamA, teamB: step.teamB, winner: step.winner }
+            return next
+          })
+          setFlashingMatch({ round: 'sf', idx: step.matchIdx })
+        } else if (step.round === 'final') {
+          setFinal({ teamA: step.teamA, teamB: step.teamB, winner: step.winner })
+          setFlashingMatch({ round: 'final', idx: 0 })
+        } else if (step.round === 'champion') {
+          setChampion(step.winner)
+          setFlashingMatch({ round: 'champion', idx: 0 })
+          setIsSimulating(false)
+          setHasSimulated(true)
+        }
+      }, index * 200)
     })
-  }, [])
-
-  const reset = () => setSimulated(null)
-
-  // Layout constants
-  const colW = 160
-  const matchH = 64
-  const matchGap = 8
-  const startY = 20
-  const svgW = colW * 11 + 40
-  const svgH = Math.max(matchH * 16 + matchGap * 16 + startY + 40, 960)
-
-  const getMatchY = (round, index, totalInRound) => {
-    const baseSpacing = matchH + matchGap
-    const offset = Math.pow(2, round) * baseSpacing / 2
-    return startY + index * offset * 2 + offset / 2 - matchH / 2
   }
 
-  const handleChipHover = (team, x, y) => {
-    const t = TEAMS[team]
-    if (!t) return
-    setTooltip({
-      x, y: y - 10,
-      text: `${t.titles > 0 ? `${t.titles} WC title(s)` : 'No WC titles'} | Rank #${t.ranking}`
-    })
+  const resetAll = () => {
+    setR32(INITIAL_R32)
+    setR16(Array(8).fill({ teamA: null, teamB: null, winner: null }))
+    setQf(Array(4).fill({ teamA: null, teamB: null, winner: null }))
+    setSf(Array(2).fill({ teamA: null, teamB: null, winner: null }))
+    setFinal({ teamA: null, teamB: null, winner: null })
+    setChampion(null)
+    setHasSimulated(false)
+    setFlashingMatch(null)
   }
 
-  // Render the bracket SVG
+  // Tooltip triggers
+  const handleMouseEnter = (teamName, e) => {
+    if (!teamName) return
+    const teamInfo = TEAMS[teamName]
+    if (teamInfo) {
+      setHoveredTeam({
+        name: teamName,
+        titles: teamInfo.titles || 0,
+        record: teamInfo.groupRecord || '3-0-0'
+      })
+      setTooltipPos({ x: e.clientX + 10, y: e.clientY + 10 })
+    }
+  }
+
+  const handleMouseMove = (e) => {
+    setTooltipPos({ x: e.clientX + 10, y: e.clientY + 10 })
+  }
+
+  const handleMouseLeave = () => {
+    setHoveredTeam(null)
+  }
+
+  // Draw Match SVG with connections
   const renderBracketSVG = () => {
-    const elements = []
-    const leftMatches = BRACKET.roundOf32.left
-    const rightMatches = BRACKET.roundOf32.right
+    const colW = 200
+    const startY = 20
+    const svgW = 1200
+    const svgH = 1200
 
-    // R32 Left
-    leftMatches.forEach((m, i) => {
-      const x = 10
-      const y = startY + i * (matchH + matchGap)
-      const isComplete = m.completed || (simulated && simulated.leftWinners[i])
-      const winner = m.completed ? m.winner : simulated?.leftWinners[i]
-
-      elements.push(
-        <g key={`L32-${i}`}>
-          <BracketChip team={m.teamA} x={x} y={y}
-            isWinner={isComplete && winner === m.teamA}
-            isLoser={isComplete && winner !== m.teamA}
-            onClick={() => setDrawer(m)}
-            onMouseEnter={() => handleChipHover(m.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={m.teamB} x={x} y={y + 30}
-            isWinner={isComplete && winner === m.teamB}
-            isLoser={isComplete && winner !== m.teamB}
-            onClick={() => setDrawer(m)}
-            onMouseEnter={() => handleChipHover(m.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          {/* Bracket line */}
-          <line x1={x + 140} y1={y + 14} x2={x + 155} y2={y + 14} stroke="#000" strokeWidth="2" />
-          <line x1={x + 140} y1={y + 44} x2={x + 155} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x + 155} y1={y + 14} x2={x + 155} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x + 155} y1={y + 29} x2={x + 170} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
-    })
-
-    // R32 Right
-    rightMatches.forEach((m, i) => {
-      const x = svgW - 150
-      const y = startY + i * (matchH + matchGap)
-      const isComplete = simulated && simulated.rightWinners[i]
-      const winner = simulated?.rightWinners[i]
-
-      elements.push(
-        <g key={`R32-${i}`}>
-          <BracketChip team={m.teamA} x={x} y={y}
-            isWinner={isComplete && winner === m.teamA}
-            isLoser={isComplete && winner !== m.teamA}
-            onClick={() => setDrawer(m)}
-            onMouseEnter={() => handleChipHover(m.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={m.teamB} x={x} y={y + 30}
-            isWinner={isComplete && winner === m.teamB}
-            isLoser={isComplete && winner !== m.teamB}
-            onClick={() => setDrawer(m)}
-            onMouseEnter={() => handleChipHover(m.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          <line x1={x} y1={y + 14} x2={x - 15} y2={y + 14} stroke="#000" strokeWidth="2" />
-          <line x1={x} y1={y + 44} x2={x - 15} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x - 15} y1={y + 14} x2={x - 15} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x - 15} y1={y + 29} x2={x - 30} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
-    })
-
-    // R16 Left
-    for (let i = 0; i < 4; i++) {
-      const x = 180
-      const y = startY + i * (matchH + matchGap) * 2 + (matchH + matchGap) / 2 - 14
-      const match = simulated?.r16Left[i]
-
-      elements.push(
-        <g key={`L16-${i}`}>
-          <BracketChip team={match?.teamA || null} x={x} y={y}
-            isWinner={match && match.winner === match.teamA}
-            isLoser={match && match.winner !== match.teamA} isUpcoming={!match}
-            onMouseEnter={() => match?.teamA && handleChipHover(match.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={match?.teamB || null} x={x} y={y + 30}
-            isWinner={match && match.winner === match.teamB}
-            isLoser={match && match.winner !== match.teamB} isUpcoming={!match}
-            onMouseEnter={() => match?.teamB && handleChipHover(match.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          <line x1={x + 140} y1={y + 14} x2={x + 155} y2={y + 14} stroke="#000" strokeWidth="2" />
-          <line x1={x + 140} y1={y + 44} x2={x + 155} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x + 155} y1={y + 14} x2={x + 155} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x + 155} y1={y + 29} x2={x + 170} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
+    const getMatchY = (round, index) => {
+      const step = svgH / Math.pow(2, 4 - round)
+      return startY + index * step + step / 2
     }
 
-    // R16 Right
-    for (let i = 0; i < 4; i++) {
-      const x = svgW - 320
-      const y = startY + i * (matchH + matchGap) * 2 + (matchH + matchGap) / 2 - 14
-      const match = simulated?.r16Right[i]
-
-      elements.push(
-        <g key={`R16-${i}`}>
-          <BracketChip team={match?.teamA || null} x={x} y={y}
-            isWinner={match && match.winner === match.teamA}
-            isLoser={match && match.winner !== match.teamA} isUpcoming={!match}
-            onMouseEnter={() => match?.teamA && handleChipHover(match.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={match?.teamB || null} x={x} y={y + 30}
-            isWinner={match && match.winner === match.teamB}
-            isLoser={match && match.winner !== match.teamB} isUpcoming={!match}
-            onMouseEnter={() => match?.teamB && handleChipHover(match.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          <line x1={x} y1={y + 14} x2={x - 15} y2={y + 14} stroke="#000" strokeWidth="2" />
-          <line x1={x} y1={y + 44} x2={x - 15} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x - 15} y1={y + 14} x2={x - 15} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x - 15} y1={y + 29} x2={x - 30} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
+    const drawLine = (x1, y1, x2, y2) => {
+      const midX = (x1 + x2) / 2
+      return `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`
     }
 
-    // QF Left
-    for (let i = 0; i < 2; i++) {
-      const x = 350
-      const y = startY + i * (matchH + matchGap) * 4 + (matchH + matchGap) * 1.5 - 14
-      const match = simulated?.qfLeft[i]
+    const renderChip = (team, x, y, isWinner, isLoser, roundKey, matchIdx) => {
+      const isFlashing = flashingMatch && flashingMatch.round === roundKey && flashingMatch.idx === matchIdx
+      const strokeColor = isFlashing ? 'var(--accent)' : isWinner ? 'var(--accent)' : 'var(--border)'
+      const bgColor = isWinner ? '#1A1F00' : 'var(--surface)'
+      const textColor = isWinner ? 'var(--accent)' : 'var(--text-1)'
 
-      elements.push(
-        <g key={`LQF-${i}`}>
-          <BracketChip team={match?.teamA || null} x={x} y={y}
-            isWinner={match && match.winner === match.teamA}
-            isLoser={match && match.winner !== match.teamA} isUpcoming={!match}
-            onMouseEnter={() => match?.teamA && handleChipHover(match.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={match?.teamB || null} x={x} y={y + 30}
-            isWinner={match && match.winner === match.teamB}
-            isLoser={match && match.winner !== match.teamB} isUpcoming={!match}
-            onMouseEnter={() => match?.teamB && handleChipHover(match.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          <line x1={x + 140} y1={y + 14} x2={x + 155} y2={y + 14} stroke="#000" strokeWidth="2" />
-          <line x1={x + 140} y1={y + 44} x2={x + 155} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x + 155} y1={y + 14} x2={x + 155} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x + 155} y1={y + 29} x2={x + 170} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
-    }
+      if (!team) {
+        return (
+          <g key={`${x}-${y}`} onMouseMove={handleMouseMove}>
+            <rect x={x} y={y - 14} width="140" height="28" fill="var(--bg)" stroke="var(--border)" strokeDasharray="3,3" strokeWidth="1" />
+            <text x={x + 10} y={y + 4} fill="var(--text-3)" fontSize="10" fontWeight="600">TBD</text>
+          </g>
+        )
+      }
 
-    // QF Right
-    for (let i = 0; i < 2; i++) {
-      const x = svgW - 490
-      const y = startY + i * (matchH + matchGap) * 4 + (matchH + matchGap) * 1.5 - 14
-      const match = simulated?.qfRight[i]
-
-      elements.push(
-        <g key={`RQF-${i}`}>
-          <BracketChip team={match?.teamA || null} x={x} y={y}
-            isWinner={match && match.winner === match.teamA}
-            isLoser={match && match.winner !== match.teamA} isUpcoming={!match}
-            onMouseEnter={() => match?.teamA && handleChipHover(match.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={match?.teamB || null} x={x} y={y + 30}
-            isWinner={match && match.winner === match.teamB}
-            isLoser={match && match.winner !== match.teamB} isUpcoming={!match}
-            onMouseEnter={() => match?.teamB && handleChipHover(match.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          <line x1={x} y1={y + 14} x2={x - 15} y2={y + 14} stroke="#000" strokeWidth="2" />
-          <line x1={x} y1={y + 44} x2={x - 15} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x - 15} y1={y + 14} x2={x - 15} y2={y + 44} stroke="#000" strokeWidth="2" />
-          <line x1={x - 15} y1={y + 29} x2={x - 30} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
-    }
-
-    // SF Left
-    {
-      const x = 520
-      const y = startY + (matchH + matchGap) * 3
-      const match = simulated?.sfLeft
-
-      elements.push(
-        <g key="LSF">
-          <BracketChip team={match?.teamA || null} x={x} y={y}
-            isWinner={match && match.winner === match.teamA}
-            isLoser={match && match.winner !== match.teamA} isUpcoming={!match}
-            onMouseEnter={() => match?.teamA && handleChipHover(match.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={match?.teamB || null} x={x} y={y + 30}
-            isWinner={match && match.winner === match.teamB}
-            isLoser={match && match.winner !== match.teamB} isUpcoming={!match}
-            onMouseEnter={() => match?.teamB && handleChipHover(match.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          <line x1={x + 140} y1={y + 29} x2={x + 170} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
-    }
-
-    // SF Right
-    {
-      const x = svgW - 660
-      const y = startY + (matchH + matchGap) * 3
-      const match = simulated?.sfRight
-
-      elements.push(
-        <g key="RSF">
-          <BracketChip team={match?.teamA || null} x={x} y={y}
-            isWinner={match && match.winner === match.teamA}
-            isLoser={match && match.winner !== match.teamA} isUpcoming={!match}
-            onMouseEnter={() => match?.teamA && handleChipHover(match.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={match?.teamB || null} x={x} y={y + 30}
-            isWinner={match && match.winner === match.teamB}
-            isLoser={match && match.winner !== match.teamB} isUpcoming={!match}
-            onMouseEnter={() => match?.teamB && handleChipHover(match.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          <line x1={x} y1={y + 29} x2={x - 30} y2={y + 29} stroke="#000" strokeWidth="2" />
-        </g>
-      )
-    }
-
-    // FINAL
-    {
-      const x = svgW / 2 - 70
-      const y = startY + (matchH + matchGap) * 3 - 20
-      const match = simulated?.final
-
-      elements.push(
-        <g key="FINAL">
-          <rect x={x - 4} y={y - 30} width={148} height={24} fill="#000" />
-          <text x={x + 70} y={y - 12} fontSize="13" fontWeight="700" fill="#fff" fontFamily="Inter, system-ui, sans-serif" textAnchor="middle">
-            FINAL
+      return (
+        <g 
+          key={`${x}-${y}-${team}`}
+          onMouseEnter={(e) => handleMouseEnter(team, e)}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          style={{ opacity: isLoser ? 0.35 : 1, transition: 'opacity 80ms ease' }}
+        >
+          <rect 
+            x={x} 
+            y={y - 14} 
+            width="140" 
+            height="28" 
+            fill={bgColor} 
+            stroke={strokeColor} 
+            strokeWidth="1"
+            style={isFlashing ? { animation: 'flash-accent 0.1s ease 2' } : {}}
+          />
+          {/* Flag Component inside foreignObject */}
+          <foreignObject x={x + 8} y={y - 7} width="20" height="13">
+            <FlagComponent teamName={team} size="small" style={{ width: 20, height: 13, border: 'none' }} />
+          </foreignObject>
+          <text 
+            x={x + 34} 
+            y={y + 4} 
+            fill={textColor} 
+            fontSize="11" 
+            fontWeight="600"
+            clipPath={`url(#clip-${team})`}
+          >
+            {team.toUpperCase().substring(0, 10)}
           </text>
-          <BracketChip team={match?.teamA || null} x={x} y={y}
-            isWinner={match && match.winner === match.teamA}
-            isLoser={match && match.winner !== match.teamA} isUpcoming={!match}
-            onMouseEnter={() => match?.teamA && handleChipHover(match.teamA, x + 70, y)}
-            onMouseLeave={() => setTooltip(null)} />
-          <BracketChip team={match?.teamB || null} x={x} y={y + 30}
-            isWinner={match && match.winner === match.teamB}
-            isLoser={match && match.winner !== match.teamB} isUpcoming={!match}
-            onMouseEnter={() => match?.teamB && handleChipHover(match.teamB, x + 70, y + 30)}
-            onMouseLeave={() => setTooltip(null)} />
-          {match?.winner && (
-            <>
-              <text x={x + 70} y={y + 80} fontSize="20" fontWeight="700" fill="#000" fontFamily="Inter, system-ui, sans-serif" textAnchor="middle">
-                🏆 {match.winner.toUpperCase()}
-              </text>
-              <text x={x + 70} y={y + 96} fontSize="11" fontWeight="600" fill="#FF2D00" fontFamily="Inter, system-ui, sans-serif" textAnchor="middle">
-                WORLD CHAMPIONS 2026
-              </text>
-            </>
-          )}
         </g>
       )
     }
 
-    // Round labels
-    const roundLabels = ['R32', 'R16', 'QF', 'SF', 'FINAL', 'SF', 'QF', 'R16', 'R32']
-    const labelXs = [10 + 70, 180 + 70, 350 + 70, 520 + 70, svgW / 2, svgW - 660 + 70, svgW - 490 + 70, svgW - 320 + 70, svgW - 150 + 70]
+    const paths = []
+    const chips = []
+
+    // Round Labels
+    const roundLabels = ['R32', 'R16', 'QF', 'SF', 'FINAL', '🏆']
     roundLabels.forEach((label, i) => {
-      elements.push(
-        <text key={`label-${i}`} x={labelXs[i]} y={svgH - 10} fontSize="9" fontWeight="700" fill="#888"
-          fontFamily="Inter, system-ui, sans-serif" textAnchor="middle" style={{ textTransform: 'uppercase', letterSpacing: '1px' }}>
+      chips.push(
+        <text key={`label-${i}`} x={20 + i * colW} y={15} fill="var(--text-3)" fontSize="10" fontWeight="600" letterSpacing="0.1em">
           {label}
         </text>
       )
     })
 
-    return elements
+    // R32
+    r32.forEach((m, idx) => {
+      const x = 20
+      const y = getMatchY(0, idx)
+      const isWinnerA = m.winner === m.teamA
+      const isWinnerB = m.winner === m.teamB
+      const isLoserA = m.winner && m.winner !== m.teamA
+      const isLoserB = m.winner && m.winner !== m.teamB
+
+      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'r32', idx))
+      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'r32', idx))
+
+      // Connectors to R16
+      const nextX = x + colW
+      const nextY = getMatchY(1, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
+      paths.push(
+        <path key={`p32-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+      )
+    })
+
+    // R16
+    r16.forEach((m, idx) => {
+      const x = 20 + colW
+      const y = getMatchY(1, idx)
+      const isWinnerA = m.winner === m.teamA && m.winner !== null
+      const isWinnerB = m.winner === m.teamB && m.winner !== null
+      const isLoserA = m.winner && m.winner !== m.teamA
+      const isLoserB = m.winner && m.winner !== m.teamB
+
+      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'r16', idx))
+      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'r16', idx))
+
+      // Connectors to QF
+      const nextX = x + colW
+      const nextY = getMatchY(2, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
+      paths.push(
+        <path key={`p16-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+      )
+    })
+
+    // QF
+    qf.forEach((m, idx) => {
+      const x = 20 + colW * 2
+      const y = getMatchY(2, idx)
+      const isWinnerA = m.winner === m.teamA && m.winner !== null
+      const isWinnerB = m.winner === m.teamB && m.winner !== null
+      const isLoserA = m.winner && m.winner !== m.teamA
+      const isLoserB = m.winner && m.winner !== m.teamB
+
+      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'qf', idx))
+      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'qf', idx))
+
+      // Connectors to SF
+      const nextX = x + colW
+      const nextY = getMatchY(3, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
+      paths.push(
+        <path key={`pqf-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+      )
+    })
+
+    // SF
+    sf.forEach((m, idx) => {
+      const x = 20 + colW * 3
+      const y = getMatchY(3, idx)
+      const isWinnerA = m.winner === m.teamA && m.winner !== null
+      const isWinnerB = m.winner === m.teamB && m.winner !== null
+      const isLoserA = m.winner && m.winner !== m.teamA
+      const isLoserB = m.winner && m.winner !== m.teamB
+
+      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'sf', idx))
+      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'sf', idx))
+
+      // Connectors to Final
+      const nextX = x + colW
+      const nextY = getMatchY(4, 0) + (idx === 0 ? -18 : 18)
+      paths.push(
+        <path key={`psf-${idx}`} d={drawLine(x + 140, y, nextX, nextY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+      )
+    })
+
+    // Final
+    const finalX = 20 + colW * 4
+    const finalY = getMatchY(4, 0)
+    const isWinnerA = final.winner === final.teamA && final.winner !== null
+    const isWinnerB = final.winner === final.teamB && final.winner !== null
+    const isLoserA = final.winner && final.winner !== final.teamA
+    const isLoserB = final.winner && final.winner !== final.teamB
+
+    chips.push(renderChip(final.teamA, finalX, finalY - 18, isWinnerA, isLoserA, 'final', 0))
+    chips.push(renderChip(final.teamB, finalX, finalY + 18, isWinnerB, isLoserB, 'final', 0))
+
+    // Connector to Champion
+    paths.push(
+      <path key="pfinal" d={drawLine(finalX + 140, finalY, finalX + colW, finalY)} fill="none" stroke="var(--border-2)" strokeWidth="1" />
+    )
+
+    // Champion
+    const champX = 20 + colW * 5
+    const champY = finalY
+    chips.push(renderChip(champion, champX, champY, champion !== null, false, 'champion', 0))
+
+    return (
+      <svg width={svgW} height={svgH} style={{ background: 'var(--bg)' }}>
+        <g>{paths}</g>
+        <g>{chips}</g>
+      </svg>
+    )
   }
 
   return (
     <div>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      {/* PAGE HEADER */}
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
-          <h1 className="page-title">🏆 Knockout Bracket</h1>
-          <p className="page-subtitle">Round of 32 → Final • Interactive visualization</p>
-        </div>
-        <div className="bracket-controls">
-          {!simulated ? (
-            <button className="btn btn-primary" onClick={simulateAll}>SIMULATE REST →</button>
-          ) : (
-            <button className="btn btn-outline" onClick={reset}>RESET</button>
-          )}
-        </div>
-      </div>
-
-      <div className="bracket-container">
-        <svg width={svgW} height={svgH} className="bracket-svg">
-          {renderBracketSVG()}
-          {tooltip && (
-            <g>
-              <rect x={tooltip.x - 80} y={tooltip.y - 22} width={160} height={20} fill="#000" />
-              <text x={tooltip.x} y={tooltip.y - 8} fontSize="9" fill="#fff" fontFamily="Inter, system-ui, sans-serif"
-                textAnchor="middle" fontWeight="600">
-                {tooltip.text}
-              </text>
-            </g>
-          )}
-        </svg>
-      </div>
-
-      {/* Drawer */}
-      {drawer && (
-        <>
-          <div className="drawer-overlay" onClick={() => setDrawer(null)} />
-          <div className="drawer open">
-            <button className="drawer-close" onClick={() => setDrawer(null)}>✕</button>
-            <h2 style={{ fontSize: 20, fontWeight: 700, textTransform: 'uppercase', marginBottom: 16 }}>
-              {drawer.teamA} vs {drawer.teamB}
-            </h2>
-            {drawer.completed && (
-              <div style={{ marginBottom: 16 }}>
-                <span className="match-status status-ft">FT</span>
-                <span style={{ marginLeft: 12, fontSize: 28, fontWeight: 700 }}>{drawer.scoreA} — {drawer.scoreB}</span>
-              </div>
-            )}
-            <div className="detail-title" style={{ marginTop: 16 }}>AI Prediction</div>
-            {(() => {
-              const pred = predictMatch(drawer.teamA, drawer.teamB)
-              if (!pred) return <p>No prediction available</p>
-              return (
-                <div>
-                  <div className="prob-bar-container">
-                    <div className="prob-bar">
-                      <div className="segment" style={{ width: `${pred.probA}%`, background: '#000' }}>{pred.probA}%</div>
-                      <div className="segment" style={{ width: `${pred.probDraw}%`, background: '#888' }}>{pred.probDraw}%</div>
-                      <div className="segment" style={{ width: `${pred.probB}%`, background: '#FF2D00' }}>{pred.probB}%</div>
-                    </div>
-                    <div className="prob-labels">
-                      <span>{drawer.teamA}</span>
-                      <span>Draw</span>
-                      <span>{drawer.teamB}</span>
-                    </div>
-                  </div>
-                  <div className="predicted-score">{pred.goalsA} — {pred.goalsB}</div>
-                  <div className="factor-tags">
-                    {pred.factors.map((f, i) => <span key={i} className="factor-tag">{f}</span>)}
-                  </div>
-                  <div className="ai-reasoning">{pred.reasoning}</div>
-                  <span className={`confidence-badge confidence-${pred.confidence}`}>
-                    CONFIDENCE: {pred.confidence}
-                  </span>
-                </div>
-              )
-            })()}
+          <h1 className="text-2xl" style={{ color: 'var(--text-1)' }}>
+            BRACKET
+          </h1>
+          <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 4 }}>
+            ROUND OF 32 → FINAL
           </div>
-        </>
+        </div>
+
+        {hasSimulated ? (
+          <button 
+            onClick={resetAll}
+            style={{
+              border: '1px solid var(--border-2)',
+              background: 'var(--surface)',
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--text-1)',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              transition: 'border-color 80ms ease, color 80ms ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--accent)'
+              e.currentTarget.style.color = 'var(--accent)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-2)'
+              e.currentTarget.style.color = 'var(--text-1)'
+            }}
+          >
+            RESET
+          </button>
+        ) : (
+          <button 
+            onClick={simulateAll}
+            disabled={isSimulating}
+            style={{
+              border: '1px solid var(--border-2)',
+              background: 'var(--surface)',
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--text-1)',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              opacity: isSimulating ? 0.5 : 1,
+              transition: 'border-color 80ms ease, color 80ms ease'
+            }}
+            onMouseEnter={(e) => {
+              if (isSimulating) return
+              e.currentTarget.style.borderColor = 'var(--accent)'
+              e.currentTarget.style.color = 'var(--accent)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-2)'
+              e.currentTarget.style.color = 'var(--text-1)'
+            }}
+          >
+            {isSimulating ? 'SIMULATING...' : 'SIMULATE →'}
+          </button>
+        )}
+      </div>
+
+      {/* SVG CONTAINER */}
+      <div style={{ overflowX: 'auto', overflowY: 'hidden', border: '1px solid var(--border)', padding: 16, background: '#0a0a0a' }}>
+        {renderBracketSVG()}
+      </div>
+
+      {/* REACT STATE HOVER TOOLTIP */}
+      {hoveredTeam && (
+        <div 
+          style={{
+            position: 'fixed',
+            left: tooltipPos.x,
+            top: tooltipPos.y,
+            background: 'var(--surface-2)',
+            border: '1px solid var(--border-2)',
+            color: 'var(--text-1)',
+            padding: '6px 10px',
+            fontSize: 10,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            zIndex: 1000,
+            pointerEvents: 'none',
+            boxShadow: 'var(--shadow-dim)'
+          }}
+        >
+          <strong>{hoveredTeam.name}</strong>
+          <div style={{ color: 'var(--text-2)', marginTop: 2 }}>
+            WC Titles: {hoveredTeam.titles}
+          </div>
+          <div style={{ color: 'var(--text-2)' }}>
+            Group Stage: {hoveredTeam.record}
+          </div>
+        </div>
       )}
     </div>
   )

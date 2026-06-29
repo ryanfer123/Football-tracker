@@ -1,19 +1,104 @@
 import { TEAMS } from '../data/teams'
 
-export function TeamFlag({ teamName, size = 'medium', className = '' }) {
-  const team = TEAMS[teamName]
-  const flagCode = team ? team.code : 'default'
-  const sizeClass = size === 'small' ? 'small' : size === 'large' ? 'large' : ''
+const NAME_TO_CODE = {
+  'Brazil': 'BRA',
+  'Germany': 'GER',
+  'Netherlands': 'NED',
+  'Japan': 'JPN',
+  'Paraguay': 'PAR',
+  'Morocco': 'MAR',
+  'Norway': 'NOR',
+  'France': 'FRA',
+  'Argentina': 'ARG',
+  'Spain': 'ESP',
+  'England': 'ENG',
+  'USA': 'USA',
+  'United States': 'USA',
+  'Portugal': 'POR',
+  'Belgium': 'BEL',
+  'Mexico': 'MEX',
+  'Croatia': 'CRO',
+  'Uruguay': 'URU',
+  'Colombia': 'COL',
+  'Senegal': 'SEN',
+  'South Korea': 'KOR',
+  'Korea Republic': 'KOR',
+  'Switzerland': 'SUI',
+  'Denmark': 'DEN',
+  'Sweden': 'SWE',
+  'Australia': 'AUS',
+  'Ghana': 'GHA',
+  'Ivory Coast': 'CIV',
+  'Algeria': 'ALG',
+  'Canada': 'CAN',
+  'Bosnia': 'BIH',
+  'Bosnia & Herzegovina': 'BIH',
+  'Bosnia and Herzegovina': 'BIH',
+  'Cape Verde': 'CPV',
+  'Ecuador': 'ECU',
+  'Austria': 'AUT',
+}
+
+const ALL_CODES = [
+  'BRA', 'GER', 'NED', 'JPN', 'PAR', 'MAR', 'NOR', 'FRA', 'ARG', 'ESP', 
+  'ENG', 'POR', 'USA', 'MEX', 'CRO', 'URU', 'COL', 'SEN', 'KOR', 'SUI', 
+  'DEN', 'SWE', 'AUS', 'GHA', 'CIV', 'ALG', 'CAN', 'BIH', 'CPV', 'ECU', 'AUT', 'BEL'
+]
+
+export function FlagComponent({ teamCode, teamName, size = 'medium', className = '' }) {
+  let code = teamCode;
+  if (!code && teamName) {
+    code = NAME_TO_CODE[teamName];
+    if (!code) {
+      const teamObj = TEAMS[teamName];
+      if (teamObj) code = teamObj.code;
+    }
+  }
+
+  if (!code) {
+    code = 'DEFAULT';
+  } else {
+    code = code.toUpperCase();
+  }
+
+  const sizeClass = size === 'small' ? 'small' : size === 'large' ? 'large' : '';
+  const isDefault = code === 'DEFAULT' || !ALL_CODES.includes(code);
+
+  if (isDefault) {
+    const width = size === 'small' ? '24px' : size === 'large' ? '120px' : '48px';
+    const height = size === 'small' ? '16px' : size === 'large' ? '80px' : '32px';
+    const fontSize = size === 'small' ? '8px' : '10px';
+
+    return (
+      <div 
+        className={`flag-default ${sizeClass} ${className}`} 
+        style={{ 
+          background: '#333', 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: fontSize,
+          fontWeight: 700,
+          border: '1px solid var(--border)',
+          width: width,
+          height: height,
+        }}
+      >
+        {teamCode ? teamCode.substring(0, 3).toUpperCase() : teamName ? teamName.substring(0, 3).toUpperCase() : 'TBD'}
+      </div>
+    )
+  }
 
   return (
-    <div className={`flag flag-${flagCode} ${sizeClass} ${className}`}>
-      {flagCode === 'NOR' && (
+    <div className={`flag flag-${code} ${sizeClass} ${className}`}>
+      {code === 'NOR' && (
         <>
           <div className="inner-cross-v" />
           <div className="inner-cross-h" />
         </>
       )}
-      {flagCode === 'KOR' && (
+      {code === 'KOR' && (
         <>
           <div className="trigram tg1" />
           <div className="trigram tg2" />
@@ -21,9 +106,13 @@ export function TeamFlag({ teamName, size = 'medium', className = '' }) {
           <div className="trigram tg4" />
         </>
       )}
-      {flagCode === 'AUS' && <div className="stars" />}
+      {code === 'AUS' && <div className="stars" />}
     </div>
   )
+}
+
+export function TeamFlag({ teamName, size = 'medium', className = '' }) {
+  return <FlagComponent teamName={teamName} size={size} className={className} />
 }
 
 // Prediction engine — deterministic heuristics
@@ -76,22 +165,22 @@ export function predictMatch(teamAName, teamBName) {
 
   // Factors
   const factors = []
-  if (teamA.titles > teamB.titles) factors.push('WC PEDIGREE ↑')
-  else if (teamB.titles > teamA.titles) factors.push('WC PEDIGREE ↓')
-  if (teamA.ranking < teamB.ranking) factors.push('HIGHER RANKED')
-  if ((statsA.cohesion || 0) > 80) factors.push('TEAM COHESION')
-  if ((statsA.pace || 0) > 85) factors.push('PACE ADVANTAGE')
-  if ((statsA.experience || 0) > 85) factors.push('EXPERIENCE')
-  if (factors.length > 3) factors.length = 3
-  if (factors.length === 0) factors.push('FORM ↑', 'TACTICAL EDGE', 'SQUAD DEPTH')
+  if (teamA.titles > teamB.titles) factors.push('FORM ↑')
+  else if (teamB.titles > teamA.titles) factors.push('FORM ↑')
+  if (teamA.ranking < teamB.ranking) factors.push('WC PEDIGREE')
+  if ((statsA.cohesion || 0) > 80) factors.push('H2H DOMINANCE')
+  if (factors.length < 3) {
+    factors.push('FORM ↑', 'WC PEDIGREE', 'H2H DOMINANCE')
+  }
+  factors.length = 3
 
   // Confidence
-  const confidence = Math.abs(probA - probB) > 30 ? 'HIGH' : Math.abs(probA - probB) > 15 ? 'MEDIUM' : 'LOW'
+  const confidence = Math.abs(probA - probB) > 30 ? 'HIGH' : Math.abs(probA - probB) > 15 ? 'MED' : 'LOW'
 
   // Reasoning
   const favored = probA > probB ? teamAName : teamBName
   const underdog = probA > probB ? teamBName : teamAName
-  const reasoning = `${favored} enter this match as favorites based on their FIFA ranking (#${probA > probB ? teamA.ranking : teamB.ranking}) and ${(probA > probB ? teamA : teamB).titles > 0 ? `${(probA > probB ? teamA : teamB).titles} World Cup title(s)` : 'recent form'}. ${underdog} will look to cause an upset, but the quality gap in key positions may prove decisive. Expect a ${confidence === 'LOW' ? 'tight, tactical battle' : confidence === 'MEDIUM' ? 'competitive match with moments of brilliance' : 'dominant display from the favorites'}.`
+  const reasoning = `${favored} enter this match as favorites based on their FIFA ranking (#${probA > probB ? teamA.ranking : teamB.ranking}) and ${(probA > probB ? teamA : teamB).titles > 0 ? `${(probA > probB ? teamA : teamB).titles} World Cup title(s)` : 'recent form'}. ${underdog} will look to cause an upset, but the quality gap in key positions may prove decisive. Expect a ${confidence === 'LOW' ? 'tight, tactical battle' : confidence === 'MED' ? 'competitive match with moments of brilliance' : 'dominant display from the favorites'}.`
 
   return {
     teamA: teamAName, teamB: teamBName,

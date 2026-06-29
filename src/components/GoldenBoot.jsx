@@ -1,111 +1,115 @@
-import { useState, useMemo } from 'react'
-import { GOLDEN_BOOT } from '../data/matchData'
+import { FlagComponent } from './shared'
+
+const SCORERS = [
+  { rank: 1, name: 'Lionel Messi', code: 'ARG', country: 'Argentina', goals: 5, assists: 3, mins: 72, eliminated: false },
+  { rank: 2, name: 'Erling Haaland', code: 'NOR', country: 'Norway', goals: 4, assists: 1, mins: 90, eliminated: false },
+  { rank: 3, name: 'Kylian Mbappé', code: 'FRA', country: 'France', goals: 4, assists: 2, mins: 82, eliminated: false },
+  { rank: 4, name: 'Vinicius Jr', code: 'BRA', country: 'Brazil', goals: 3, assists: 2, mins: 88, eliminated: false },
+  { rank: 5, name: 'Harry Kane', code: 'ENG', country: 'England', goals: 3, assists: 1, mins: 90, eliminated: false },
+  { rank: 6, name: 'Robert Lewandowski', code: 'default', country: 'Poland', goals: 3, assists: 0, mins: 90, eliminated: true },
+  { rank: 7, name: 'Jude Bellingham', code: 'ENG', country: 'England', goals: 2, assists: 3, mins: 90, eliminated: false },
+  { rank: 8, name: 'Rodrygo', code: 'BRA', country: 'Brazil', goals: 2, assists: 2, mins: 78, eliminated: false },
+  { rank: 9, name: 'Jamal Musiala', code: 'GER', country: 'Germany', goals: 2, assists: 2, mins: 84, eliminated: false },
+  { rank: 10, name: 'Lautaro Martínez', code: 'ARG', country: 'Argentina', goals: 2, assists: 1, mins: 65, eliminated: false },
+  { rank: 11, name: 'Antoine Griezmann', code: 'FRA', country: 'France', goals: 2, assists: 1, mins: 76, eliminated: false },
+  { rank: 12, name: 'Álvaro Morata', code: 'ESP', country: 'Spain', goals: 2, assists: 0, mins: 70, eliminated: false },
+  { rank: 13, name: 'Cristiano Ronaldo', code: 'POR', country: 'Portugal', goals: 2, assists: 0, mins: 80, eliminated: false },
+  { rank: 14, name: 'Gonçalo Ramos', code: 'POR', country: 'Portugal', goals: 1, assists: 2, mins: 60, eliminated: false },
+  { rank: 15, name: 'Julián Álvarez', code: 'ARG', country: 'Argentina', goals: 1, assists: 1, mins: 70, eliminated: false }
+]
 
 export default function GoldenBoot() {
-  const [sortBy, setSortBy] = useState('GOALS')
-  const [expandedPlayer, setExpandedPlayer] = useState(null)
-
-  const sortedPlayers = useMemo(() => {
-    const players = [...GOLDEN_BOOT]
-    if (sortBy === 'GOALS') players.sort((a, b) => b.goals - a.goals)
-    else if (sortBy === 'ASSISTS') players.sort((a, b) => b.assists - a.assists)
-    else if (sortBy === 'RATING') players.sort((a, b) => b.rating - a.rating)
-    return players
-  }, [sortBy])
-
-  const getRatingColor = (r) => {
-    if (r >= 8) return 'high'
-    if (r >= 7) return 'mid'
-    return 'low'
-  }
-
   return (
     <div>
+      {/* PAGE HEADER */}
       <div className="page-header">
-        <h1 className="page-title">⚽ Golden Boot</h1>
-        <p className="page-subtitle">Top scorers • World Cup 2026</p>
+        <h1 className="text-2xl" style={{ color: 'var(--text-1)' }}>
+          GOLDEN BOOT
+        </h1>
+        <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 4 }}>
+          TOP SCORERS — WC2026
+        </div>
       </div>
 
-      <div className="sort-bar">
-        {['GOALS', 'ASSISTS', 'RATING'].map(s => (
-          <button key={s}
-            className={`filter-btn ${sortBy === s ? 'active' : ''}`}
-            onClick={() => setSortBy(s)}>
-            {s}
-          </button>
-        ))}
-      </div>
+      {/* TABLE */}
+      <div style={{ overflowX: 'auto', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid var(--border-2)', background: 'var(--bg)' }}>
+              <th className="text-xs" style={{ color: 'var(--text-3)', padding: '8px 16px', width: 60 }}>#</th>
+              <th className="text-xs" style={{ color: 'var(--text-3)', padding: '8px 16px' }}>PLAYER</th>
+              <th className="text-xs" style={{ color: 'var(--text-3)', padding: '8px 16px', width: 120 }}>COUNTRY</th>
+              <th className="text-xs" style={{ color: 'var(--text-3)', padding: '8px 16px', width: 80, textAlign: 'right' }}>GOALS</th>
+              <th className="text-xs" style={{ color: 'var(--text-3)', padding: '8px 16px', width: 100, textAlign: 'right' }}>ASSISTS</th>
+              <th className="text-xs" style={{ color: 'var(--text-3)', padding: '8px 16px', width: 100, textAlign: 'right' }}>MINS/G</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SCORERS.map((row) => {
+              const isFirst = row.rank === 1
+              const rowBorderLeft = isFirst ? '2px solid var(--accent)' : 'none'
 
-      <table className="scorer-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Player</th>
-            <th>Country</th>
-            <th>Club</th>
-            <th>Goals</th>
-            <th>Assists</th>
-            <th>Mins/Goal</th>
-            <th>Rating</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedPlayers.map((player, i) => (
-            <>
-              <tr key={player.name}
-                className={`scorer-row ${i === 0 && sortBy === 'GOALS' ? 'leader' : ''}`}
-                onClick={() => setExpandedPlayer(expandedPlayer === player.name ? null : player.name)}>
-                <td>{i + 1}</td>
-                <td>
-                  <span style={{ fontWeight: 700 }}>{player.name}</span>
-                  {i === 0 && sortBy === 'GOALS' && (
-                    <span className="golden-boot-tag">👟 GOLDEN BOOT LEADER</span>
-                  )}
-                </td>
-                <td>{player.flag} {player.country}</td>
-                <td>{player.club}</td>
-                <td style={{ fontWeight: 700, fontSize: 16 }}>{player.goals}</td>
-                <td>{player.assists}</td>
-                <td>{player.minsPerGoal}</td>
-                <td style={{ fontWeight: 700, color: player.rating >= 8.5 ? '#FF2D00' : '#000' }}>
-                  {player.rating}
-                </td>
-              </tr>
-              {expandedPlayer === player.name && (
-                <tr key={`${player.name}-detail`}>
-                  <td colSpan={8} style={{ padding: 0 }}>
-                    <div className="scorer-expanded">
-                      <div className="detail-title">Goal Breakdown</div>
-                      <ul className="goal-list">
-                        {player.goalDetails.map((g, j) => (
-                          <li key={j}>
-                            <span className="goal-minute">{g.minute}'</span>
-                            <span>{g.match}</span>
-                            <span className="goal-type">{g.type}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <div className="detail-title" style={{ marginTop: 16 }}>Match Ratings</div>
-                      <div className="match-rating-chips">
-                        {player.matchRatings.filter(r => r > 0).map((r, j) => (
-                          <div key={j} className={`rating-chip ${getRatingColor(r)}`}>
-                            {r.toFixed(1)}
-                          </div>
-                        ))}
-                      </div>
-
-                      <div style={{ marginTop: 12, fontSize: 12, color: '#888' }}>
-                        Club: {player.club} • Status: <span className={`status-chip ${player.status === 'IN' ? 'in' : 'out'}`}>{player.status}</span>
-                      </div>
+              return (
+                <tr 
+                  key={row.rank}
+                  style={{
+                    height: 48,
+                    borderBottom: '1px solid var(--border)',
+                    borderLeft: rowBorderLeft,
+                    transition: 'background 80ms ease',
+                    cursor: 'pointer',
+                    opacity: row.eliminated ? 0.5 : 1
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-2)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >
+                  {/* Rank */}
+                  <td style={{ padding: '0 16px', fontSize: 13, fontWeight: 700, color: isFirst ? 'var(--accent)' : 'var(--text-3)' }}>
+                    {row.rank}
+                  </td>
+                  
+                  {/* Player Name */}
+                  <td style={{ padding: '0 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <FlagComponent teamCode={row.code} size="tiny" style={{ width: 20, height: 13 }} />
+                      <span 
+                        style={{ 
+                          fontSize: 14, 
+                          fontWeight: 700, 
+                          color: 'var(--text-1)',
+                          textDecoration: row.eliminated ? 'line-through' : 'none'
+                        }}
+                      >
+                        {row.name}
+                      </span>
                     </div>
                   </td>
+
+                  {/* Country Name */}
+                  <td style={{ padding: '0 16px', fontSize: 12, color: 'var(--text-3)', textTransform: 'uppercase' }}>
+                    {row.country}
+                  </td>
+
+                  {/* Goals */}
+                  <td style={{ padding: '0 16px', fontSize: 18, fontWeight: 800, color: isFirst ? 'var(--accent)' : 'var(--text-1)', textAlign: 'right' }}>
+                    {row.goals}
+                  </td>
+
+                  {/* Assists */}
+                  <td style={{ padding: '0 16px', fontSize: 13, color: 'var(--text-2)', textAlign: 'right' }}>
+                    {row.assists}
+                  </td>
+
+                  {/* Mins/G */}
+                  <td style={{ padding: '0 16px', fontSize: 12, color: 'var(--text-3)', textAlign: 'right' }}>
+                    {row.mins}m
+                  </td>
                 </tr>
-              )}
-            </>
-          ))}
-        </tbody>
-      </table>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
