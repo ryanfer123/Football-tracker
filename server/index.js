@@ -344,7 +344,10 @@ app.get('/api/stats/goldenboot', async (req, res) => {
       'https://footballdata.io/api/v1/players/topscorers',
       'https://footballdata.io/api/v1/players/top_scorers',
       'https://footballdata.io/api/v1/stats/scorers',
-      'https://footballdata.io/api/v1/scorers'
+      'https://footballdata.io/api/v1/scorers',
+      // api-football common topscorer endpoints (may require league/season params)
+      'https://v3.football.api-sports.io/players/topscorers',
+      'https://api-football-v1.p.rapidapi.com/players/topscorers'
     ]
 
     let json = null
