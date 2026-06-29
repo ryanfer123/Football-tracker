@@ -220,6 +220,57 @@ app.post('/api/auth/logout', (_req, res) => {
   res.json({ ok: true })
 })
 
+let matchCache = { data: null, timestamp: 0 }
+app.get('/api/matches/today', async (req, res) => {
+  try {
+    const now = Date.now()
+    if (matchCache.data && (now - matchCache.timestamp < 60000)) {
+      return res.json(matchCache.data)
+    }
+    
+    if (!process.env.FOOTBALL_API_KEY) {
+      return res.json([])
+    }
+
+    const response = await fetch('https://footballdata.io/api/v1/fixtures/today', {
+      headers: { 'Authorization': `Bearer ${process.env.FOOTBALL_API_KEY}` }
+    })
+    
+    if (!response.ok) throw new Error('API failed')
+    
+    const json = await response.json()
+    const matches = (json.data?.matches || []).map(m => {
+      let status = 'PRE'
+      if (m.status === 'in_progress') status = 'LIVE'
+      if (m.status === 'complete') status = 'FT'
+      
+      // Attempt to parse match_date for time
+      const dateObj = new Date(m.date_unix * 1000)
+      const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })
+      const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric', timeZone: 'Asia/Kolkata' }).toUpperCase()
+      
+      return {
+        id: String(m.match_id),
+        teamA: m.home_team.team_name,
+        teamB: m.away_team.team_name,
+        scoreA: m.score.home,
+        scoreB: m.score.away,
+        status,
+        time: status === 'LIVE' ? (m.status_localized || 'LIVE') : timeStr,
+        venue: m.venue.stadium_name || 'TBA',
+        city: m.venue.stadium_location || '',
+        date: dateStr
+      }
+    })
+    
+    matchCache = { data: matches, timestamp: now }
+    res.json(matches)
+  } catch (error) {
+    console.error('Error fetching matches:', error)
+    res.status(500).json({ message: 'Could not fetch live matches' })
+  }
+})
+
 const distPath = path.resolve(__dirname, '../dist')
 if (existsSync(path.join(distPath, 'index.html'))) {
   app.use(express.static(distPath))

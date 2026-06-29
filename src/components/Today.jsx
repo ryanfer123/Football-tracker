@@ -728,34 +728,12 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
 
     async function fetchData() {
       try {
-        const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard')
+        const res = await fetch('/api/matches/today')
         const data = await res.json()
         if (!active) return
 
-        if (data && data.events && data.events.length > 0) {
-          const mapped = data.events.map(event => {
-            const competition = event.competitions[0]
-            const teamAObj = competition.competitors[0]
-            const teamBObj = competition.competitors[1]
-            
-            const isLiveState = event.status.type.state === 'in'
-            const isFtState = event.status.type.state === 'post'
-            
-            return {
-              id: event.id,
-              teamA: teamAObj.team.displayName,
-              teamB: teamBObj.team.displayName,
-              scoreA: parseInt(teamAObj.score) || 0,
-              scoreB: parseInt(teamBObj.score) || 0,
-              status: isLiveState ? 'LIVE' : isFtState ? 'FT' : 'PRE',
-              minute: event.status.displayClock || "0'",
-              time: new Date(event.date).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false }),
-              venue: competition.venue?.fullName || 'Stadium',
-              city: competition.venue?.address?.city || 'Host City',
-              date: 'JUNE 29, 2026'
-            }
-          })
-          setTodayMatches(mapped)
+        if (Array.isArray(data) && data.length > 0) {
+          setTodayMatches(data)
         } else {
           setTodayMatches(FALLBACK_TODAY)
         }
