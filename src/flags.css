@@ -1,0 +1,371 @@
+/* ─── SWISS GRAPHIC DESIGN PURE CSS FLAGS ─── */
+
+.flag {
+  width: 48px;
+  height: 32px;
+  border: 1px solid #2E2E2E;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.flag.large {
+  width: 120px;
+  height: 80px;
+  border: 1.5px solid #2E2E2E;
+}
+
+.flag.small {
+  width: 28px;
+  height: 18px;
+  border: 1px solid #2E2E2E;
+}
+
+/* Brazil */
+.flag-BRA { background: #009C3B; }
+.flag-BRA::before {
+  content: ''; position: absolute;
+  top: 10%; left: 10%; right: 10%; bottom: 10%;
+  background: #FFDF00;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.flag-BRA::after {
+  content: ''; position: absolute;
+  top: 30%; left: 35%; right: 35%; bottom: 30%;
+  background: #002776; border-radius: 50%;
+}
+
+/* Germany */
+.flag-GER {
+  background: linear-gradient(to bottom, #000 33.3%, #DD0000 33.3%, #DD0000 66.6%, #FFCC00 66.6%);
+}
+
+/* Netherlands */
+.flag-NED {
+  background: linear-gradient(to bottom, #AE1C28 33.3%, #fff 33.3%, #fff 66.6%, #21468B 66.6%);
+}
+
+/* Japan */
+.flag-JPN { background: #fff; }
+.flag-JPN::after {
+  content: ''; position: absolute;
+  top: 15%; bottom: 15%; left: 30%; right: 30%;
+  background: #BC002D; border-radius: 50%;
+}
+
+/* Paraguay */
+.flag-PAR {
+  background: linear-gradient(to bottom, #D52B1E 33.3%, #fff 33.3%, #fff 66.6%, #0038A8 66.6%);
+}
+.flag-PAR::after {
+  content: ''; position: absolute;
+  top: 40%; left: 42%; width: 16%; height: 20%;
+  background: #000; border-radius: 50%; /* Coat of arms placeholder */
+}
+
+/* Morocco */
+.flag-MAR { background: #C1272D; }
+.flag-MAR::after {
+  content: '★';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #006233;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* France */
+.flag-FRA {
+  background: linear-gradient(to right, #002395 33.3%, #fff 33.3%, #fff 66.6%, #ED2939 66.6%);
+}
+
+/* Norway */
+.flag-NOR { background: #EF2B2D; }
+.flag-NOR::before {
+  content: ''; position: absolute;
+  top: 0; bottom: 0; left: 25%; width: 25%;
+  background: #002868;
+}
+.flag-NOR::after {
+  content: ''; position: absolute;
+  left: 0; right: 0; top: 35%; height: 30%;
+  background: #002868;
+}
+.flag-NOR .inner-cross-v {
+  position: absolute; top: 0; bottom: 0; left: 30%; width: 15%;
+  background: #FFFFFF; z-index: 1;
+}
+.flag-NOR .inner-cross-h {
+  position: absolute; left: 0; right: 0; top: 42.5%; height: 15%;
+  background: #FFFFFF; z-index: 1;
+}
+
+/* Argentina */
+.flag-ARG {
+  background: linear-gradient(to bottom, #74ACDF 33.3%, #fff 33.3%, #fff 66.6%, #74ACDF 66.6%);
+}
+.flag-ARG::after {
+  content: '☀'; position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #F6B40E; font-size: 16px;
+  line-height: 1;
+}
+
+/* Spain */
+.flag-ESP {
+  background: linear-gradient(to bottom, #AA151B 25%, #F1BF00 25%, #F1BF00 75%, #AA151B 75%);
+}
+.flag-ESP::after {
+  content: ''; position: absolute;
+  top: 35%; left: 20%; width: 10%; height: 30%;
+  background: #000;
+}
+
+/* England */
+.flag-ENG { background: #fff; }
+.flag-ENG::before {
+  content: ''; position: absolute;
+  top: 0; bottom: 0; left: 42.5%; width: 15%;
+  background: #CE1124;
+}
+.flag-ENG::after {
+  content: ''; position: absolute;
+  left: 0; right: 0; top: 35%; height: 30%;
+  background: #CE1124;
+}
+
+/* Portugal */
+.flag-POR {
+  background: linear-gradient(to right, #046A38 40%, #DA291C 40%);
+}
+.flag-POR::after {
+  content: ''; position: absolute;
+  top: 30%; left: 32%; width: 16%; height: 40%;
+  background: #F1BF00; border-radius: 4px;
+}
+
+/* USA */
+.flag-USA {
+  background: repeating-linear-gradient(to bottom, #B31942 0, #B31942 7.69%, #fff 7.69%, #fff 15.38%);
+}
+.flag-USA::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; width: 40%; height: 53.85%;
+  background: #0A3161;
+}
+
+/* Mexico */
+.flag-MEX {
+  background: linear-gradient(to right, #006847 33.3%, #fff 33.3%, #fff 66.6%, #CE1126 66.6%);
+}
+.flag-MEX::after {
+  content: ''; position: absolute;
+  top: 35%; left: 42%; width: 16%; height: 30%;
+  background: #5E3A1C; border-radius: 50%;
+}
+
+/* Croatia */
+.flag-CRO {
+  background: linear-gradient(to bottom, #FF0000 33.3%, #fff 33.3%, #fff 66.6%, #0000FF 66.6%);
+}
+.flag-CRO::after {
+  content: ''; position: absolute;
+  top: 30%; left: 40%; width: 20%; height: 40%;
+  background: repeating-linear-gradient(45deg, #FF0000, #FF0000 5px, #fff 5px, #fff 10px);
+  border: 1px solid #000;
+}
+
+/* Uruguay */
+.flag-URU {
+  background: repeating-linear-gradient(to bottom, #0038A8 0, #0038A8 11.1%, #fff 11.1%, #fff 22.2%);
+}
+.flag-URU::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; width: 40%; height: 44.4%;
+  background: #fff;
+}
+.flag-URU::after {
+  content: ''; position: absolute;
+  top: 10%; left: 10%; width: 20%; height: 24.4%;
+  background: #FCD116; border-radius: 50%;
+}
+
+/* Colombia */
+.flag-COL {
+  background: linear-gradient(to bottom, #FCD116 50%, #003893 50%, #003893 75%, #CE1126 75%);
+}
+
+/* Senegal */
+.flag-SEN {
+  background: linear-gradient(to right, #00853F 33.3%, #FDEF42 33.3%, #FDEF42 66.6%, #E31B23 66.6%);
+}
+.flag-SEN::after {
+  content: ''; position: absolute;
+  top: 35%; left: 42%; width: 16%; height: 30%;
+  background: #00853F;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* Korea Republic */
+.flag-KOR { background: #fff; }
+.flag-KOR::before {
+  content: ''; position: absolute;
+  top: 25%; left: 35%; width: 30%; height: 50%;
+  background: linear-gradient(to bottom, #CD2E3A 50%, #0047A0 50%);
+  border-radius: 50%;
+}
+.flag-KOR .trigram {
+  position: absolute; width: 8%; height: 15%; background: #000;
+}
+.flag-KOR .tg1 { top: 10%; left: 15%; transform: rotate(45deg); }
+.flag-KOR .tg2 { top: 10%; right: 15%; transform: rotate(-45deg); }
+.flag-KOR .tg3 { bottom: 10%; left: 15%; transform: rotate(-45deg); }
+.flag-KOR .tg4 { bottom: 10%; right: 15%; transform: rotate(45deg); }
+
+/* Switzerland */
+.flag-SUI { background: #FF0000; }
+.flag-SUI::before {
+  content: ''; position: absolute;
+  top: 15%; bottom: 15%; left: 40%; width: 20%;
+  background: #fff;
+}
+.flag-SUI::after {
+  content: ''; position: absolute;
+  left: 20%; right: 20%; top: 40%; height: 20%;
+  background: #fff;
+}
+
+/* Denmark */
+.flag-DEN { background: #C60C30; }
+.flag-DEN::before {
+  content: ''; position: absolute;
+  top: 0; bottom: 0; left: 30%; width: 15%;
+  background: #fff;
+}
+.flag-DEN::after {
+  content: ''; position: absolute;
+  left: 0; right: 0; top: 42.5%; height: 15%;
+  background: #fff;
+}
+
+/* Sweden */
+.flag-SWE { background: #006AA7; }
+.flag-SWE::before {
+  content: ''; position: absolute;
+  top: 0; bottom: 0; left: 30%; width: 15%;
+  background: #FECC00;
+}
+.flag-SWE::after {
+  content: ''; position: absolute;
+  left: 0; right: 0; top: 42.5%; height: 15%;
+  background: #FECC00;
+}
+
+/* Italy */
+.flag-ITA {
+  background: linear-gradient(to right, #009246 33.3%, #fff 33.3%, #fff 66.6%, #CE2B37 66.6%);
+}
+
+/* Belgium */
+.flag-BEL {
+  background: linear-gradient(to right, #000 33.3%, #FDDA24 33.3%, #FDDA24 66.6%, #EF3340 66.6%);
+}
+
+/* Ecuador */
+.flag-ECU {
+  background: linear-gradient(to bottom, #FFD100 50%, #001489 50%, #001489 75%, #ED1C24 75%);
+}
+.flag-ECU::after {
+  content: ''; position: absolute;
+  top: 25%; left: 42%; width: 16%; height: 25%;
+  background: #000; border-radius: 4px;
+}
+
+/* Ghana */
+.flag-GHA {
+  background: linear-gradient(to bottom, #CE1126 33.3%, #FCD116 33.3%, #FCD116 66.6%, #006B3F 66.6%);
+}
+.flag-GHA::after {
+  content: ''; position: absolute;
+  top: 35%; left: 42%; width: 16%; height: 30%;
+  background: #000;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* Cameroon */
+.flag-CMR {
+  background: linear-gradient(to right, #007A5E 33.3%, #CE1126 33.3%, #CE1126 66.6%, #FCD116 66.6%);
+}
+.flag-CMR::after {
+  content: ''; position: absolute;
+  top: 35%; left: 42%; width: 16%; height: 30%;
+  background: #FCD116;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* Australia */
+.flag-AUS { background: #012169; }
+.flag-AUS::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; width: 40%; height: 50%;
+  background: repeating-linear-gradient(45deg, #012169 25%, #E4002B 25%, #E4002B 50%, #fff 50%, #fff 75%, #012169 75%);
+}
+.flag-AUS .stars {
+  position: absolute; right: 20%; bottom: 20%; width: 10%; height: 15%; background: #fff; border-radius: 50%;
+}
+
+/* DR Congo */
+.flag-COD { background: #007FFF; }
+.flag-COD::before {
+  content: ''; position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: linear-gradient(to bottom right, transparent 40%, #CE1021 40%, #CE1021 60%, transparent 60%);
+}
+.flag-COD::after {
+  content: ''; position: absolute;
+  top: 10%; left: 10%; width: 20%; height: 30%;
+  background: #F7D116;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* Canada */
+.flag-CAN {
+  background: linear-gradient(to right, #FF0000 25%, #fff 25%, #fff 75%, #FF0000 75%);
+}
+.flag-CAN::after {
+  content: ''; position: absolute;
+  top: 20%; left: 35%; right: 35%; bottom: 20%;
+  background: #FF0000;
+  clip-path: polygon(50% 0%, 65% 20%, 90% 15%, 85% 45%, 100% 60%, 75% 75%, 60% 100%, 40% 100%, 25% 75%, 0% 60%, 15% 45%, 10% 15%, 35% 20%);
+}
+
+/* Austria */
+.flag-AUT {
+  background: linear-gradient(to bottom, #ED2939 33.3%, #fff 33.3%, #fff 66.6%, #ED2939 66.6%);
+}
+
+/* Cape Verde */
+.flag-CPV {
+  background: linear-gradient(to bottom, #003893 50%, #fff 50%, #fff 60%, #CE1126 60%, #CE1126 70%, #fff 70%, #fff 80%, #003893 80%);
+}
+.flag-CPV::after {
+  content: ''; position: absolute;
+  top: 30%; left: 20%; width: 40%; height: 40%;
+  border: 4px dotted #F7D116; border-radius: 50%;
+}
+
+/* Nigeria */
+.flag-NGA {
+  background: linear-gradient(to right, #008751 33.3%, #fff 33.3%, #fff 66.6%, #008751 66.6%);
+}
+
+/* Generic Fallback */
+.flag-default {
+  background: #000;
+}
