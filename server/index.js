@@ -16,6 +16,20 @@ app.use((req, res, next) => {
   try { console.log('REQ', req.method, req.path) } catch (e) {}
   next()
 })
+
+// Helper: fetch with timeout (protect from hanging external API calls)
+async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal })
+    clearTimeout(id)
+    return res
+  } catch (err) {
+    clearTimeout(id)
+    throw err
+  }
+}
 const port = process.env.PORT || 5050
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -245,9 +259,9 @@ app.get('/api/matches/today', async (req, res) => {
 
     for (const key of keys) {
       try {
-        const response = await fetch('https://footballdata.io/api/v1/fixtures/today', {
+        const response = await fetchWithTimeout('https://footballdata.io/api/v1/fixtures/today', {
           headers: { 'Authorization': `Bearer ${key}` }
-        })
+        }, 10000)
         
         if (response.ok) {
           json = await response.json()
@@ -342,7 +356,7 @@ app.get('/api/stats/goldenboot', async (req, res) => {
       const key = keys[kIdx]
       for (const ep of endpoints) {
         try {
-          const response = await fetch(ep, { headers: { 'Authorization': `Bearer ${key}` } })
+          const response = await fetchWithTimeout(ep, { headers: { 'Authorization': `Bearer ${key}` } }, 10000)
           if (!response.ok) continue
           json = await response.json()
           // Accept several shapes
