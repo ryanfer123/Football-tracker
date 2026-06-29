@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
 import { TEAMS } from '../data/teams'
 
-export default function Profile({ onNavigateToPredict }) {
+export default function Profile({ onNavigateToPredict, currentUser, onLogout, onUpdateUser }) {
   // Stored preferences state
   const [followed, setFollowed] = useState(() => {
     const saved = localStorage.getItem('followedTeams')
@@ -19,12 +19,8 @@ export default function Profile({ onNavigateToPredict }) {
     }
   })
 
-  const [username, setUsername] = useState(() => {
-    return localStorage.getItem('profileUsername') || 'WC26 FAN'
-  })
-
   const [isEditing, setIsEditing] = useState(false)
-  const [tempUsername, setTempUsername] = useState(username)
+  const [tempUsername, setTempUsername] = useState(currentUser?.name || '')
 
   const [showDropdown, setShowDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -43,23 +39,52 @@ export default function Profile({ onNavigateToPredict }) {
   }
 
   const handleRemoveTeam = (teamName) => {
-    setFollowed(prev => prev.filter(t => t !== teamName))
+    const next = followed.filter(t => t !== teamName)
+    setFollowed(next)
+    localStorage.setItem('followedTeams', JSON.stringify(next))
   }
 
   const handleAddTeam = (teamName) => {
     if (!followed.includes(teamName)) {
-      setFollowed(prev => [...prev, teamName])
+      const next = [...followed, teamName]
+      setFollowed(next)
+      localStorage.setItem('followedTeams', JSON.stringify(next))
     }
     setShowDropdown(false)
     setSearchQuery('')
   }
 
-  const handleSaveUsername = () => {
+  const handleSaveUsername = async () => {
     if (tempUsername.trim()) {
-      setUsername(tempUsername)
-      localStorage.setItem('profileUsername', tempUsername)
+      try {
+        const response = await fetch('/api/auth/me', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: tempUsername }),
+          credentials: 'include'
+        })
+        if (response.ok) {
+          const data = await response.json()
+          if (onUpdateUser) {
+            onUpdateUser(data.user)
+          }
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
     setIsEditing(false)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+      if (onLogout) {
+        onLogout()
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   // Fallback Predictions if none exist in localStorage
@@ -164,28 +189,50 @@ export default function Profile({ onNavigateToPredict }) {
                 </button>
               </div>
             ) : (
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-1)', marginBottom: 2 }}>
-                {username}
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-1)', marginBottom: 2 }}>
+                  {currentUser?.name || 'WC26 FAN'}
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text-2)', marginBottom: 4 }}>
+                  {currentUser?.email}
+                </div>
               </div>
             )}
             
             <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 12 }}>Joined June 2026</div>
             
             {!isEditing && (
-              <button 
-                onClick={() => { setTempUsername(username); setIsEditing(true) }}
-                style={{ 
-                  background: 'transparent',
-                  border: '1px solid var(--border)', 
-                  padding: '3px 8px', 
-                  fontSize: 9, 
-                  fontWeight: 600, 
-                  color: 'var(--text-3)',
-                  cursor: 'pointer'
-                }}
-              >
-                EDIT PROFILE
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button 
+                  onClick={() => { setTempUsername(currentUser?.name || ''); setIsEditing(true) }}
+                  style={{ 
+                    background: 'transparent',
+                    border: '1px solid var(--border)', 
+                    padding: '3px 8px', 
+                    fontSize: 9, 
+                    fontWeight: 600, 
+                    color: 'var(--text-3)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  EDIT PROFILE
+                </button>
+                <button 
+                  onClick={handleLogout}
+                  style={{ 
+                    background: 'transparent',
+                    border: '1px solid var(--border)', 
+                    padding: '3px 8px', 
+                    fontSize: 9, 
+                    fontWeight: 600, 
+                    color: 'var(--red)',
+                    cursor: 'pointer',
+                    marginLeft: 8
+                  }}
+                >
+                  SIGN OUT
+                </button>
+              </div>
             )}
           </div>
 

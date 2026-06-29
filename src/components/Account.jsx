@@ -26,7 +26,7 @@ async function request(path, options = {}) {
   return data
 }
 
-export default function Account() {
+export default function Account({ onAuthSuccess }) {
   const [mode, setMode] = useState('login')
   const [form, setForm] = useState(initialForm)
   const [profileForm, setProfileForm] = useState({ name: '', favoriteTeam: '' })
@@ -75,10 +75,9 @@ export default function Account() {
       })
 
       setUser(nextUser)
-      setProfileForm({
-        name: nextUser.name,
-        favoriteTeam: nextUser.favoriteTeam || '',
-      })
+      if (onAuthSuccess) {
+        onAuthSuccess(nextUser)
+      }
       setForm(initialForm)
       setStatus(mode === 'register' ? 'Account created.' : 'Signed in.')
     } catch (authError) {

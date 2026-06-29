@@ -9,9 +9,11 @@ import GoldenBoot from './components/GoldenBoot'
 import Tracker from './components/Tracker'
 import DreamXI from './components/DreamXI'
 import Profile from './components/Profile'
+import Account from './components/Account'
 
 import { TEAMS } from './data/teams'
 import { PLAYERS } from './data/players'
+import { FlagComponent } from './components/shared'
 
 const SVG_ICONS = {
   search: (
@@ -93,6 +95,9 @@ const TABS = [
 ]
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(null)
+  const [authChecking, setAuthChecking] = useState(true)
+
   const [activeTab, setActiveTab] = useState('today')
   const [selectedTeamName, setSelectedTeamName] = useState(null)
   const [selectedPlayerName, setSelectedPlayerName] = useState(null)
@@ -101,6 +106,26 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const searchInputRef = useRef(null)
+
+  // Check authentication session on mount
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' })
+        if (res.ok) {
+          const data = await res.json()
+          setCurrentUser(data.user)
+        } else {
+          setCurrentUser(null)
+        }
+      } catch {
+        setCurrentUser(null)
+      } finally {
+        setAuthChecking(false)
+      }
+    }
+    checkSession()
+  }, [])
 
   // Escape key close search
   useEffect(() => {
@@ -158,7 +183,14 @@ export default function App() {
       case 'golden-boot': 
         return <GoldenBoot selectedPlayerName={selectedPlayerName} setSelectedPlayerName={setSelectedPlayerName} />
       case 'profile':
-        return <Profile onNavigateToPredict={() => setActiveTab('predict')} />
+        return (
+          <Profile 
+            onNavigateToPredict={() => setActiveTab('predict')} 
+            currentUser={currentUser}
+            onLogout={() => setCurrentUser(null)}
+            onUpdateUser={(user) => setCurrentUser(user)}
+          />
+        )
       default: 
         return <Today onNavigateToTeam={viewTeamProfile} />
     }
@@ -198,6 +230,45 @@ export default function App() {
     m.teamA.toLowerCase().includes(searchQuery.toLowerCase()) ||
     m.teamB.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  if (authChecking) {
+    return (
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          height: '100vh', 
+          background: 'var(--bg)', 
+          color: 'var(--text-3)', 
+          fontSize: 13, 
+          fontWeight: 600,
+          letterSpacing: '0.08em'
+        }}
+      >
+        CHECKING SESSION...
+      </div>
+    )
+  }
+
+  if (!currentUser) {
+    return (
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          minHeight: '100vh', 
+          background: 'var(--bg)', 
+          padding: 20 
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: 720 }}>
+          <Account onAuthSuccess={(user) => setCurrentUser(user)} />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="app">
