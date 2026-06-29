@@ -5,56 +5,43 @@ import { PLAYERS } from '../data/players'
 // Coordinates in % (x, y) relative to pitch container
 const FORMATION_SLOTS = {
   '4-3-3': [
-    { id: 0, role: 'GK', x: 50, y: 88, name: 'GK' },
-    { id: 1, role: 'DEF', x: 15, y: 68, name: 'LB' },
-    { id: 2, role: 'DEF', x: 38, y: 72, name: 'LCB' },
-    { id: 3, role: 'DEF', x: 62, y: 72, name: 'RCB' },
-    { id: 4, role: 'DEF', x: 85, y: 68, name: 'RB' },
-    { id: 5, role: 'MID', x: 25, y: 46, name: 'LCM' },
-    { id: 6, role: 'MID', x: 50, y: 50, name: 'CM' },
-    { id: 7, role: 'MID', x: 75, y: 46, name: 'RCM' },
-    { id: 8, role: 'FWD', x: 20, y: 22, name: 'LW' },
-    { id: 9, role: 'FWD', x: 50, y: 16, name: 'ST' },
-    { id: 10, role: 'FWD', x: 80, y: 22, name: 'RW' }
+    { id: 0, role: 'GK', x: 50, y: 90, name: 'GK' },
+    { id: 1, role: 'DEF', x: 15, y: 70, name: 'LB' },
+    { id: 2, role: 'DEF', x: 35, y: 70, name: 'LCB' },
+    { id: 3, role: 'DEF', x: 65, y: 70, name: 'RCB' },
+    { id: 4, role: 'DEF', x: 85, y: 70, name: 'RB' },
+    { id: 5, role: 'MID', x: 25, y: 45, name: 'LCM' },
+    { id: 6, role: 'MID', x: 50, y: 55, name: 'CDM' },
+    { id: 7, role: 'MID', x: 75, y: 45, name: 'RCM' },
+    { id: 8, role: 'FWD', x: 25, y: 20, name: 'LW' },
+    { id: 9, role: 'FWD', x: 50, y: 15, name: 'ST' },
+    { id: 10, role: 'FWD', x: 75, y: 20, name: 'RW' }
   ],
   '4-4-2': [
-    { id: 0, role: 'GK', x: 50, y: 88, name: 'GK' },
-    { id: 1, role: 'DEF', x: 15, y: 68, name: 'LB' },
-    { id: 2, role: 'DEF', x: 38, y: 72, name: 'LCB' },
-    { id: 3, role: 'DEF', x: 62, y: 72, name: 'RCB' },
-    { id: 4, role: 'DEF', x: 85, y: 68, name: 'RB' },
-    { id: 5, role: 'MID', x: 15, y: 46, name: 'LM' },
-    { id: 6, role: 'MID', x: 38, y: 48, name: 'LCM' },
-    { id: 7, role: 'MID', x: 62, y: 48, name: 'RCM' },
-    { id: 8, role: 'MID', x: 85, y: 46, name: 'RM' },
+    { id: 0, role: 'GK', x: 50, y: 90, name: 'GK' },
+    { id: 1, role: 'DEF', x: 15, y: 70, name: 'LB' },
+    { id: 2, role: 'DEF', x: 35, y: 70, name: 'LCB' },
+    { id: 3, role: 'DEF', x: 65, y: 70, name: 'RCB' },
+    { id: 4, role: 'DEF', x: 85, y: 70, name: 'RB' },
+    { id: 5, role: 'MID', x: 15, y: 45, name: 'LM' },
+    { id: 6, role: 'MID', x: 35, y: 45, name: 'LCM' },
+    { id: 7, role: 'MID', x: 65, y: 45, name: 'RCM' },
+    { id: 8, role: 'MID', x: 85, y: 45, name: 'RM' },
     { id: 9, role: 'FWD', x: 35, y: 20, name: 'ST1' },
     { id: 10, role: 'FWD', x: 65, y: 20, name: 'ST2' }
   ],
   '4-2-3-1': [
-    { id: 0, role: 'GK', x: 50, y: 88, name: 'GK' },
-    { id: 1, role: 'DEF', x: 15, y: 68, name: 'LB' },
-    { id: 2, role: 'DEF', x: 38, y: 72, name: 'LCB' },
-    { id: 3, role: 'DEF', x: 62, y: 72, name: 'RCB' },
-    { id: 4, role: 'DEF', x: 85, y: 68, name: 'RB' },
-    { id: 5, role: 'MID', x: 33, y: 52, name: 'LDM' },
-    { id: 6, role: 'MID', x: 67, y: 52, name: 'RDM' },
-    { id: 7, role: 'MID', x: 20, y: 32, name: 'LAM' },
-    { id: 8, role: 'MID', x: 50, y: 30, name: 'AM' },
-    { id: 9, role: 'MID', x: 80, y: 32, name: 'RAM' },
+    { id: 0, role: 'GK', x: 50, y: 90, name: 'GK' },
+    { id: 1, role: 'DEF', x: 15, y: 75, name: 'LB' },
+    { id: 2, role: 'DEF', x: 35, y: 75, name: 'LCB' },
+    { id: 3, role: 'DEF', x: 65, y: 75, name: 'RCB' },
+    { id: 4, role: 'DEF', x: 85, y: 75, name: 'RB' },
+    { id: 5, role: 'MID', x: 35, y: 55, name: 'LDM' },
+    { id: 6, role: 'MID', x: 65, y: 55, name: 'RDM' },
+    { id: 7, role: 'MID', x: 20, y: 35, name: 'LAM' },
+    { id: 8, role: 'MID', x: 50, y: 35, name: 'AM' },
+    { id: 9, role: 'MID', x: 80, y: 35, name: 'RAM' },
     { id: 10, role: 'FWD', x: 50, y: 15, name: 'ST' }
-  ],
-  '3-5-2': [
-    { id: 0, role: 'GK', x: 50, y: 88, name: 'GK' },
-    { id: 1, role: 'DEF', x: 25, y: 72, name: 'LCB' },
-    { id: 2, role: 'DEF', x: 50, y: 74, name: 'CB' },
-    { id: 3, role: 'DEF', x: 75, y: 72, name: 'RCB' },
-    { id: 4, role: 'MID', x: 12, y: 46, name: 'LWB' },
-    { id: 5, role: 'MID', x: 33, y: 48, name: 'LCM' },
-    { id: 6, role: 'MID', x: 50, y: 52, name: 'CM' },
-    { id: 7, role: 'MID', x: 67, y: 48, name: 'RCM' },
-    { id: 8, role: 'MID', x: 88, y: 46, name: 'RWB' },
-    { id: 9, role: 'FWD', x: 35, y: 20, name: 'ST1' },
-    { id: 10, role: 'FWD', x: 65, y: 20, name: 'ST2' }
   ]
 }
 
@@ -238,8 +225,8 @@ export default function DreamXI() {
                     left: `${slot.x}%`,
                     top: `${slot.y}%`,
                     transform: 'translate(-50%, -50%)',
-                    width: 76,
-                    height: 32,
+                    width: 80,
+                    height: 26,
                     background: isFilled ? 'var(--surface-2)' : 'var(--surface)',
                     border: isFilled ? '1.5px solid var(--accent)' : '1px dashed var(--border-2)',
                     display: 'flex',
@@ -255,11 +242,11 @@ export default function DreamXI() {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '0 4px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4, height: 10 }}>
                         <FlagComponent teamName={player.team} size="small" style={{ width: 12, height: 8, border: 'none' }} />
-                        <span style={{ fontSize: 9, color: 'var(--text-3)' }}>{slot.name}</span>
+                        <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{slot.name}</span>
                       </div>
                       <span 
                         style={{ 
-                          fontSize: 9, 
+                          fontSize: 10, 
                           fontWeight: 700, 
                           color: 'var(--text-1)', 
                           maxWidth: '100%', 
@@ -273,7 +260,7 @@ export default function DreamXI() {
                       </span>
                     </div>
                   ) : (
-                    <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-3)' }}>PICK {slot.name}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-3)' }}>PICK {slot.name}</span>
                   )}
                 </div>
               )
@@ -283,7 +270,9 @@ export default function DreamXI() {
           {/* Chemistry & Action Buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span className="text-xs" style={{ color: 'var(--text-3)', fontWeight: 600 }}>CHEMISTRY: {chemistry}/10</span>
+              <span className="text-xs" style={{ color: 'var(--text-3)', fontWeight: 600, cursor: 'help' }} title="Chemistry increases by filling slots, placing players in correct positions, and matching nationalities.">
+                CHEMISTRY: {chemistry}/10 ⓘ
+              </span>
             </div>
             <div style={{ height: 4, width: '100%', background: 'var(--border)' }}>
               <div style={{ width: `${chemistry * 10}%`, height: '100%', background: 'var(--accent)' }} />

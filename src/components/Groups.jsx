@@ -86,14 +86,7 @@ const getGroupMatches = (letter, teams) => {
 export default function Groups({ onNavigateToTeam }) {
   const [filter, setFilter] = useState('ALL')
   const [expandedGroup, setExpandedGroup] = useState(null)
-
-  const shouldShowGroup = (group) => {
-    if (filter === 'ALL') return true
-    const teams = GROUPS[group].teams
-    if (filter === 'ADVANCED') return teams.some(t => t.status === 'winner' || t.status === 'runnerup' || t.status === 'third')
-    if (filter === 'ELIMINATED') return teams.some(t => t.status === 'eliminated')
-    return true
-  }
+  const [sortBy, setSortBy] = useState('PTS')
 
   const toggleGroupExpand = (letter) => {
     if (expandedGroup === letter) {
@@ -115,45 +108,88 @@ export default function Groups({ onNavigateToTeam }) {
         </div>
       </div>
 
-      {/* FILTER BUTTONS */}
-      <div className="filter-bar" style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {['ALL', 'ADVANCED', 'ELIMINATED'].map(f => {
-          const isActive = filter === f
-          return (
-            <button 
-              key={f}
-              onClick={() => setFilter(f)}
-              style={{
-                border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
-                background: isActive ? '#1A1F00' : 'var(--surface)',
-                color: isActive ? 'var(--accent)' : 'var(--text-2)',
-                fontSize: 10,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                padding: '6px 12px',
-                cursor: 'pointer',
-                transition: 'border-color 80ms ease, color 80ms ease'
-              }}
-            >
-              {f === 'ALL' ? 'ALL GROUPS' : f}
-            </button>
-          )
-        })}
+      {/* FILTER & SORT BAR */}
+      <div className="filter-bar" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {['ALL', 'ADVANCED', 'ELIMINATED'].map(f => {
+            const isActive = filter === f
+            return (
+              <button 
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  background: isActive ? '#1A1F00' : 'var(--surface)',
+                  color: isActive ? 'var(--accent)' : 'var(--text-2)',
+                  fontSize: 10,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  padding: '6px 12px',
+                  cursor: 'pointer',
+                  transition: 'border-color 80ms ease, color 80ms ease'
+                }}
+              >
+                {f === 'ALL' ? 'ALL GROUPS' : f}
+              </button>
+            )
+          })}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600 }}>SORT BY:</span>
+          {['PTS', 'GF'].map(s => {
+            const isActive = sortBy === s
+            return (
+              <button 
+                key={s}
+                onClick={() => setSortBy(s)}
+                style={{
+                  border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  background: isActive ? '#1A1F00' : 'var(--surface)',
+                  color: isActive ? 'var(--accent)' : 'var(--text-2)',
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: '4px 10px',
+                  cursor: 'pointer'
+                }}
+              >
+                {s}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* 12-GROUP GRID (4 COLUMNS, GAP AS BORDER) */}
+      {/* 12-GROUP GRID (3 COLUMNS, GAP AS BORDER) */}
       <div 
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 1,
           background: 'var(--border)'
         }}
       >
-        {GROUP_LETTERS.filter(shouldShowGroup).map(letter => {
+        {GROUP_LETTERS.map(letter => {
           const group = GROUPS[letter]
           const isExpanded = expandedGroup === letter
           const matches = getGroupMatches(letter, group.teams)
+
+          let displayTeams = group.teams.filter(t => {
+            if (filter === 'ADVANCED') return t.status === 'winner' || t.status === 'runnerup' || t.status === 'third'
+            if (filter === 'ELIMINATED') return t.status === 'eliminated'
+            return true
+          })
+
+          if (displayTeams.length === 0) return null
+
+          if (sortBy === 'GF') {
+            displayTeams = [...displayTeams].sort((a, b) => b.gf - a.gf)
+          } else {
+            displayTeams = [...displayTeams].sort((a, b) => {
+              if (b.pts !== a.pts) return b.pts - a.pts
+              if (b.gd !== a.gd) return b.gd - a.gd
+              return b.gf - a.gf
+            })
+          }
 
           return (
             <div key={letter} style={{ background: 'var(--surface)', display: 'flex', flexDirection: 'column' }}>
@@ -208,7 +244,7 @@ export default function Groups({ onNavigateToTeam }) {
 
                 {/* Team Rows */}
                 <div>
-                  {group.teams.map((team, i) => {
+                  {displayTeams.map((team, i) => {
                     const isEliminated = team.status === 'eliminated'
                     const rank = i + 1
                     

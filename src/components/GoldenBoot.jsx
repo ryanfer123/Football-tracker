@@ -2,32 +2,33 @@ import { useState, useEffect } from 'react'
 import { FlagComponent } from './shared'
 
 const SCORERS = [
-  { rank: 1, name: 'Lionel Messi', code: 'ARG', country: 'Argentina', goals: 5, assists: 3, mins: 72, eliminated: false },
-  { rank: 2, name: 'Erling Haaland', code: 'NOR', country: 'Norway', goals: 4, assists: 1, mins: 90, eliminated: false },
-  { rank: 3, name: 'Kylian Mbappé', code: 'FRA', country: 'France', goals: 4, assists: 2, mins: 82, eliminated: false },
-  { rank: 4, name: 'Vinicius Jr', code: 'BRA', country: 'Brazil', goals: 3, assists: 2, mins: 88, eliminated: false },
-  { rank: 5, name: 'Harry Kane', code: 'ENG', country: 'England', goals: 3, assists: 1, mins: 90, eliminated: false },
-  { rank: 6, name: 'Robert Lewandowski', code: 'default', country: 'Poland', goals: 3, assists: 0, mins: 90, eliminated: true },
-  { rank: 7, name: 'Jude Bellingham', code: 'ENG', country: 'England', goals: 2, assists: 3, mins: 90, eliminated: false },
-  { rank: 8, name: 'Rodrygo', code: 'BRA', country: 'Brazil', goals: 2, assists: 2, mins: 78, eliminated: false },
-  { rank: 9, name: 'Jamal Musiala', code: 'GER', country: 'Germany', goals: 2, assists: 2, mins: 84, eliminated: false },
-  { rank: 10, name: 'Lautaro Martínez', code: 'ARG', country: 'Argentina', goals: 2, assists: 1, mins: 65, eliminated: false },
-  { rank: 11, name: 'Antoine Griezmann', code: 'FRA', country: 'France', goals: 2, assists: 1, mins: 76, eliminated: false },
-  { rank: 12, name: 'Álvaro Morata', code: 'ESP', country: 'Spain', goals: 2, assists: 0, mins: 70, eliminated: false },
-  { rank: 13, name: 'Cristiano Ronaldo', code: 'POR', country: 'Portugal', goals: 2, assists: 0, mins: 80, eliminated: false },
-  { rank: 14, name: 'Gonçalo Ramos', code: 'POR', country: 'Portugal', goals: 1, assists: 2, mins: 60, eliminated: false },
-  { rank: 15, name: 'Julián Álvarez', code: 'ARG', country: 'Argentina', goals: 1, assists: 1, mins: 70, eliminated: false }
+  { rank: 1, name: 'Lionel Messi', code: 'ARG', country: 'Argentina', goals: 6, assists: 2, mins: 270, eliminated: false },
+  { rank: 2, name: 'Ousmane Dembélé', code: 'FRA', country: 'France', goals: 4, assists: 1, mins: 120, eliminated: false },
+  { rank: 2, name: 'Kylian Mbappé', code: 'FRA', country: 'France', goals: 4, assists: 3, mins: 270, eliminated: false },
+  { rank: 2, name: 'Erling Haaland', code: 'NOR', country: 'Norway', goals: 4, assists: 1, mins: 270, eliminated: false },
+  { rank: 2, name: 'Vinicius Jr', code: 'BRA', country: 'Brazil', goals: 4, assists: 2, mins: 245, eliminated: false },
+  { rank: 6, name: 'Harry Kane', code: 'ENG', country: 'England', goals: 3, assists: 1, mins: 270, eliminated: false },
+  { rank: 6, name: 'Ismael Saibari', code: 'MAR', country: 'Morocco', goals: 3, assists: 0, mins: 250, eliminated: false },
+  { rank: 6, name: 'Jonathan David', code: 'CAN', country: 'Canada', goals: 3, assists: 0, mins: 270, eliminated: false },
+  { rank: 6, name: 'Matheus Cunha', code: 'BRA', country: 'Brazil', goals: 3, assists: 1, mins: 180, eliminated: false },
+  { rank: 6, name: 'Deniz Undav', code: 'GER', country: 'Germany', goals: 3, assists: 2, mins: 145, eliminated: false },
+  { rank: 11, name: 'Lamine Yamal', code: 'ESP', country: 'Spain', goals: 2, assists: 2, mins: 270, eliminated: false },
+  { rank: 11, name: 'Jude Bellingham', code: 'ENG', country: 'England', goals: 2, assists: 3, mins: 270, eliminated: false },
+  { rank: 11, name: 'Bruno Fernandes', code: 'POR', country: 'Portugal', goals: 2, assists: 1, mins: 270, eliminated: false },
+  { rank: 11, name: 'Cristiano Ronaldo', code: 'POR', country: 'Portugal', goals: 2, assists: 1, mins: 240, eliminated: false },
+  { rank: 11, name: 'Julián Álvarez', code: 'ARG', country: 'Argentina', goals: 2, assists: 2, mins: 210, eliminated: false }
 ]
 
 const getPlayerDetails = (playerName) => {
   if (playerName === 'Lionel Messi') {
     return {
       goals: [
-        { match: 'ARG vs Saudi Arabia', min: "22'", type: 'PKN' },
-        { match: 'ARG vs Cape Verde', min: "12'", type: 'FK' },
-        { match: 'ARG vs Cape Verde', min: "45'", type: 'Open play' },
-        { match: 'ARG vs Cape Verde', min: "67'", type: 'Penalty' },
-        { match: 'ARG vs Ghana', min: "78'", type: 'Open play' }
+        { match: 'ARG vs Algeria', min: "12'", type: 'Penalty' },
+        { match: 'ARG vs Algeria', min: "34'", type: 'Open play' },
+        { match: 'ARG vs Algeria', min: "67'", type: 'Open play' },
+        { match: 'ARG vs Austria', min: "45+1'", type: 'Open play' },
+        { match: 'ARG vs Austria', min: "78'", type: 'Volley' },
+        { match: 'ARG vs Jordan', min: "88'", type: 'Free kick' }
       ],
       dots: [
         { t: '20%', l: '45%' },
@@ -280,40 +281,9 @@ export default function GoldenBoot({ selectedPlayerName, setSelectedPlayerName }
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    let active = true
-
-    async function fetchScorers() {
-      try {
-        const res = await fetch('/api/stats/goldenboot')
-        const data = await res.json()
-        if (!active) return
-
-        if (Array.isArray(data) && data.length > 0) {
-          const mapped = data.map((s, idx) => ({
-            rank: s.rank || idx + 1,
-            name: s.name || 'Unknown',
-            code: s.code || '',
-            country: s.country || '',
-            logo: s.logo || null,
-            goals: s.goals || 0,
-            assists: s.assists || 0,
-            mins: s.mins || s.minutes || 0,
-            eliminated: !!s.eliminated
-          }))
-          setScorers(mapped)
-        } else {
-          setScorers(SCORERS)
-        }
-      } catch (err) {
-        setScorers(SCORERS)
-      } finally {
-        if (active) setLoading(false)
-      }
-    }
-
-    fetchScorers()
-    const id = setInterval(fetchScorers, 60000)
-    return () => { active = false; clearInterval(id) }
+    // Override API fetch to strictly use the hardcoded 2026 data
+    setScorers(SCORERS)
+    setLoading(false)
   }, [])
 
   return (

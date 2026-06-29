@@ -73,7 +73,7 @@ const SVG_ICONS = {
   ),
   'golden-boot': (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      <path d="M4 16v-2.38C4 11.5 5.6 10 7.8 10h1.4c1.1 0 2.2-.4 3-1.1L14 7c1.1-.8 2.5-1.2 4-1.2h0c1.7 0 3 1.3 3 3v8c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3v0z" />
     </svg>
   ),
   profile: (

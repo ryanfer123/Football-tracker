@@ -195,6 +195,42 @@ export default function Predict() {
         </div>
       </div>
 
+      {/* QUICK SELECT */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600, marginBottom: 8, letterSpacing: '0.05em' }}>TODAY'S MATCHES (QUICK SELECT)</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[
+            { tA: 'Brazil', tB: 'Japan' },
+            { tA: 'Germany', tB: 'Paraguay' },
+            { tA: 'Netherlands', tB: 'Morocco' }
+          ].map((m, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setTeamA(m.tA)
+                setTeamB(m.tB)
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                padding: '6px 12px',
+                cursor: 'pointer',
+                transition: 'border-color 80ms ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
+            >
+              <FlagComponent teamName={m.tA} size="small" style={{ width: 14, height: 10 }} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-1)' }}>v</span>
+              <FlagComponent teamName={m.tB} size="small" style={{ width: 14, height: 10 }} />
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* SELECTORS ROW */}
       <div className="predict-selector" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
         <div style={{ position: 'relative' }}>

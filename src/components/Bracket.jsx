@@ -8,7 +8,7 @@ const ODDS = {
 }
 
 const INITIAL_R32 = [
-  { teamA: 'Canada', teamB: 'Bosnia and Herzegovina', winner: 'Canada', completed: true },
+  { teamA: 'Canada', teamB: 'South Africa', winner: 'Canada', completed: true },
   { teamA: 'Brazil', teamB: 'Japan', winner: null, completed: false },
   { teamA: 'Germany', teamB: 'Paraguay', winner: null, completed: false },
   { teamA: 'Netherlands', teamB: 'Morocco', winner: null, completed: false },
@@ -17,7 +17,7 @@ const INITIAL_R32 = [
   { teamA: 'Mexico', teamB: 'Ecuador', winner: null, completed: false },
   { teamA: 'England', teamB: 'DR Congo', winner: null, completed: false },
   { teamA: 'Belgium', teamB: 'Senegal', winner: null, completed: false },
-  { teamA: 'USA', teamB: 'South Korea', winner: null, completed: false },
+  { teamA: 'USA', teamB: 'Bosnia & Herz.', winner: null, completed: false },
   { teamA: 'Spain', teamB: 'Austria', winner: null, completed: false },
   { teamA: 'Portugal', teamB: 'Croatia', winner: null, completed: false },
   { teamA: 'Switzerland', teamB: 'Algeria', winner: null, completed: false },
@@ -346,14 +346,26 @@ export default function Bracket() {
 
   // Draw Match SVG with connections
   const renderBracketSVG = () => {
-    const colW = 200
+    const colW = 220
     const startY = 20
-    const svgW = 1200
-    const svgH = 1200
+    const svgW = 2000
+    const svgH = 900
+    const chipW = 160
+    const chipH = 28
 
-    const getMatchY = (round, index) => {
-      const step = svgH / Math.pow(2, 4 - round)
-      return startY + index * step + step / 2
+    const getMatchPos = (round, index) => {
+      if (round === 4) { // Final
+        return { x: 20 + 4 * colW, y: svgH / 2, isRight: false }
+      }
+      const totalMatches = Math.pow(2, 4 - round)
+      const halfMatches = totalMatches / 2
+      const isRight = index >= halfMatches
+      const colIdx = isRight ? 8 - round : round
+      const x = 20 + colIdx * colW
+      const step = svgH / halfMatches
+      const yIdx = isRight ? index - halfMatches : index
+      const y = startY + yIdx * step + step / 2
+      return { x, y, isRight, colIdx }
     }
 
     const drawLine = (x1, y1, x2, y2) => {
@@ -361,7 +373,7 @@ export default function Bracket() {
       return `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`
     }
 
-    const renderChip = (team, x, y, isWinner, isLoser, roundKey, matchIdx) => {
+    const renderChip = (team, x, y, isWinner, isLoser, roundKey, matchIdx, isRight) => {
       const isFlashing = flashingMatch && flashingMatch.round === roundKey && flashingMatch.idx === matchIdx
       const isHighlightMode = highlightTeam !== 'NONE'
       const inPath = isHighlightMode && isMatchInPath(roundKey, matchIdx, highlightTeam)
@@ -380,7 +392,7 @@ export default function Bracket() {
       if (!team) {
         return (
           <g key={`${x}-${y}`} onMouseMove={handleMouseMove} style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}>
-            <rect x={x} y={y - 14} width="140" height="28" fill="var(--bg)" stroke={strokeColor} strokeDasharray="3,3" strokeWidth="1" />
+            <rect x={x} y={y - chipH/2} width={chipW} height={chipH} fill="var(--bg)" stroke={strokeColor} strokeDasharray="3,3" strokeWidth="1" />
             <text x={x + 10} y={y + 4} fill="var(--text-3)" fontSize="10" fontWeight="600">TBD</text>
           </g>
         )
@@ -397,9 +409,9 @@ export default function Bracket() {
         >
           <rect 
             x={x} 
-            y={y - 14} 
-            width="140" 
-            height="28" 
+            y={y - chipH/2} 
+            width={chipW} 
+            height={chipH} 
             fill={bgColor} 
             stroke={strokeColor} 
             strokeWidth={inPath ? 2 : 1}
@@ -429,164 +441,85 @@ export default function Bracket() {
     const chips = []
 
     // Round Labels
-    const roundLabels = ['R32', 'R16', 'QF', 'SF', 'FINAL', '🏆']
-    roundLabels.forEach((label, i) => {
-      chips.push(
-        <text key={`label-${i}`} x={20 + i * colW} y={15} fill="var(--text-3)" fontSize="10" fontWeight="600" letterSpacing="0.1em">
-          {label}
-        </text>
-      )
+    const leftLabels = ['R32', 'R16', 'QF', 'SF']
+    const rightLabels = ['SF', 'QF', 'R16', 'R32']
+    
+    leftLabels.forEach((label, i) => {
+      chips.push(<text key={`llabel-${i}`} x={20 + i * colW} y={15} fill="var(--text-3)" fontSize="10" fontWeight="600" letterSpacing="0.1em">{label}</text>)
+    })
+    chips.push(<text key="clabel" x={20 + 4 * colW} y={15} fill="var(--text-3)" fontSize="10" fontWeight="600" letterSpacing="0.1em">FINAL</text>)
+    rightLabels.forEach((label, i) => {
+      chips.push(<text key={`rlabel-${i}`} x={20 + (5 + i) * colW} y={15} fill="var(--text-3)" fontSize="10" fontWeight="600" letterSpacing="0.1em">{label}</text>)
     })
 
-    // R32
-    r32.forEach((m, idx) => {
-      const x = 20
-      const y = getMatchY(0, idx)
-      const isWinnerA = m.winner === m.teamA
-      const isWinnerB = m.winner === m.teamB
-      const isLoserA = m.winner && m.winner !== m.teamA
-      const isLoserB = m.winner && m.winner !== m.teamB
+    const drawRound = (matches, roundIdx, roundKey) => {
+      matches.forEach((m, idx) => {
+        const pos = getMatchPos(roundIdx, idx)
+        const isWinnerA = m.winner === m.teamA && m.winner !== null
+        const isWinnerB = m.winner === m.teamB && m.winner !== null
+        const isLoserA = m.winner && m.winner !== m.teamA
+        const isLoserB = m.winner && m.winner !== m.teamB
 
-      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'r32', idx))
-      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'r32', idx))
+        chips.push(renderChip(m.teamA, pos.x, pos.y - 18, isWinnerA, isLoserA, roundKey, idx, pos.isRight))
+        chips.push(renderChip(m.teamB, pos.x, pos.y + 18, isWinnerB, isLoserB, roundKey, idx, pos.isRight))
 
-      const nextX = x + colW
-      const nextY = getMatchY(1, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
-      
-      const isHighlightMode = highlightTeam !== 'NONE'
-      const inPath = isHighlightMode && isMatchInPath('r32', idx, highlightTeam)
+        if (roundIdx < 4) {
+          const nextIdx = Math.floor(idx / 2)
+          const nextPos = getMatchPos(roundIdx + 1, nextIdx)
+          const isHighlightMode = highlightTeam !== 'NONE'
+          const inPath = isHighlightMode && isMatchInPath(roundKey, idx, highlightTeam)
 
-      paths.push(
-        <path 
-          key={`p32-${idx}`} 
-          d={drawLine(x + 140, y, nextX, nextY)} 
-          fill="none" 
-          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
-          strokeWidth={inPath ? 2 : 1} 
-          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
-        />
-      )
-    })
+          const x1 = pos.isRight ? pos.x : pos.x + chipW
+          const y1 = pos.y
+          const x2 = pos.isRight ? nextPos.x + chipW : nextPos.x
+          const y2 = nextPos.y + (idx % 2 === 0 ? -18 : 18)
 
-    // R16
-    r16.forEach((m, idx) => {
-      const x = 20 + colW
-      const y = getMatchY(1, idx)
-      const isWinnerA = m.winner === m.teamA && m.winner !== null
-      const isWinnerB = m.winner === m.teamB && m.winner !== null
-      const isLoserA = m.winner && m.winner !== m.teamA
-      const isLoserB = m.winner && m.winner !== m.teamB
+          paths.push(
+            <path 
+              key={`p${roundKey}-${idx}`} 
+              d={drawLine(x1, y1, x2, y2)} 
+              fill="none" 
+              stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
+              strokeWidth={inPath ? 2 : 1} 
+              style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
+            />
+          )
+        }
+      })
+    }
 
-      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'r16', idx))
-      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'r16', idx))
-
-      const nextX = x + colW
-      const nextY = getMatchY(2, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
-      
-      const isHighlightMode = highlightTeam !== 'NONE'
-      const inPath = isHighlightMode && isMatchInPath('r16', idx, highlightTeam)
-
-      paths.push(
-        <path 
-          key={`p16-${idx}`} 
-          d={drawLine(x + 140, y, nextX, nextY)} 
-          fill="none" 
-          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
-          strokeWidth={inPath ? 2 : 1}
-          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
-        />
-      )
-    })
-
-    // QF
-    qf.forEach((m, idx) => {
-      const x = 20 + colW * 2
-      const y = getMatchY(2, idx)
-      const isWinnerA = m.winner === m.teamA && m.winner !== null
-      const isWinnerB = m.winner === m.teamB && m.winner !== null
-      const isLoserA = m.winner && m.winner !== m.teamA
-      const isLoserB = m.winner && m.winner !== m.teamB
-
-      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'qf', idx))
-      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'qf', idx))
-
-      const nextX = x + colW
-      const nextY = getMatchY(3, Math.floor(idx / 2)) + (idx % 2 === 0 ? -18 : 18)
-      
-      const isHighlightMode = highlightTeam !== 'NONE'
-      const inPath = isHighlightMode && isMatchInPath('qf', idx, highlightTeam)
-
-      paths.push(
-        <path 
-          key={`pqf-${idx}`} 
-          d={drawLine(x + 140, y, nextX, nextY)} 
-          fill="none" 
-          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
-          strokeWidth={inPath ? 2 : 1}
-          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
-        />
-      )
-    })
-
-    // SF
-    sf.forEach((m, idx) => {
-      const x = 20 + colW * 3
-      const y = getMatchY(3, idx)
-      const isWinnerA = m.winner === m.teamA && m.winner !== null
-      const isWinnerB = m.winner === m.teamB && m.winner !== null
-      const isLoserA = m.winner && m.winner !== m.teamA
-      const isLoserB = m.winner && m.winner !== m.teamB
-
-      chips.push(renderChip(m.teamA, x, y - 18, isWinnerA, isLoserA, 'sf', idx))
-      chips.push(renderChip(m.teamB, x, y + 18, isWinnerB, isLoserB, 'sf', idx))
-
-      const nextX = x + colW
-      const nextY = getMatchY(4, 0) + (idx === 0 ? -18 : 18)
-      
-      const isHighlightMode = highlightTeam !== 'NONE'
-      const inPath = isHighlightMode && isMatchInPath('sf', idx, highlightTeam)
-
-      paths.push(
-        <path 
-          key={`psf-${idx}`} 
-          d={drawLine(x + 140, y, nextX, nextY)} 
-          fill="none" 
-          stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
-          strokeWidth={inPath ? 2 : 1}
-          style={{ opacity: isHighlightMode && !inPath ? 0.25 : 1 }}
-        />
-      )
-    })
+    drawRound(r32, 0, 'r32')
+    drawRound(r16, 1, 'r16')
+    drawRound(qf, 2, 'qf')
+    drawRound(sf, 3, 'sf')
 
     // Final
-    const finalX = 20 + colW * 4
-    const finalY = getMatchY(4, 0)
+    const finalPos = getMatchPos(4, 0)
     const isWinnerA = final.winner === final.teamA && final.winner !== null
     const isWinnerB = final.winner === final.teamB && final.winner !== null
     const isLoserA = final.winner && final.winner !== final.teamA
     const isLoserB = final.winner && final.winner !== final.teamB
 
-    chips.push(renderChip(final.teamA, finalX, finalY - 18, isWinnerA, isLoserA, 'final', 0))
-    chips.push(renderChip(final.teamB, finalX, finalY + 18, isWinnerB, isLoserB, 'final', 0))
-
-    const isHighlightMode = highlightTeam !== 'NONE'
-    const inPath = isHighlightMode
-
-    paths.push(
-      <path 
-        key="pfinal" 
-        d={drawLine(finalX + 140, finalY, finalX + colW, finalY)} 
-        fill="none" 
-        stroke={inPath ? 'var(--accent)' : 'var(--border-2)'} 
-        strokeWidth={inPath ? 2 : 1}
-        style={{ opacity: isHighlightMode ? 1 : 1 }}
-      />
-    )
+    chips.push(renderChip(final.teamA, finalPos.x, finalPos.y - 18, isWinnerA, isLoserA, 'final', 0, false))
+    chips.push(renderChip(final.teamB, finalPos.x, finalPos.y + 18, isWinnerB, isLoserB, 'final', 0, true))
 
     // Champion
-    const champX = 20 + colW * 5
-    const champY = finalY
-    chips.push(renderChip(champion, champX, champY, champion !== null, false, 'champion', 0))
+    const champX = finalPos.x
+    const champY = finalPos.y - 80
+    chips.push(renderChip(champion, champX, champY, champion !== null, false, 'champion', 0, false))
+
+    if (champion !== null) {
+        const isHighlightMode = highlightTeam !== 'NONE'
+        paths.push(
+            <path 
+                key="pchamp" 
+                d={`M ${champX + chipW/2} ${finalPos.y - 36} V ${champY + chipH/2}`} 
+                fill="none" 
+                stroke={isHighlightMode ? 'var(--accent)' : 'var(--border-2)'} 
+                strokeWidth={isHighlightMode ? 2 : 1} 
+            />
+        )
+    }
 
     return (
       <svg width={svgW} height={svgH} style={{ background: 'var(--bg)' }}>
@@ -605,7 +538,7 @@ export default function Bracket() {
             BRACKET
           </h1>
           <div className="text-xs" style={{ color: 'var(--text-3)', marginTop: 4 }}>
-            ROUND OF 32 → FINAL
+            ROUND OF 32 → FINAL <span style={{ color: 'var(--accent)', marginLeft: 8, fontWeight: 700 }}>↔ SCROLL HORIZONTALLY</span>
           </div>
         </div>
 

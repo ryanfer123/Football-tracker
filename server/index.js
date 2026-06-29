@@ -272,8 +272,44 @@ app.get('/api/matches/today', async (req, res) => {
         // Silently catch fetch errors and try the next key
       }
     }
+
+    // FALLBACK TO API-FOOTBALL
+    const apiFootballKey = process.env.API_FOOTBALL_KEY
+    if (!success && apiFootballKey) {
+      try {
+        const dateStr = new Date().toISOString().split('T')[0]
+        const response = await fetchWithTimeout(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
+          headers: { 'x-apisports-key': apiFootballKey }
+        }, 10000)
+        
+        if (response.ok) {
+          const apiFootballData = await response.json()
+          if (apiFootballData.response && Array.isArray(apiFootballData.response)) {
+            // Map api-football data to match footballdata.io structure
+            json = {
+              data: {
+                matches: apiFootballData.response.map(m => ({
+                  match_id: m.fixture.id,
+                  home_team: { team_name: m.teams.home.name, team_logo: m.teams.home.logo },
+                  away_team: { team_name: m.teams.away.name, team_logo: m.teams.away.logo },
+                  score: { home: m.goals.home || 0, away: m.goals.away || 0 },
+                  status: m.fixture.status.short === 'FT' ? 'complete' : 
+                          (m.fixture.status.short === 'NS' || m.fixture.status.short === 'TBD' ? 'upcoming' : 'in_progress'),
+                  status_localized: m.fixture.status.elapsed ? `${m.fixture.status.elapsed}'` : 'LIVE',
+                  date_unix: m.fixture.timestamp,
+                  venue: { stadium_name: m.fixture.venue.name, stadium_location: m.fixture.venue.city }
+                }))
+              }
+            }
+            success = true
+          }
+        }
+      } catch (err) {
+        // Fallback failed
+      }
+    }
     
-    if (!success) throw new Error('All API keys failed or rate limited')
+    if (!success) throw new Error('All API keys and fallbacks failed or rate limited')
     const matches = (json.data?.matches || []).map(m => {
       let status = 'PRE'
       if (m.status === 'in_progress') status = 'LIVE'

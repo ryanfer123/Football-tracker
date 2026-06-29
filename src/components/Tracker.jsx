@@ -352,6 +352,33 @@ export default function Tracker({ onNavigateToTeam, onGoToTeams }) {
               </div>
             )
           })}
+
+          <button 
+            onClick={() => onGoToTeams && onGoToTeams()}
+            style={{
+              width: '100%',
+              padding: 24,
+              border: '2px dashed var(--border-2)',
+              background: 'transparent',
+              color: 'var(--text-2)',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.05em',
+              cursor: 'pointer',
+              marginTop: 16,
+              transition: 'border-color 80ms ease, color 80ms ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--accent)'
+              e.currentTarget.style.color = 'var(--accent)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-2)'
+              e.currentTarget.style.color = 'var(--text-2)'
+            }}
+          >
+            + ADD ANOTHER TEAM
+          </button>
         </div>
       )}
     </div>

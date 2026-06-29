@@ -139,29 +139,29 @@ export const GROUPS = {
     teams: [
       { name: 'Switzerland', p: 3, w: 2, d: 1, l: 0, gf: 4, ga: 0, gd: 4, pts: 7, status: 'winner' },
       { name: 'Canada', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 2, gd: 2, pts: 4, status: 'runnerup' },
-      { name: 'USA', p: 3, w: 1, d: 0, l: 2, gf: 5, ga: 1, gd: 4, pts: 3, status: 'third' },
+      { name: 'Bosnia & Herz', p: 3, w: 1, d: 1, l: 1, gf: 3, ga: 2, gd: 1, pts: 4, status: 'third' },
       { name: 'Qatar', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 5, gd: -5, pts: 0, status: 'eliminated' }
     ]
   },
   C: {
     teams: [
-      { name: 'Brazil', p: 3, w: 3, d: 0, l: 0, gf: 6, ga: 1, gd: 5, pts: 9, status: 'winner' },
-      { name: 'Morocco', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 4, gd: 0, pts: 4, status: 'runnerup' },
-      { name: 'Netherlands', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 4, gd: 0, pts: 4, status: 'third' },
-      { name: 'Nigeria', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 5, gd: -5, pts: 0, status: 'eliminated' }
+      { name: 'Brazil', p: 3, w: 2, d: 1, l: 0, gf: 7, ga: 1, gd: 6, pts: 7, status: 'winner' },
+      { name: 'Morocco', p: 3, w: 1, d: 2, l: 0, gf: 4, ga: 3, gd: 1, pts: 5, status: 'runnerup' },
+      { name: 'Scotland', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 5, gd: -3, pts: 3, status: 'third' },
+      { name: 'Haiti', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 5, gd: -4, pts: 1, status: 'eliminated' }
     ]
   },
   D: {
     teams: [
-      { name: 'Japan', p: 3, w: 2, d: 1, l: 0, gf: 4, ga: 1, gd: 3, pts: 7, status: 'winner' },
-      { name: 'Germany', p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2, gd: 4, pts: 7, status: 'runnerup' },
-      { name: 'Paraguay', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 4, gd: -2, pts: 3, status: 'third' },
+      { name: 'Germany', p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2, gd: 4, pts: 7, status: 'winner' },
+      { name: 'England', p: 3, w: 2, d: 1, l: 0, gf: 5, ga: 2, gd: 3, pts: 7, status: 'runnerup' },
+      { name: 'Paraguay', p: 3, w: 0, d: 2, l: 1, gf: 2, ga: 4, gd: -2, pts: 2, status: 'third' },
       { name: 'Cameroon', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 5, gd: -5, pts: 0, status: 'eliminated' }
     ]
   },
   E: {
     teams: [
-      { name: 'France', p: 3, w: 2, d: 1, l: 0, gf: 5, ga: 1, gd: 4, pts: 7, status: 'winner' },
+      { name: 'France', p: 3, w: 3, d: 0, l: 0, gf: 8, ga: 1, gd: 7, pts: 9, status: 'winner' },
       { name: 'Norway', p: 3, w: 2, d: 0, l: 1, gf: 5, ga: 3, gd: 2, pts: 6, status: 'runnerup' },
       { name: 'Ivory Coast', p: 3, w: 1, d: 1, l: 1, gf: 2, ga: 3, gd: -1, pts: 4, status: 'third' },
       { name: 'Denmark', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 4, gd: -3, pts: 1, status: 'eliminated' }
@@ -169,17 +169,17 @@ export const GROUPS = {
   },
   F: {
     teams: [
-      { name: 'England', p: 3, w: 2, d: 1, l: 0, gf: 5, ga: 0, gd: 5, pts: 7, status: 'winner' },
-      { name: 'DR Congo', p: 3, w: 1, d: 1, l: 1, gf: 2, ga: 3, gd: -1, pts: 4, status: 'runnerup' },
-      { name: 'Serbia', p: 3, w: 0, d: 2, l: 1, gf: 1, ga: 2, gd: -1, pts: 2, status: 'third' },
-      { name: 'IR Iran', p: 3, w: 0, d: 2, l: 1, gf: 1, ga: 4, gd: -3, pts: 2, status: 'eliminated' }
+      { name: 'Japan', p: 3, w: 1, d: 2, l: 0, gf: 7, ga: 3, gd: 4, pts: 5, status: 'winner' },
+      { name: 'Netherlands', p: 3, w: 1, d: 2, l: 0, gf: 4, ga: 3, gd: 1, pts: 5, status: 'runnerup' },
+      { name: 'Sweden', p: 3, w: 0, d: 3, l: 0, gf: 3, ga: 3, gd: 0, pts: 3, status: 'third' },
+      { name: 'Tunisia', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 6, gd: -5, pts: 1, status: 'eliminated' }
     ]
   },
   G: {
     teams: [
       { name: 'Belgium', p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 2, gd: 4, pts: 7, status: 'winner' },
       { name: 'Senegal', p: 3, w: 2, d: 0, l: 1, gf: 4, ga: 3, gd: 1, pts: 6, status: 'runnerup' },
-      { name: 'Costa Rica', p: 3, w: 0, d: 2, l: 1, gf: 2, ga: 3, gd: -1, pts: 2, status: 'eliminated' },
+      { name: 'Costa Rica', p: 3, w: 0, d: 2, l: 1, gf: 2, ga: 3, gd: -1, pts: 2, status: 'third' },
       { name: 'Israel', p: 3, w: 0, d: 1, l: 2, gf: 0, ga: 4, gd: -4, pts: 1, status: 'eliminated' }
     ]
   },
@@ -187,7 +187,7 @@ export const GROUPS = {
     teams: [
       { name: 'Mexico', p: 3, w: 2, d: 1, l: 0, gf: 4, ga: 1, gd: 3, pts: 7, status: 'winner' },
       { name: 'Ecuador', p: 3, w: 2, d: 0, l: 1, gf: 3, ga: 2, gd: 1, pts: 6, status: 'runnerup' },
-      { name: 'Czechia', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 3, gd: -1, pts: 3, status: 'eliminated' },
+      { name: 'Czechia', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 3, gd: -1, pts: 3, status: 'third' },
       { name: 'South Korea', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 4, gd: -3, pts: 1, status: 'eliminated' }
     ]
   },
@@ -211,16 +211,16 @@ export const GROUPS = {
     teams: [
       { name: 'Switzerland', p: 3, w: 2, d: 1, l: 0, gf: 4, ga: 1, gd: 3, pts: 7, status: 'winner' },
       { name: 'Egypt', p: 3, w: 1, d: 1, l: 1, gf: 4, ga: 3, gd: 1, pts: 4, status: 'runnerup' },
-      { name: 'Tunisia', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 3, gd: -1, pts: 3, status: 'eliminated' },
+      { name: 'Tunisia', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 3, gd: -1, pts: 3, status: 'third' },
       { name: 'Saudi Arabia', p: 3, w: 0, d: 0, l: 3, gf: 0, ga: 3, gd: -3, pts: 0, status: 'eliminated' }
     ]
   },
   L: {
     teams: [
-      { name: 'Argentina', p: 3, w: 3, d: 0, l: 0, gf: 8, ga: 1, gd: 7, pts: 9, status: 'winner' },
-      { name: 'Colombia', p: 3, w: 2, d: 1, l: 0, gf: 3, ga: 1, gd: 2, pts: 7, status: 'runnerup' },
-      { name: 'Cape Verde', p: 3, w: 1, d: 1, l: 1, gf: 1, ga: 4, gd: -3, pts: 4, status: 'third' },
-      { name: 'Ghana', p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 3, gd: -2, pts: 1, status: 'eliminated' }
+      { name: 'Argentina', p: 3, w: 3, d: 0, l: 0, gf: 9, ga: 1, gd: 8, pts: 9, status: 'winner' },
+      { name: 'Austria', p: 3, w: 2, d: 0, l: 1, gf: 4, ga: 3, gd: 1, pts: 6, status: 'runnerup' },
+      { name: 'Algeria', p: 3, w: 1, d: 0, l: 2, gf: 2, ga: 5, gd: -3, pts: 3, status: 'third' },
+      { name: 'Jordan', p: 3, w: 0, d: 0, l: 3, gf: 1, ga: 7, gd: -6, pts: 0, status: 'eliminated' }
     ]
   }
 };

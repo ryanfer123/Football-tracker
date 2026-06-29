@@ -28,9 +28,9 @@ export const TEAMS = {
     ],
     stats: { attack: 88, defence: 78, midfield: 82, pace: 90, experience: 95, cohesion: 80 },
     groupResults: [
-      { vs: 'Nigeria', result: 'W', score: '2-0' },
-      { vs: 'Netherlands', result: 'W', score: '1-0' },
-      { vs: 'Morocco', result: 'W', score: '3-1' }
+      { vs: 'Haiti', result: 'W', score: '3-0' },
+      { vs: 'Scotland', result: 'W', score: '3-0' },
+      { vs: 'Morocco', result: 'D', score: '1-1' }
     ]
   },
   Germany: {
@@ -121,9 +121,9 @@ export const TEAMS = {
     ],
     stats: { attack: 90, defence: 82, midfield: 86, pace: 85, experience: 93, cohesion: 95 },
     groupResults: [
-      { vs: 'Chile', result: 'W', score: '2-0' },
-      { vs: 'Cape Verde', result: 'W', score: '4-0' },
-      { vs: 'Ghana', result: 'W', score: '2-1' }
+      { vs: 'Algeria', result: 'W', score: '3-1' },
+      { vs: 'Austria', result: 'W', score: '2-0' },
+      { vs: 'Jordan', result: 'W', score: '4-0' }
     ]
   },
   Spain: {
@@ -142,12 +142,12 @@ export const TEAMS = {
     squad: {
       GK: ['Unai Simón'],
       DEF: ['Dani Carvajal', 'Aymeric Laporte', 'Robin Le Normand', 'Marc Cucurella'],
-      MID: ['Pedri', 'Rodri', 'Gavi'],
+      MID: ['Pedri', 'Fabián Ruiz', 'Gavi'],
       FW: ['Lamine Yamal', 'Álvaro Morata', 'Nico Williams']
     },
     keyPlayers: [
       { name: 'Lamine Yamal', position: 'RW', club: 'Barcelona', goals: 2, assists: 3, rating: 8.8, note: 'Just 18 years old and already the tournament\'s most exciting talent. Unstoppable on the wing.' },
-      { name: 'Rodri', position: 'CDM', club: 'Man City', goals: 0, assists: 1, rating: 8.0, note: 'The metronome. Controls the game\'s tempo with surgical passing and positioning.' },
+      { name: 'Fabián Ruiz', position: 'CM', club: 'PSG', goals: 0, assists: 1, rating: 8.0, note: 'The midfield orchestrator. Excellent passing range and vision.' },
       { name: 'Pedri', position: 'CM', club: 'Barcelona', goals: 1, assists: 2, rating: 8.3, note: 'Silky smooth on the ball — finds passes nobody else sees. Spain\'s creative heartbeat.' }
     ],
     stats: { attack: 86, defence: 80, midfield: 92, pace: 88, experience: 82, cohesion: 90 },
@@ -276,7 +276,7 @@ export const TEAMS = {
     ]
   },
   Japan: {
-    code: 'JPN', flag: '🇯🇵', group: 'D',
+    code: 'JPN', flag: '🇯🇵', group: 'F',
     flagColors: ['#FFFFFF', '#BC002D', '#FFFFFF'],
     ranking: 15, titles: 0, titleYears: [],
     status: 'IN', coach: 'Hajime Moriyasu',
@@ -294,9 +294,9 @@ export const TEAMS = {
     ],
     stats: { attack: 76, defence: 72, midfield: 78, pace: 82, experience: 65, cohesion: 88 },
     groupResults: [
-      { vs: 'Paraguay', result: 'W', score: '2-0' },
-      { vs: 'Cameroon', result: 'W', score: '1-0' },
-      { vs: 'Germany', result: 'D', score: '1-1' }
+      { vs: 'Netherlands', result: 'D', score: '2-2' },
+      { vs: 'Tunisia', result: 'W', score: '4-0' },
+      { vs: 'Sweden', result: 'D', score: '1-1' }
     ]
   },
   Mexico: {
@@ -754,8 +754,45 @@ export const TEAMS = {
       { vs: 'Argentina', result: 'L', score: '1-2' },
       { vs: 'Colombia', result: 'D', score: '0-0' }
     ]
+  },
+  Haiti: {
+    code: 'HAI', flag: '🇭🇹', group: 'C',
+    flagColors: ['#00205B', '#E03C31', '#FFFFFF'],
+    ranking: 87, titles: 0, titleYears: [],
+    status: 'OUT', coach: 'Gabriel Calderón Pellegrino',
+    wcHistory: { 1974: 'GROUP', 2026: 'GROUP' },
+    formation: '4-4-2',
+    squad: { GK: [], DEF: [], MID: [], FW: [] },
+    keyPlayers: [],
+    stats: { attack: 65, defence: 60, midfield: 62, pace: 70, experience: 40, cohesion: 65 },
+    groupResults: []
+  },
+  Scotland: {
+    code: 'SCO', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', group: 'C',
+    flagColors: ['#005EB8', '#FFFFFF', '#005EB8'],
+    ranking: 39, titles: 0, titleYears: [],
+    status: 'OUT', coach: 'Steve Clarke',
+    wcHistory: { 1954: 'GROUP', 1958: 'GROUP', 1974: 'GROUP', 1978: 'GROUP', 1982: 'GROUP', 1986: 'GROUP', 1990: 'GROUP', 1998: 'GROUP', 2026: 'GROUP' },
+    formation: '3-4-2-1',
+    squad: { GK: [], DEF: [], MID: [], FW: [] },
+    keyPlayers: [],
+    stats: { attack: 72, defence: 75, midfield: 78, pace: 70, experience: 75, cohesion: 80 },
+    groupResults: []
+  },
+  Jordan: {
+    code: 'JOR', flag: '🇯🇴', group: 'L',
+    flagColors: ['#000000', '#FFFFFF', '#007A3D'],
+    ranking: 70, titles: 0, titleYears: [],
+    status: 'OUT', coach: 'Hussein Ammouta',
+    wcHistory: { 2026: 'GROUP' },
+    formation: '4-3-3',
+    squad: { GK: [], DEF: [], MID: [], FW: [] },
+    keyPlayers: [],
+    stats: { attack: 68, defence: 65, midfield: 66, pace: 72, experience: 50, cohesion: 75 },
+    groupResults: []
   }
 };
+
 
 // Create an array of all team names for easy iteration
 export const ALL_TEAM_NAMES = Object.keys(TEAMS);

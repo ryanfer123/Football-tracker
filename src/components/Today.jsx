@@ -6,11 +6,11 @@ const FALLBACK_TODAY = [
     id: 'bra-jpn',
     teamA: 'Brazil',
     teamB: 'Japan',
-    scoreA: 1,
+    scoreA: 0,
     scoreB: 0,
-    status: 'LIVE',
-    minute: "63'",
-    time: '21:30',
+    status: 'PRE',
+    minute: "0'",
+    time: '22:30',
     venue: 'NRG Stadium',
     city: 'Houston',
     date: 'JUNE 29, 2026'
@@ -78,18 +78,18 @@ const UPCOMING_FIXTURES = [
 
 const DETAIL_DATA = {
   Brazil: {
-    wins: 14, draws: 6, vsWins: 3,
+    wins: 10, draws: 2, vsWins: 0,
     form: ['W', 'W', 'W', 'D', 'W'],
     players: [
       { name: 'Vinicius Jr', pos: 'FWD', stats: '2G 2A' },
-      { name: 'Rodri', pos: 'MID', stats: '0G 3A' }
+      { name: 'Rodrygo', pos: 'FWD', stats: '2G 1A' }
     ],
     pred: 'BRAZIL WIN · 2-0 · CONFIDENCE: ',
     confidence: 'HIGH',
     prob: [64, 18, 18]
   },
   Japan: {
-    wins: 3, draws: 6, vsWins: 14,
+    wins: 0, draws: 2, vsWins: 10,
     form: ['W', 'L', 'W', 'W', 'D'],
     players: [
       { name: 'Kubo', pos: 'FWD', stats: '1G 1A' },
@@ -245,6 +245,20 @@ function MatchExpansionContent({ match, onNavigateToTeam }) {
             {match.logoB && <img src={match.logoB} alt={match.teamB} style={{ width: 24, height: 24, objectFit: 'contain' }} />}
           </div>
         </div>
+        {isBrazilJapan && (
+          <div style={{
+            background: 'var(--accent)',
+            color: '#000',
+            padding: '4px 12px',
+            borderRadius: 16,
+            fontSize: 10,
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            marginLeft: 'auto'
+          }}>
+            JAPAN'S FIRST-EVER WIN?
+          </div>
+        )}
       </div>
 
       {/* ROW 2: FORM GUIDE */}
@@ -605,11 +619,21 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
           </div>
 
           <div style={{ width: 200, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            <div className="score-text" style={{ fontSize: 56 }}>
+            <div className="score-text" style={{ fontSize: 72 }}>
               {match.scoreA} — {match.scoreB}
             </div>
-            <div className="live-badge">
-              <span className="live-dot" style={{ display: 'inline-block', width: 6, height: 6, background: '#000', borderRadius: '50%' }}>●</span>
+            <div className="live-badge" style={{ 
+              background: 'var(--accent)', 
+              color: '#000', 
+              padding: '4px 16px', 
+              borderRadius: 20, 
+              fontSize: 12, 
+              fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6
+            }}>
+              <span className="live-dot" style={{ width: 6, height: 6, background: '#000', borderRadius: '50%' }}></span>
               LIVE {match.minute}
             </div>
           </div>
@@ -631,11 +655,23 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
           </div>
 
           <div style={{ width: 200, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--text-2)', lineHeight: 1 }}>
-              {match.time}
+            <div style={{ 
+              background: 'var(--surface-2)', 
+              color: 'var(--text-2)', 
+              padding: '4px 16px', 
+              borderRadius: 20, 
+              fontSize: 11, 
+              fontWeight: 700,
+              marginBottom: 8,
+              textTransform: 'uppercase'
+            }}>
+              Upcoming
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600, marginTop: 2 }}>
-              IST
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-1)' }}>
+              Kickoff: {match.time.replace(' PM ET', '')} IST
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600, marginTop: 4 }}>
+              Kickoff in: 2h 15m
             </div>
           </div>
 
@@ -862,7 +898,7 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
               BRAZIL 1-0 JAPAN · 63' · NRG Stadium &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               GERMANY vs PARAGUAY · Kicks off 02:00 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               NETHERLANDS vs MOROCCO · Kicks off 06:30 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
-              Messi leads Golden Boot with 5 goals &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
+              Messi leads Golden Boot with 6 goals &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               Canada advance to Round of 16 after 1-0 win &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span>
             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)' }}>
@@ -870,7 +906,7 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
               BRAZIL 1-0 JAPAN · 63' · NRG Stadium &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               GERMANY vs PARAGUAY · Kicks off 02:00 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               NETHERLANDS vs MOROCCO · Kicks off 06:30 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
-              Messi leads Golden Boot with 5 goals &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
+              Messi leads Golden Boot with 6 goals &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               Canada advance to Round of 16 after 1-0 win &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span>
           </div>
@@ -903,6 +939,27 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
           )}
         </div>
       )}
+
+      {/* WHERE TO WATCH */}
+      <div style={{ marginTop: 24, marginBottom: 24, padding: 20, background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 12 }}>
+        <h3 className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 12 }}>WHERE TO WATCH</h3>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 200px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--bg)', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--border)' }}>
+            <div style={{ width: 40, height: 40, background: 'var(--accent)', color: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>TV</div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-1)' }}>FOX Sports</div>
+              <div style={{ fontSize: 11, color: 'var(--text-3)' }}>English Broadcast</div>
+            </div>
+          </div>
+          <div style={{ flex: '1 1 200px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--bg)', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--border)' }}>
+            <div style={{ width: 40, height: 40, background: 'var(--surface-2)', color: 'var(--text-2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>ES</div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-1)' }}>Telemundo</div>
+              <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Spanish Broadcast</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* UPCOMING SECTION */}
       {showUpcoming && (
@@ -945,6 +1002,24 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
           </div>
         </div>
       )}
+
+      {/* STORYLINE CARDS */}
+      <div style={{ marginTop: 32, marginBottom: 40 }}>
+        <h3 className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 12 }}>TOURNAMENT STORYLINES</h3>
+        <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 16 }}>
+          {[
+            { title: "Messi's Last Dance", desc: "6 goals in the group stage. The maestro looks unstoppable.", tag: "GOLDEN BOOT" },
+            { title: "Japan's Dream Run", desc: "Can the Blue Samurai stun Brazil and reach the QFs?", tag: "UPSET WATCH" },
+            { title: "England's Midfield Masterclass", desc: "Bellingham and Rice are controlling every game.", tag: "TACTICS" }
+          ].map((story, i) => (
+            <div key={i} style={{ minWidth: 260, flex: 1, padding: 20, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--accent)', marginBottom: 8 }}>{story.tag}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-1)', marginBottom: 8 }}>{story.title}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.5 }}>{story.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

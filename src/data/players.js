@@ -31,7 +31,7 @@ export const PLAYERS = [
 
   // Spain
   { name: 'Lamine Yamal', team: 'Spain', position: 'FWD', goals: 2, rating: 9.0 },
-  { name: 'Rodri', team: 'Spain', position: 'MID', goals: 0, rating: 8.7 },
+  { name: 'Fabián Ruiz', team: 'Spain', position: 'MID', goals: 0, rating: 8.7 },
   { name: 'Pedri', team: 'Spain', position: 'MID', goals: 1, rating: 8.3 },
   { name: 'Unai Simón', team: 'Spain', position: 'GK', goals: 0, rating: 8.1 },
 
