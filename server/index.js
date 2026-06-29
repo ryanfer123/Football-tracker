@@ -247,7 +247,7 @@ app.get('/api/matches/today', async (req, res) => {
       return res.json(matchCache.data)
     }
     
-    const keysString = process.env.FOOTBALL_API_KEYS || process.env.FOOTBALL_API_KEY || ''
+    const keysString = process.env.FOOTBALL_API_KEYS || process.env.FOOTBALL_API_KEY || process.env.API_FOOTBALL_KEYS || process.env.API_FOOTBALL_KEY || ''
     const keys = keysString.split(',').map(k => k.trim()).filter(Boolean)
 
     if (keys.length === 0) {
@@ -330,7 +330,7 @@ app.get('/api/stats/goldenboot', async (req, res) => {
       return res.json(goldenBootCache.data)
     }
 
-    const keysString = process.env.FOOTBALL_API_KEYS || process.env.FOOTBALL_API_KEY || ''
+    const keysString = process.env.FOOTBALL_API_KEYS || process.env.FOOTBALL_API_KEY || process.env.API_FOOTBALL_KEYS || process.env.API_FOOTBALL_KEY || ''
     const keys = keysString.split(',').map(k => k.trim()).filter(Boolean)
 
     if (keys.length === 0) {
