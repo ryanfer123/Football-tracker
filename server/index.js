@@ -314,7 +314,8 @@ app.get('/api/stats/goldenboot', async (req, res) => {
     const keys = keysString.split(',').map(k => k.trim()).filter(Boolean)
 
     if (keys.length === 0) {
-      return res.json([])
+      console.warn('/api/stats/goldenboot: No FOOTBALL_API_KEY(S) configured')
+      return res.status(503).json({ error: 'No FOOTBALL_API_KEY(S) configured on server' })
     }
 
     const endpoints = [
@@ -328,8 +329,11 @@ app.get('/api/stats/goldenboot', async (req, res) => {
 
     let json = null
     let success = false
+    let usedEndpoint = null
+    let usedKeyIdx = null
 
-    for (const key of keys) {
+    for (let kIdx = 0; kIdx < keys.length; kIdx++) {
+      const key = keys[kIdx]
       for (const ep of endpoints) {
         try {
           const response = await fetch(ep, { headers: { 'Authorization': `Bearer ${key}` } })
@@ -341,10 +345,14 @@ app.get('/api/stats/goldenboot', async (req, res) => {
           if (Array.isArray(candidates) && candidates.length > 0) {
             json = { scorers: candidates }
             success = true
+            usedEndpoint = ep
+            usedKeyIdx = kIdx
             break
           } else if (Array.isArray(rootArray) && rootArray.length > 0) {
             json = { scorers: rootArray }
             success = true
+            usedEndpoint = ep
+            usedKeyIdx = kIdx
             break
           }
         } catch (err) {
@@ -352,6 +360,10 @@ app.get('/api/stats/goldenboot', async (req, res) => {
         }
       }
       if (success) break
+    }
+
+    if (success) {
+      console.log(`/api/stats/goldenboot: fetched ${Array.isArray(json.scorers) ? json.scorers.length : 0} scorers from ${usedEndpoint} using key index ${usedKeyIdx}`)
     }
 
     if (!success) throw new Error('All API keys/endpoints failed or returned no data')
