@@ -44,11 +44,14 @@ export default function Account({ onAuthSuccess }) {
           favoriteTeam: currentUser.favoriteTeam || '',
         })
         setStatus('')
+        if (onAuthSuccess) {
+          onAuthSuccess(currentUser)
+        }
       })
       .catch(() => {
         setStatus('')
       })
-  }, [])
+  }, [onAuthSuccess])
 
   const updateForm = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value })

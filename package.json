@@ -19,7 +19,9 @@
     "concurrently": "^10.0.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "framer-motion": "^12.42.0",
     "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.22.0",
     "mongoose": "^9.7.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

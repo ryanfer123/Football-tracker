@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import './index.css'
 import Today from './components/Today'
 import Bracket from './components/Bracket'
@@ -370,26 +371,45 @@ export default function App() {
 
       {/* MAIN VIEW */}
       <main className="main-content">
-        {renderTab()}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            style={{ minHeight: '100%' }}
+          >
+            {renderTab()}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* FEATURE 9: GLOBAL SEARCH OVERLAY */}
-      {isSearchOpen && (
-        <div 
-          onClick={() => setIsSearchOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.92)',
-            zIndex: 100,
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          {/* Top Bar */}
-          <div 
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div 
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(16px)' }}
+            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setIsSearchOpen(false)}
             style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(10,10,10,0.85)',
+              zIndex: 100,
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            {/* Top Bar */}
+            <motion.div 
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
               height: 56,
               background: 'var(--surface)',
               borderBottom: '2px solid var(--accent)',
@@ -427,7 +447,7 @@ export default function App() {
             >
               ×
             </button>
-          </div>
+          </motion.div>
 
           {/* Results Area */}
           <div 
@@ -573,10 +593,11 @@ export default function App() {
               </div>
             )}
           </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* NEOBRUTALIST TOAST NOTIFICATION CONTAINER */}
+      {/* NEOBRUTALIST TOAST NOTIFICATION CONTAINER (NOW SMOOTH) */}
       <div 
         style={{ 
           position: 'fixed', 
@@ -584,14 +605,19 @@ export default function App() {
           right: 20, 
           display: 'flex', 
           flexDirection: 'column', 
-          gap: 10, 
+          gap: 12, 
           zIndex: 1000 
         }}
       >
-        {toasts.map(toast => (
-          <div 
-            key={toast.id}
-            style={{
+        <AnimatePresence>
+          {toasts.map(toast => (
+            <motion.div 
+              key={toast.id}
+              initial={{ opacity: 0, x: 50, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 20, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              style={{
               width: 320,
               background: 'var(--surface)',
               border: '2px solid var(--accent)',
@@ -613,18 +639,22 @@ export default function App() {
                   border: 'none', 
                   color: 'var(--text-2)', 
                   cursor: 'pointer',
-                  fontSize: 16,
-                  padding: 0
+                  fontSize: 18,
+                  padding: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
                 ×
               </button>
             </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-1)' }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-1)' }}>
               {toast.message}
             </div>
-          </div>
+          </motion.div>
         ))}
+        </AnimatePresence>
       </div>
     </div>
   )
