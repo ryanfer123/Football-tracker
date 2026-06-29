@@ -1634,3 +1634,237 @@ body {
     width: 100vw;
   }
 }
+
+/* ════════════════════════════════════════
+   CRITICAL FIXES - DARK THEME OVERRIDES
+   ════════════════════════════════════════ */
+
+.main-content {
+  background: #0D0D0D !important;
+  padding: 24px !important;
+}
+
+.page-title {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.5px !important;
+}
+
+.page-subtitle {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #00FF87 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 20px !important;
+}
+
+.sidebar {
+  background: #111111 !important;
+}
+
+.sidebar-tab.active {
+  background: #1A1A1A !important;
+  border-left: 3px solid #00FF87 !important;
+  color: #00FF87 !important;
+}
+
+.sidebar-tab .tab-icon {
+  color: #4A4A4A;
+}
+
+.sidebar-tab.active .tab-icon {
+  color: #00FF87 !important;
+}
+
+.sidebar-tab:hover .tab-icon {
+  color: #8A8A8A;
+}
+
+/* Match Cards */
+.match-card {
+  background: #1A1A1A !important;
+  border: 1.5px solid #2E2E2E !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+  margin-bottom: 0 !important; /* using gap in container */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.match-card:hover {
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 4px 4px 0px #FFFFFF !important;
+}
+
+.match-card.is-live {
+  border-left: 3px solid #00FF87 !important;
+  box-shadow: 4px 4px 0px #00FF87 !important;
+}
+
+.match-card.is-live:hover {
+  box-shadow: 4px 4px 0px #00FF87 !important;
+}
+
+.match-card-main {
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 16px !important;
+}
+
+.match-card.is-live .match-card-main {
+  height: 120px !important;
+}
+
+.match-card:not(.is-live) .match-card-main {
+  height: 96px !important;
+}
+
+.match-team {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.match-team.left {
+  justify-content: flex-start !important;
+}
+
+.match-team.right {
+  justify-content: flex-end !important;
+}
+
+.team-name {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  text-transform: uppercase !important;
+}
+
+.match-card:not(.is-live) .team-name {
+  font-weight: 700 !important;
+}
+
+.match-center {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.match-score {
+  font-size: 72px !important;
+  font-weight: 900 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -2px !important;
+  line-height: 1 !important;
+}
+
+.status-live {
+  background: #00FF87 !important;
+  color: #000000 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 3px 10px !important;
+  border-radius: 0px !important;
+}
+
+.match-time {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+}
+
+.match-vs {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #4A4A4A !important;
+}
+
+.match-card-footer {
+  height: 32px !important;
+  background: #141414 !important;
+  border-top: 1px solid #2E2E2E !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10px !important;
+  color: #4A4A4A !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* Up Next Section */
+.upcoming-section .section-title {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #00FF87 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+  margin-bottom: 12px !important;
+}
+
+.day-label {
+  height: 28px !important;
+  background: #141414 !important;
+  border-top: 1px solid #2E2E2E !important;
+  border-bottom: 1px solid #2E2E2E !important;
+  color: #8A8A8A !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+  padding-left: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.upcoming-match-row {
+  height: 52px !important;
+  background: #1A1A1A !important;
+  border-bottom: 1px solid #1E1E1E !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 16px !important;
+  cursor: pointer !important;
+}
+
+.upcoming-match-row:hover {
+  background: #222222 !important;
+}
+
+.upcoming-teams {
+  flex: 1;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.upcoming-teams.right {
+  justify-content: flex-end !important;
+}
+
+.upcoming-teams span {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #FFFFFF !important;
+  text-transform: uppercase !important;
+}
+
+.upcoming-vs {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #4A4A4A !important;
+  width: 40px !important;
+  text-align: center !important;
+}
+
+.upcoming-time {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #8A8A8A !important;
+  margin-left: auto !important;
+  padding-left: 24px !important;
+}

@@ -3,7 +3,7 @@
 .flag {
   width: 48px;
   height: 32px;
-  border: 1px solid #2E2E2E;
+  border: 1px solid #3A3A3A;
   position: relative;
   overflow: hidden;
   display: inline-block;
@@ -14,13 +14,13 @@
 .flag.large {
   width: 120px;
   height: 80px;
-  border: 1.5px solid #2E2E2E;
+  border: 1.5px solid #3A3A3A;
 }
 
 .flag.small {
   width: 28px;
   height: 18px;
-  border: 1px solid #2E2E2E;
+  border: 1px solid #3A3A3A;
 }
 
 /* Brazil */

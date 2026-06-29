@@ -7,7 +7,6 @@ export function TeamFlag({ teamName, size = 'medium', className = '' }) {
 
   return (
     <div className={`flag flag-${flagCode} ${sizeClass} ${className}`}>
-      {/* Complex flags handled in flags.css via ::before/::after */}
       {flagCode === 'NOR' && (
         <>
           <div className="inner-cross-v" />
