@@ -228,17 +228,33 @@ app.get('/api/matches/today', async (req, res) => {
       return res.json(matchCache.data)
     }
     
-    if (!process.env.FOOTBALL_API_KEY) {
+    const keysString = process.env.FOOTBALL_API_KEYS || process.env.FOOTBALL_API_KEY || ''
+    const keys = keysString.split(',').map(k => k.trim()).filter(Boolean)
+
+    if (keys.length === 0) {
       return res.json([])
     }
 
-    const response = await fetch('https://footballdata.io/api/v1/fixtures/today', {
-      headers: { 'Authorization': `Bearer ${process.env.FOOTBALL_API_KEY}` }
-    })
+    let json = null
+    let success = false
+
+    for (const key of keys) {
+      try {
+        const response = await fetch('https://footballdata.io/api/v1/fixtures/today', {
+          headers: { 'Authorization': `Bearer ${key}` }
+        })
+        
+        if (response.ok) {
+          json = await response.json()
+          success = true
+          break
+        }
+      } catch (err) {
+        // Silently catch fetch errors and try the next key
+      }
+    }
     
-    if (!response.ok) throw new Error('API failed')
-    
-    const json = await response.json()
+    if (!success) throw new Error('All API keys failed or rate limited')
     const matches = (json.data?.matches || []).map(m => {
       let status = 'PRE'
       if (m.status === 'in_progress') status = 'LIVE'
