@@ -5,14 +5,14 @@ import { TEAMS } from '../data/teams'
 const DEFAULT_TRACKER_DATA = {
   Brazil: {
     status: 'ROUND OF 32',
-    nextMatchLabel: 'vs JAPAN · TODAY 13:00',
+    nextMatchLabel: 'vs JAPAN · TODAY 22:30',
     form: ['W', 'W', 'W', 'D', 'W'],
     goalsScored: 9,
     goalsConceded: 1,
     keyPlayer: 'Vinicius Jr',
     keyPlayerGoals: 3,
     nextOpponent: 'Japan',
-    nextMatchTime: 'JUNE 29, 13:00 ET',
+    nextMatchTime: 'JUNE 29, 22:30 IST',
     results: [
       { vs: 'Nigeria', score: '2–0', res: 'W' },
       { vs: 'Netherlands', score: '1–0', res: 'W' },
@@ -21,14 +21,14 @@ const DEFAULT_TRACKER_DATA = {
   },
   France: {
     status: 'ROUND OF 32',
-    nextMatchLabel: 'vs SWEDEN · JUN 30 21:00',
+    nextMatchLabel: 'vs SWEDEN · JUL 01 06:30',
     form: ['W', 'D', 'W', 'W', 'L'],
     goalsScored: 8,
     goalsConceded: 2,
     keyPlayer: 'Kylian Mbappé',
     keyPlayerGoals: 4,
     nextOpponent: 'Sweden',
-    nextMatchTime: 'JUNE 30, 21:00 ET',
+    nextMatchTime: 'JULY 01, 06:30 IST',
     results: [
       { vs: 'Denmark', score: '2–0', res: 'W' },
       { vs: 'Sweden', score: '1–1', res: 'D' },
@@ -37,14 +37,14 @@ const DEFAULT_TRACKER_DATA = {
   },
   England: {
     status: 'ROUND OF 32',
-    nextMatchLabel: 'vs DR CONGO · JUL 1 12:00',
+    nextMatchLabel: 'vs DR CONGO · JUL 01 21:30',
     form: ['W', 'W', 'D', 'W', 'W'],
     goalsScored: 7,
     goalsConceded: 0,
     keyPlayer: 'Jude Bellingham',
     keyPlayerGoals: 2,
     nextOpponent: 'DR Congo',
-    nextMatchTime: 'JULY 01, 12:00 ET',
+    nextMatchTime: 'JULY 01, 21:30 IST',
     results: [
       { vs: 'Serbia', score: '1–0', res: 'W' },
       { vs: 'IR Iran', score: '3–0', res: 'W' },
@@ -64,14 +64,14 @@ const getTeamTrackerData = (teamName) => {
 
   return {
     status: 'ROUND OF 32',
-    nextMatchLabel: 'vs GERMANY · JUL 2 15:00',
+    nextMatchLabel: 'vs GERMANY · JUL 03 00:30',
     form: ['W', 'D', 'L', 'W', 'D'],
     goalsScored: 5,
     goalsConceded: 3,
     keyPlayer: keyPlayerName,
     keyPlayerGoals: 2,
     nextOpponent: 'Germany',
-    nextMatchTime: 'JULY 02, 15:00 ET',
+    nextMatchTime: 'JULY 03, 00:30 IST',
     results: [
       { vs: 'Italy', score: '1–1', res: 'D' },
       { vs: 'Spain', score: '0–1', res: 'L' },

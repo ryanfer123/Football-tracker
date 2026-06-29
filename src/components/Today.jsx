@@ -10,7 +10,7 @@ const FALLBACK_TODAY = [
     scoreB: 0,
     status: 'LIVE',
     minute: "63'",
-    time: '12:00',
+    time: '21:30',
     venue: 'NRG Stadium',
     city: 'Houston',
     date: 'JUNE 29, 2026'
@@ -22,7 +22,7 @@ const FALLBACK_TODAY = [
     scoreA: 0,
     scoreB: 0,
     status: 'PRE',
-    time: '16:30',
+    time: '02:00',
     venue: 'Gillette Stadium',
     city: 'Boston',
     date: 'JUNE 29, 2026'
@@ -34,7 +34,7 @@ const FALLBACK_TODAY = [
     scoreA: 0,
     scoreB: 0,
     status: 'PRE',
-    time: '21:00',
+    time: '06:30',
     venue: 'Estadio BBVA',
     city: 'Monterrey',
     date: 'JUNE 29, 2026'
@@ -45,33 +45,33 @@ const UPCOMING_FIXTURES = [
   {
     date: 'JUN 30',
     matches: [
-      { id: 'civ-nor', teamA: 'Ivory Coast', teamB: 'Norway', time: '17:00 ET', venue: 'Dallas', city: 'Dallas', date: 'JUNE 30, 2026' },
-      { id: 'fra-swe', teamA: 'France', teamB: 'Sweden', time: '21:00 ET', venue: 'MetLife NJ', city: 'East Rutherford', date: 'JUNE 30, 2026' },
-      { id: 'mex-ecu', teamA: 'Mexico', teamB: 'Ecuador', time: '01:00 ET+1', venue: 'Azteca', city: 'Mexico City', date: 'JUNE 30, 2026' }
+      { id: 'civ-nor', teamA: 'Ivory Coast', teamB: 'Norway', time: '02:30', venue: 'Dallas', city: 'Dallas', date: 'JUNE 30, 2026' },
+      { id: 'fra-swe', teamA: 'France', teamB: 'Sweden', time: '06:30', venue: 'MetLife NJ', city: 'East Rutherford', date: 'JUNE 30, 2026' },
+      { id: 'mex-ecu', teamA: 'Mexico', teamB: 'Ecuador', time: '10:30', venue: 'Azteca', city: 'Mexico City', date: 'JUNE 30, 2026' }
     ]
   },
   {
     date: 'JUL 1',
     matches: [
-      { id: 'eng-cod', teamA: 'England', teamB: 'DR Congo', time: '12:00 ET', venue: 'Atlanta', city: 'Atlanta', date: 'JULY 01, 2026' },
-      { id: 'bel-sen', teamA: 'Belgium', teamB: 'Senegal', time: '16:00 ET', venue: 'Seattle', city: 'Seattle', date: 'JULY 01, 2026' },
-      { id: 'usa-bih', teamA: 'USA', teamB: 'Bosnia and Herzegovina', time: '20:00 ET', venue: 'SF Bay', city: 'Santa Clara', date: 'JULY 01, 2026' }
+      { id: 'eng-cod', teamA: 'England', teamB: 'DR Congo', time: '21:30', venue: 'Atlanta', city: 'Atlanta', date: 'JULY 01, 2026' },
+      { id: 'bel-sen', teamA: 'Belgium', teamB: 'Senegal', time: '02:00', venue: 'Seattle', city: 'Seattle', date: 'JULY 01, 2026' },
+      { id: 'usa-bih', teamA: 'USA', teamB: 'Bosnia and Herzegovina', time: '05:30', venue: 'SF Bay', city: 'Santa Clara', date: 'JULY 01, 2026' }
     ]
   },
   {
     date: 'JUL 2',
     matches: [
-      { id: 'esp-aut', teamA: 'Spain', teamB: 'Austria', time: '15:00 ET', venue: 'LA', city: 'Los Angeles', date: 'JULY 02, 2026' },
-      { id: 'por-cro', teamA: 'Portugal', teamB: 'Croatia', time: '19:00 ET', venue: 'Toronto', city: 'Toronto', date: 'JULY 02, 2026' },
-      { id: 'sui-alg', teamA: 'Switzerland', teamB: 'Algeria', time: '23:00 ET', venue: 'Vancouver', city: 'Vancouver', date: 'JULY 02, 2026' }
+      { id: 'esp-aut', teamA: 'Spain', teamB: 'Austria', time: '00:30', venue: 'LA', city: 'Los Angeles', date: 'JULY 02, 2026' },
+      { id: 'por-cro', teamA: 'Portugal', teamB: 'Croatia', time: '04:30', venue: 'Toronto', city: 'Toronto', date: 'JULY 02, 2026' },
+      { id: 'sui-alg', teamA: 'Switzerland', teamB: 'Algeria', time: '08:30', venue: 'Vancouver', city: 'Vancouver', date: 'JULY 02, 2026' }
     ]
   },
   {
     date: 'JUL 3',
     matches: [
-      { id: 'aus-egy', teamA: 'Australia', teamB: 'Egypt', time: '14:00 ET', venue: 'Dallas', city: 'Dallas', date: 'JULY 03, 2026' },
-      { id: 'arg-cpv', teamA: 'Argentina', teamB: 'Cape Verde', time: '18:00 ET', venue: 'Miami', city: 'Miami', date: 'JULY 03, 2026' },
-      { id: 'col-gha', teamA: 'Colombia', teamB: 'Ghana', time: '21:30 ET', venue: 'Kansas City', city: 'Kansas City', date: 'JULY 03, 2026' }
+      { id: 'aus-egy', teamA: 'Australia', teamB: 'Egypt', time: '23:30', venue: 'Dallas', city: 'Dallas', date: 'JULY 03, 2026' },
+      { id: 'arg-cpv', teamA: 'Argentina', teamB: 'Cape Verde', time: '03:30', venue: 'Miami', city: 'Miami', date: 'JULY 03, 2026' },
+      { id: 'col-gha', teamA: 'Colombia', teamB: 'Ghana', time: '07:00', venue: 'Kansas City', city: 'Kansas City', date: 'JULY 03, 2026' }
     ]
   }
 ]
@@ -610,7 +610,7 @@ function MatchCard({ match, onNavigateToTeam, selectedMatchId, setSelectedMatchI
               {match.time}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 600, marginTop: 2 }}>
-              ET
+              IST
             </div>
           </div>
 
@@ -731,7 +731,7 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
               scoreB: parseInt(teamBObj.score) || 0,
               status: isLiveState ? 'LIVE' : isFtState ? 'FT' : 'PRE',
               minute: event.status.displayClock || "0'",
-              time: new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+              time: new Date(event.date).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false }),
               venue: competition.venue?.fullName || 'Stadium',
               city: competition.venue?.address?.city || 'Host City',
               date: 'JUNE 29, 2026'
@@ -755,11 +755,8 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
     fetchData()
 
     const intervalId = setInterval(() => {
-      const hasLive = todayMatches.some(m => m.status === 'LIVE')
-      if (hasLive) {
-        fetchData()
-      }
-    }, 60000)
+      fetchData()
+    }, 30000)
 
     return () => {
       active = false
@@ -842,16 +839,16 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)' }}>
               <span style={{ color: 'var(--accent)', marginRight: 4 }}>●</span>
               BRAZIL 1-0 JAPAN · 63' · NRG Stadium &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
-              GERMANY vs PARAGUAY · Kicks off 16:30 ET &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
-              NETHERLANDS vs MOROCCO · Kicks off 21:00 ET &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
+              GERMANY vs PARAGUAY · Kicks off 02:00 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
+              NETHERLANDS vs MOROCCO · Kicks off 06:30 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               Messi leads Golden Boot with 5 goals &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               Canada advance to Round of 16 after 1-0 win &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span>
             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)' }}>
               <span style={{ color: 'var(--accent)', marginRight: 4 }}>●</span>
               BRAZIL 1-0 JAPAN · 63' · NRG Stadium &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
-              GERMANY vs PARAGUAY · Kicks off 16:30 ET &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
-              NETHERLANDS vs MOROCCO · Kicks off 21:00 ET &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
+              GERMANY vs PARAGUAY · Kicks off 02:00 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
+              NETHERLANDS vs MOROCCO · Kicks off 06:30 IST &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               Messi leads Golden Boot with 5 goals &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp; 
               Canada advance to Round of 16 after 1-0 win &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span>
