@@ -1,6 +1,25 @@
 import { useState } from 'react'
 import { GROUPS } from '../data/matchData'
 import { FlagComponent } from './shared'
+import { Bar } from 'react-chartjs-2'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 const GROUP_LETTERS = Object.keys(GROUPS).sort()
 
@@ -359,6 +378,39 @@ export default function Groups({ onNavigateToTeam }) {
                         </div>
                       )
                     })}
+                  </div>
+
+                  {/* CHART JS: Group Goals Analysis */}
+                  <div style={{ padding: '20px', borderTop: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 700, letterSpacing: '0.1em', marginBottom: 16 }}>
+                      GROUP GOALS ANALYSIS
+                    </div>
+                    <div style={{ height: 160 }}>
+                      <Bar 
+                        data={{
+                          labels: displayTeams.map(t => t.name.substring(0,3).toUpperCase()),
+                          datasets: [{
+                            label: 'Goals Scored',
+                            data: displayTeams.map(t => t.stats.gf),
+                            backgroundColor: 'rgba(212, 255, 38, 0.6)',
+                            borderColor: '#D4FF26',
+                            borderWidth: 1,
+                            borderRadius: 4
+                          }]
+                        }}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          scales: {
+                            y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { color: '#888888', stepSize: 1 } },
+                            x: { grid: { display: false }, ticks: { color: '#888888', font: { family: 'Outfit', weight: 600 } } }
+                          },
+                          plugins: {
+                            legend: { display: false }
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               )}

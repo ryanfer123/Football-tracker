@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FlagComponent, predictMatch } from './shared'
 import { TEAMS } from '../data/teams'
 
@@ -121,16 +122,18 @@ export default function Predict() {
   const [teamA, setTeamA] = useState(teamList[0] || 'Argentina')
   const [teamB, setTeamB] = useState(teamList[1] || 'Brazil')
   const [prediction, setPrediction] = useState(null)
+  const [step, setStep] = useState(1) // 1: Select, 2: H2H, 3: Result
 
   const handlePredict = () => {
     if (teamA === teamB) return
     const result = predictMatch(teamA, teamB)
     setPrediction(result)
+    setStep(3)
   }
 
-  const h2hHistory = prediction ? getH2HHistory(prediction.teamA, prediction.teamB) : []
-  const recentA = prediction ? getRecentMatches(prediction.teamA) : []
-  const recentB = prediction ? getRecentMatches(prediction.teamB) : []
+  const h2hHistory = getH2HHistory(teamA, teamB)
+  const recentA = getRecentMatches(teamA)
+  const recentB = getRecentMatches(teamB)
 
   // Scorelines
   const scorelineBreakdown = [
@@ -195,187 +198,130 @@ export default function Predict() {
         </div>
       </div>
 
-      {/* QUICK SELECT */}
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600, marginBottom: 8, letterSpacing: '0.05em' }}>TODAY'S MATCHES (QUICK SELECT)</div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {[
-            { tA: 'Brazil', tB: 'Japan' },
-            { tA: 'Germany', tB: 'Paraguay' },
-            { tA: 'Netherlands', tB: 'Morocco' }
-          ].map((m, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                setTeamA(m.tA)
-                setTeamB(m.tB)
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                padding: '6px 12px',
-                cursor: 'pointer',
-                transition: 'border-color 80ms ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--accent)'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
-            >
-              <FlagComponent teamName={m.tA} size="small" style={{ width: 14, height: 10 }} />
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-1)' }}>v</span>
-              <FlagComponent teamName={m.tB} size="small" style={{ width: 14, height: 10 }} />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SELECTORS ROW */}
-      <div className="predict-selector" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <div style={{ position: 'relative' }}>
-          <select 
-            value={teamA} 
-            onChange={(e) => setTeamA(e.target.value)}
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border-2)',
-              color: 'var(--text-1)',
-              fontSize: 14,
-              fontWeight: 500,
-              padding: '10px 14px',
-              paddingRight: 24,
-              width: 240,
-              appearance: 'none',
-              cursor: 'pointer'
-            }}
+      <AnimatePresence mode="wait">
+        {step === 1 && (
+          <motion.div
+            key="step1"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.2 }}
           >
-            {teamList.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
-          </select>
-          <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }}>▾</span>
-        </div>
-
-        <div className="text-xs" style={{ color: 'var(--text-3)', fontSize: 11 }}>VS</div>
-
-        <div style={{ position: 'relative' }}>
-          <select 
-            value={teamB} 
-            onChange={(e) => setTeamB(e.target.value)}
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border-2)',
-              color: 'var(--text-1)',
-              fontSize: 14,
-              fontWeight: 500,
-              padding: '10px 14px',
-              paddingRight: 24,
-              width: 240,
-              appearance: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {teamList.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
-          </select>
-          <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }}>▾</span>
-        </div>
-
-        <button 
-          onClick={handlePredict}
-          style={{
-            background: 'var(--accent)',
-            color: '#000',
-            fontSize: 14,
-            fontWeight: 700,
-            padding: '10px 20px',
-            cursor: 'pointer',
-            transition: 'background 80ms ease'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent-dim)'}
-          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--accent)'}
-        >
-          PREDICT →
-        </button>
-      </div>
-
-      {/* PREDICTION RESULT CARD */}
-      {prediction && (
-        <div>
-          <div 
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--border-2)',
-              borderTop: '2px solid var(--accent)',
-              padding: 20,
-              boxShadow: 'var(--shadow-accent)',
-              marginBottom: 24
-            }}
-          >
-            {/* Top Row Header */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 24, marginBottom: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <FlagComponent teamName={prediction.teamA} />
-                <span style={{ fontSize: 18, fontWeight: 800 }}>{prediction.teamA.toUpperCase()}</span>
-              </div>
-              <span style={{ color: 'var(--text-3)', fontSize: 24 }}>—</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row-reverse' }}>
-                <FlagComponent teamName={prediction.teamB} />
-                <span style={{ fontSize: 18, fontWeight: 800 }}>{prediction.teamB.toUpperCase()}</span>
+            {/* QUICK SELECT */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600, marginBottom: 8, letterSpacing: '0.05em' }}>TODAY'S MATCHES (QUICK SELECT)</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {[
+                  { tA: 'Brazil', tB: 'Japan' },
+                  { tA: 'Germany', tB: 'Paraguay' },
+                  { tA: 'Netherlands', tB: 'Morocco' }
+                ].map((m, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setTeamA(m.tA)
+                      setTeamB(m.tB)
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: 'var(--surface)',
+                      border: '1px solid var(--border)',
+                      padding: '6px 12px',
+                      cursor: 'pointer',
+                      transition: 'border-color 80ms ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--accent)'}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
+                  >
+                    <FlagComponent teamName={m.tA} size="small" style={{ width: 14, height: 10 }} />
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-1)' }}>v</span>
+                    <FlagComponent teamName={m.tB} size="small" style={{ width: 14, height: 10 }} />
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Predicted Score */}
-            <div style={{ textAlign: 'center', fontSize: 48, fontWeight: 900, letterSpacing: -3, margin: '16px 0', color: 'var(--text-1)' }}>
-              {prediction.goalsA} — {prediction.goalsB}
-            </div>
-
-            {/* Win Probability Bar */}
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', height: 6, width: '100%', background: 'var(--border-2)' }}>
-                <div style={{ width: `${prediction.probA}%`, background: 'var(--accent)' }} />
-                <div style={{ width: `${prediction.probDraw}%`, background: 'var(--border-2)' }} />
-                <div style={{ width: `${prediction.probB}%`, background: 'var(--red)' }} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 10, color: 'var(--text-2)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                <span>{prediction.teamA} {prediction.probA}%</span>
-                <span>DRAW {prediction.probDraw}%</span>
-                <span>{prediction.teamB} {prediction.probB}%</span>
-              </div>
-            </div>
-
-            {/* Factors Row */}
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-              {prediction.factors.map((f, idx) => (
-                <div 
-                  key={idx}
+            {/* SELECTORS ROW */}
+            <div className="predict-selector" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+              <div style={{ position: 'relative' }}>
+                <select 
+                  value={teamA} 
+                  onChange={(e) => setTeamA(e.target.value)}
                   style={{
+                    background: 'var(--surface)',
                     border: '1px solid var(--border-2)',
-                    padding: '3px 8px',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: 'var(--text-2)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.08em'
+                    color: 'var(--text-1)',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    padding: '10px 14px',
+                    paddingRight: 24,
+                    width: 240,
+                    appearance: 'none',
+                    cursor: 'pointer'
                   }}
                 >
-                  [{f}]
-                </div>
-              ))}
+                  {teamList.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
+                </select>
+                <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }}>▾</span>
+              </div>
+
+              <div className="text-xs" style={{ color: 'var(--text-3)', fontSize: 11 }}>VS</div>
+
+              <div style={{ position: 'relative' }}>
+                <select 
+                  value={teamB} 
+                  onChange={(e) => setTeamB(e.target.value)}
+                  style={{
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border-2)',
+                    color: 'var(--text-1)',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    padding: '10px 14px',
+                    paddingRight: 24,
+                    width: 240,
+                    appearance: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {teamList.map(t => <option key={t} value={t}>{t.toUpperCase()}</option>)}
+                </select>
+                <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }}>▾</span>
+              </div>
             </div>
 
-            {/* Analysis Text */}
-            <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.5, marginBottom: 16 }}>
-              {prediction.reasoning}
-            </div>
+            <button 
+              onClick={() => {
+                if (teamA !== teamB) setStep(2)
+              }}
+              style={{
+                background: 'var(--text-1)',
+                color: 'var(--bg)',
+                padding: '14px 24px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: teamA === teamB ? 'not-allowed' : 'pointer',
+                opacity: teamA === teamB ? 0.5 : 1,
+                border: 'none',
+                display: 'block',
+                marginBottom: 24
+              }}
+            >
+              NEXT: VIEW HEAD TO HEAD
+            </button>
+          </motion.div>
+        )}
 
-            {/* Confidence Badge */}
-            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3)' }}>
-              CONFIDENCE:{' '}
-              <span style={{ color: prediction.confidence === 'HIGH' ? 'var(--accent)' : prediction.confidence === 'LOW' ? 'var(--red)' : 'var(--text-1)' }}>
-                {prediction.confidence}
-              </span>
-            </div>
-          </div>
-
+        {step === 2 && (
+          <motion.div
+            key="step2"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+          >
           {/* FEATURE 6: HISTORICAL MEETINGS */}
           <div style={{ marginBottom: 28 }}>
             <div className="text-xs" style={{ color: 'var(--text-3)', marginBottom: 8 }}>
@@ -484,8 +430,139 @@ export default function Predict() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+            <button 
+              onClick={handlePredict}
+              style={{
+                background: 'var(--accent)',
+                color: '#000',
+                padding: '14px 24px',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: 'pointer',
+                border: 'none',
+                display: 'block',
+                width: '100%',
+                marginBottom: 24,
+                transition: 'background 80ms ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent-dim)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'var(--accent)'}
+            >
+              GENERATE PREDICTION
+            </button>
+          </motion.div>
+        )}
+
+        {step === 3 && prediction && (
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div 
+              style={{
+                background: 'var(--surface)',
+                border: '1px solid var(--border-2)',
+                borderTop: '2px solid var(--accent)',
+                padding: 20,
+                boxShadow: 'var(--shadow-accent)',
+                marginBottom: 24
+              }}
+            >
+              {/* Top Row Header */}
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 24, marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <FlagComponent teamName={prediction.teamA} />
+                  <span style={{ fontSize: 18, fontWeight: 800 }}>{prediction.teamA.toUpperCase()}</span>
+                </div>
+                <span style={{ color: 'var(--text-3)', fontSize: 24 }}>—</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row-reverse' }}>
+                  <FlagComponent teamName={prediction.teamB} />
+                  <span style={{ fontSize: 18, fontWeight: 800 }}>{prediction.teamB.toUpperCase()}</span>
+                </div>
+              </div>
+
+              {/* Predicted Score */}
+              <div style={{ textAlign: 'center', fontSize: 48, fontWeight: 900, letterSpacing: -3, margin: '16px 0', color: 'var(--text-1)' }}>
+                {prediction.goalsA} — {prediction.goalsB}
+              </div>
+
+              {/* Win Probability Bar */}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', height: 6, width: '100%', background: 'var(--border-2)' }}>
+                  <div style={{ width: `${prediction.probA}%`, background: 'var(--accent)' }} />
+                  <div style={{ width: `${prediction.probDraw}%`, background: 'var(--border-2)' }} />
+                  <div style={{ width: `${prediction.probB}%`, background: 'var(--red)' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 10, color: 'var(--text-2)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  <span>{prediction.teamA} {prediction.probA}%</span>
+                  <span>DRAW {prediction.probDraw}%</span>
+                  <span>{prediction.teamB} {prediction.probB}%</span>
+                </div>
+              </div>
+
+              {/* Factors Row */}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+                {prediction.factors.map((f, idx) => (
+                  <div 
+                    key={idx}
+                    style={{
+                      border: '1px solid var(--border-2)',
+                      padding: '3px 8px',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: 'var(--text-2)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em'
+                    }}
+                  >
+                    [{f}]
+                  </div>
+                ))}
+              </div>
+
+              {/* Analysis Text */}
+              <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.5, marginBottom: 16 }}>
+                {prediction.reasoning}
+              </div>
+
+              {/* Confidence Badge */}
+              <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3)' }}>
+                CONFIDENCE:{' '}
+                <span style={{ color: prediction.confidence === 'HIGH' ? 'var(--accent)' : prediction.confidence === 'LOW' ? 'var(--red)' : 'var(--text-1)' }}>
+                  {prediction.confidence}
+                </span>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => {
+                setStep(1)
+                setPrediction(null)
+              }}
+              style={{
+                background: 'transparent',
+                border: '1px solid var(--border-2)',
+                color: 'var(--text-1)',
+                padding: '14px 24px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'block',
+                marginBottom: 24,
+                width: '100%',
+                transition: 'background 80ms ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-2)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              PREDICT ANOTHER MATCH
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* TOURNAMENT ODDS */}
       <div style={{ marginTop: 24 }}>

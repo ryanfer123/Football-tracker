@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { FlagComponent } from './shared'
+import CountdownTimer from './CountdownTimer'
 
 const FALLBACK_TODAY = [
   {
@@ -843,6 +844,8 @@ export default function Today({ onNavigateToTeam, selectedMatchId, setSelectedMa
           ROUND OF 32 · {todayMatches.length} MATCHES
         </div>
       </div>
+
+      <CountdownTimer targetDate="2026-06-29T22:30:00" label="BRAZIL VS JAPAN KICKS OFF IN" />
 
       {/* FEATURE 9: SEARCH & FILTER BAR */}
       <div 

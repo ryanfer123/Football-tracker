@@ -11,6 +11,7 @@ import Tracker from './components/Tracker'
 import DreamXI from './components/DreamXI'
 import Profile from './components/Profile'
 import Account from './components/Account'
+import AnnouncementBar from './components/AnnouncementBar'
 
 import { TEAMS } from './data/teams'
 import { PLAYERS } from './data/players'
@@ -319,9 +320,11 @@ export default function App() {
   }
 
   return (
-    <div className="app">
-      {/* SIDEBAR */}
-      <aside className="sidebar">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      <AnnouncementBar />
+      <div className="app" style={{ flex: 1, height: 'auto' }}>
+        {/* SIDEBAR */}
+        <aside className="sidebar">
         <div className="sidebar-logo">26</div>
         
         {/* Global Search Button */}
@@ -656,6 +659,7 @@ export default function App() {
         ))}
         </AnimatePresence>
       </div>
+    </div>
     </div>
   )
 }

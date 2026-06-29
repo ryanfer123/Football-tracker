@@ -41,6 +41,8 @@
 
 body {
   background: var(--bg);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--text-1);
   font-family: 'Inter', -apple-system, sans-serif;
   overflow: hidden;
