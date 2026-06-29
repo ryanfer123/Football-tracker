@@ -355,29 +355,43 @@ app.get('/api/stats/goldenboot', async (req, res) => {
     for (let kIdx = 0; kIdx < keys.length; kIdx++) {
       const key = keys[kIdx]
       for (const ep of endpoints) {
-        try {
-          const response = await fetchWithTimeout(ep, { headers: { 'Authorization': `Bearer ${key}` } }, 10000)
-          if (!response.ok) continue
-          json = await response.json()
-          // Accept several shapes
-          const candidates = json.data && (Array.isArray(json.data) ? json.data : json.data.scorers || json.data.top_scorers)
-          const rootArray = Array.isArray(json) ? json : null
-          if (Array.isArray(candidates) && candidates.length > 0) {
-            json = { scorers: candidates }
-            success = true
-            usedEndpoint = ep
-            usedKeyIdx = kIdx
-            break
-          } else if (Array.isArray(rootArray) && rootArray.length > 0) {
-            json = { scorers: rootArray }
-            success = true
-            usedEndpoint = ep
-            usedKeyIdx = kIdx
-            break
+        // Try multiple common auth header formats to support different providers (footballdata, api-football, rapidapi)
+        const headerVariants = [
+          { 'Authorization': `Bearer ${key}` },
+          { 'x-apisports-key': key },
+          { 'x-rapidapi-key': key, 'x-rapidapi-host': 'api-football-v1.p.rapidapi.com' }
+        ]
+
+        for (const headers of headerVariants) {
+          try {
+            const response = await fetchWithTimeout(ep, { headers }, 10000)
+            if (!response.ok) continue
+            json = await response.json()
+            // Accept several shapes
+            const candidates = json.data && (Array.isArray(json.data) ? json.data : json.data.scorers || json.data.top_scorers)
+            const rootArray = Array.isArray(json) ? json : null
+            if (Array.isArray(candidates) && candidates.length > 0) {
+              json = { scorers: candidates }
+              success = true
+              usedEndpoint = ep
+              usedKeyIdx = kIdx
+              // Log which header variant succeeded (index) for debugging
+              console.log(`/api/stats/goldenboot: successful headers variant for endpoint ${ep}`)
+              break
+            } else if (Array.isArray(rootArray) && rootArray.length > 0) {
+              json = { scorers: rootArray }
+              success = true
+              usedEndpoint = ep
+              usedKeyIdx = kIdx
+              console.log(`/api/stats/goldenboot: successful root-array response for endpoint ${ep}`)
+              break
+            }
+          } catch (err) {
+            // try next header variant
           }
-        } catch (err) {
-          // try next endpoint
         }
+
+        if (success) break
       }
       if (success) break
     }
